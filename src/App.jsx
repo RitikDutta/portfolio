@@ -10,10 +10,9 @@ const spotlightItems = [
 ];
 
 const aboutLines = [
-  "As a data scientist, I turn raw data into decisions people can trust.",
-  "I design experiments, build models, and shape pipelines that stay useful in the real world.",
-  "My work balances statistical rigor, explainability, and outcomes that teams can act on.",
-  "I care about clear signals, honest metrics, and insight that leads to measurable impact.",
+  "I’ve always been obsessed with patterns noticing what others usually miss.",
+  "And somewhere along the way, those patterns turned into something real… something with IMPACT.",
+  "Now I build systems that don’t just work they leave a mark.",
 ];
 
 const aboutCharacterLines = [];
