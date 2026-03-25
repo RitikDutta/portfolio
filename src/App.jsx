@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
-import brainModelUrl from "../brain.glb?url";
+import brainModelUrl from "../brain_hologram.glb?url";
 
 const featureCards = [
   {
@@ -677,7 +677,7 @@ export default function App() {
           },
           undefined,
           (error) => {
-            console.error("Failed to load brain.glb.", error);
+            console.error("Failed to load brain_hologram.glb.", error);
           },
         );
 
