@@ -964,32 +964,30 @@ export default function App() {
           </div>
         </section>
 
-        <div className="content-shell">
-          <section className="about-scroll" id="about" ref={aboutSectionRef}>
-            <div className="about-frame">
-              <div className="about-copy">
-                {aboutCharacterLines.map((line, lineIndex) => (
-                  <p
-                    aria-label={aboutLines[lineIndex]}
-                    className="about-line"
-                    key={aboutLines[lineIndex]}
-                  >
-                    {line.map(({ character, index }) => (
-                      <span
-                        aria-hidden="true"
-                        className="about-char"
-                        data-char-index={index}
-                        key={`${index}-${character}`}
-                      >
-                        {character === " " ? "\u00A0" : character}
-                      </span>
-                    ))}
-                  </p>
-                ))}
-              </div>
+        <section className="about-scroll" id="about" ref={aboutSectionRef}>
+          <div className="about-frame">
+            <div className="about-copy">
+              {aboutCharacterLines.map((line, lineIndex) => (
+                <p
+                  aria-label={aboutLines[lineIndex]}
+                  className="about-line"
+                  key={aboutLines[lineIndex]}
+                >
+                  {line.map(({ character, index }) => (
+                    <span
+                      aria-hidden="true"
+                      className="about-char"
+                      data-char-index={index}
+                      key={`${index}-${character}`}
+                    >
+                      {character === " " ? "\u00A0" : character}
+                    </span>
+                  ))}
+                </p>
+              ))}
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </main>
     </div>
   );
