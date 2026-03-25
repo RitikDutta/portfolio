@@ -103,8 +103,10 @@ export default function App() {
       const scale = Math.max(width / sourceWidth, height / sourceHeight);
       const drawWidth = sourceWidth * scale;
       const drawHeight = sourceHeight * scale;
+      const extraVerticalCrop = Math.max(drawHeight - height, 0);
       const offsetX = (width - drawWidth) / 2;
-      const offsetY = (height - drawHeight) / 2;
+      const offsetY =
+        (height - drawHeight) / 2 + extraVerticalCrop * 0.5 * currentProgress;
 
       context.clearRect(0, 0, width, height);
       context.fillStyle = "#03070d";
@@ -204,6 +206,10 @@ export default function App() {
         "--scroll-progress",
         currentProgress.toFixed(4),
       );
+
+      if (activeFrameIndex >= 0 && frameCache.has(activeFrameIndex)) {
+        drawFrame(frameCache.get(activeFrameIndex));
+      }
 
       renderVisibleFrame();
 
