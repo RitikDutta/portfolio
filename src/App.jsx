@@ -104,9 +104,11 @@ export default function App() {
       const drawWidth = sourceWidth * scale;
       const drawHeight = sourceHeight * scale;
       const extraVerticalCrop = Math.max(drawHeight - height, 0);
+      const verticalShiftStrength = 0.21;
       const offsetX = (width - drawWidth) / 2;
       const offsetY =
-        (height - drawHeight) / 2 + extraVerticalCrop * 0.5 * currentProgress;
+        (height - drawHeight) / 2 +
+        extraVerticalCrop * verticalShiftStrength * currentProgress;
 
       context.clearRect(0, 0, width, height);
       context.fillStyle = "#03070d";
