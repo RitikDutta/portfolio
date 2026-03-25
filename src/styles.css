@@ -138,6 +138,7 @@ a {
 
 .hero-fallback {
   opacity: 1;
+  object-position: center calc(50% + (var(--scroll-progress) * 22%));
 }
 
 .hero-scroll[data-decoder-ready="true"] .hero-canvas {
