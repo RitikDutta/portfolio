@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import heroVideo from "../hero.mp4";
+import heroImage from "../hero.webp";
+import heroPoster from "../hero-poster.webp";
 
 const featureCards = [
   {
@@ -17,29 +18,43 @@ const featureCards = [
 ];
 
 const spotlightItems = [
-  "Hero-led landing experience",
+  "Centered full-screen animated WebP",
   "Responsive layout for mobile and desktop",
-  "Video-integrated design with layered overlays",
+  "Scroll-controlled frames instead of autoplay",
 ];
 
 export default function App() {
   const heroSectionRef = useRef(null);
-  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     const heroSection = heroSectionRef.current;
-    const video = videoRef.current;
+    const canvas = canvasRef.current;
 
-    if (!heroSection || !video) {
+    if (!heroSection || !canvas) {
+      return undefined;
+    }
+
+    const context = canvas.getContext("2d");
+
+    if (!context) {
       return undefined;
     }
 
     let frameId = 0;
     let sectionStart = 0;
     let scrollRange = 1;
-    let safeDuration = 0;
-    let targetTime = 0;
-    let videoReady = false;
+    let targetProgress = 0;
+    let currentProgress = 0;
+    let decoder = null;
+    let frameCount = 1;
+    let mounted = true;
+    let activeFrameIndex = -1;
+    let requestedFrameIndex = -1;
+
+    const frameCache = new Map();
+    const pendingFrames = new Map();
+    const maxCachedFrames = 10;
 
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -47,40 +62,164 @@ export default function App() {
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
+    const trimFrameCache = (focusIndex) => {
+      if (frameCache.size <= maxCachedFrames) {
+        return;
+      }
+
+      const keepIndexes = new Set(
+        [...frameCache.keys()]
+          .sort((left, right) => {
+            return Math.abs(left - focusIndex) - Math.abs(right - focusIndex);
+          })
+          .slice(0, maxCachedFrames),
+      );
+
+      for (const [index, frame] of frameCache.entries()) {
+        if (keepIndexes.has(index)) {
+          continue;
+        }
+
+        frame.close?.();
+        frameCache.delete(index);
+      }
+    };
+
+    const drawFrame = (frame) => {
+      const bounds = canvas.getBoundingClientRect();
+      const devicePixelRatio = window.devicePixelRatio || 1;
+      const width = Math.max(1, Math.round(bounds.width * devicePixelRatio));
+      const height = Math.max(1, Math.round(bounds.height * devicePixelRatio));
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      const sourceWidth =
+        frame.displayWidth || frame.codedWidth || frame.width || 1;
+      const sourceHeight =
+        frame.displayHeight || frame.codedHeight || frame.height || 1;
+      const scale = Math.max(width / sourceWidth, height / sourceHeight);
+      const drawWidth = sourceWidth * scale;
+      const drawHeight = sourceHeight * scale;
+      const offsetX = (width - drawWidth) / 2;
+      const offsetY = (height - drawHeight) / 2;
+
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#03070d";
+      context.fillRect(0, 0, width, height);
+      context.drawImage(frame, offsetX, offsetY, drawWidth, drawHeight);
+    };
+
+    const decodeFrame = (frameIndex) => {
+      if (!decoder) {
+        return Promise.resolve(null);
+      }
+
+      if (frameCache.has(frameIndex)) {
+        return Promise.resolve(frameCache.get(frameIndex));
+      }
+
+      if (pendingFrames.has(frameIndex)) {
+        return pendingFrames.get(frameIndex);
+      }
+
+      const task = decoder
+        .decode({
+          completeFramesOnly: true,
+          frameIndex,
+        })
+        .then(({ image }) => {
+          pendingFrames.delete(frameIndex);
+
+          if (!mounted) {
+            image.close?.();
+            return null;
+          }
+
+          frameCache.set(frameIndex, image);
+          trimFrameCache(frameIndex);
+          return image;
+        })
+        .catch(() => {
+          pendingFrames.delete(frameIndex);
+          return null;
+        });
+
+      pendingFrames.set(frameIndex, task);
+      return task;
+    };
+
+    const warmNearbyFrames = (frameIndex) => {
+      [frameIndex - 1, frameIndex + 1]
+        .filter((index) => index >= 0 && index < frameCount)
+        .forEach((index) => {
+          if (!frameCache.has(index) && !pendingFrames.has(index)) {
+            void decodeFrame(index);
+          }
+        });
+    };
+
+    const renderVisibleFrame = () => {
+      if (!decoder || frameCount < 1) {
+        return;
+      }
+
+      const nextFrameIndex = clamp(
+        Math.round(currentProgress * (frameCount - 1)),
+        0,
+        frameCount - 1,
+      );
+
+      if (nextFrameIndex === requestedFrameIndex) {
+        return;
+      }
+
+      requestedFrameIndex = nextFrameIndex;
+
+      void decodeFrame(nextFrameIndex).then((frame) => {
+        if (!mounted || !frame || requestedFrameIndex !== nextFrameIndex) {
+          return;
+        }
+
+        activeFrameIndex = nextFrameIndex;
+        heroSection.dataset.decoderReady = "true";
+        drawFrame(frame);
+        warmNearbyFrames(nextFrameIndex);
+      });
+    };
+
     const renderFrame = () => {
       frameId = 0;
 
-      if (!videoReady || safeDuration <= 0) {
-        return;
+      const easing = reducedMotionQuery.matches ? 1 : 0.12;
+      currentProgress += (targetProgress - currentProgress) * easing;
+
+      if (Math.abs(targetProgress - currentProgress) <= 0.0004) {
+        currentProgress = targetProgress;
       }
 
-      const nextTime = reducedMotionQuery.matches
-        ? targetTime
-        : video.currentTime + (targetTime - video.currentTime) * 0.2;
+      heroSection.style.setProperty(
+        "--scroll-progress",
+        currentProgress.toFixed(4),
+      );
 
-      if (Math.abs(targetTime - nextTime) <= 0.01) {
-        video.currentTime = targetTime;
-        return;
+      renderVisibleFrame();
+
+      const shouldContinue = Math.abs(targetProgress - currentProgress) > 0.0004;
+
+      if (shouldContinue) {
+        frameId = window.requestAnimationFrame(renderFrame);
       }
-
-      video.currentTime = nextTime;
-      frameId = window.requestAnimationFrame(renderFrame);
     };
 
     const syncToScroll = () => {
-      const progress = clamp(
+      targetProgress = clamp(
         (window.scrollY - sectionStart) / scrollRange,
         0,
         1,
       );
-
-      heroSection.style.setProperty("--scroll-progress", progress.toFixed(4));
-
-      if (!videoReady || safeDuration <= 0) {
-        return;
-      }
-
-      targetTime = progress * safeDuration;
 
       if (!frameId) {
         frameId = window.requestAnimationFrame(renderFrame);
@@ -91,36 +230,95 @@ export default function App() {
       const sectionTop = heroSection.getBoundingClientRect().top + window.scrollY;
       sectionStart = sectionTop;
       scrollRange = Math.max(heroSection.offsetHeight - window.innerHeight, 1);
+
+      if (activeFrameIndex >= 0 && frameCache.has(activeFrameIndex)) {
+        drawFrame(frameCache.get(activeFrameIndex));
+      }
+
       syncToScroll();
     };
 
-    const handleLoadedMetadata = () => {
-      safeDuration = Math.max(video.duration - 0.1, 0);
-      videoReady = safeDuration > 0;
-      video.pause();
-      video.currentTime = 0;
-      updateBounds();
+    const initializeDecoder = async () => {
+      const ImageDecoderClass = window.ImageDecoder;
+
+      heroSection.dataset.decoderReady = "false";
+
+      if (!ImageDecoderClass) {
+        return;
+      }
+
+      try {
+        const supportsWebP =
+          typeof ImageDecoderClass.isTypeSupported === "function"
+            ? await ImageDecoderClass.isTypeSupported("image/webp")
+            : true;
+
+        if (!supportsWebP || !mounted) {
+          return;
+        }
+
+        const response = await fetch(heroImage);
+        const imageBuffer = await response.arrayBuffer();
+
+        if (!mounted) {
+          return;
+        }
+
+        decoder = new ImageDecoderClass({
+          data: imageBuffer,
+          type: "image/webp",
+        });
+
+        if (decoder.tracks?.ready) {
+          await decoder.tracks.ready;
+        }
+
+        if (!mounted) {
+          return;
+        }
+
+        frameCount = decoder.tracks?.selectedTrack?.frameCount ?? 1;
+
+        const firstFrame = await decodeFrame(0);
+
+        if (!mounted || !firstFrame) {
+          return;
+        }
+
+        activeFrameIndex = 0;
+        requestedFrameIndex = 0;
+        heroSection.dataset.decoderReady = "true";
+        drawFrame(firstFrame);
+        warmNearbyFrames(0);
+        syncToScroll();
+      } catch (error) {
+        console.error("Failed to decode animated WebP frames.", error);
+      }
     };
-
-    video.pause();
-
-    if (video.readyState >= 1) {
-      handleLoadedMetadata();
-    } else {
-      video.addEventListener("loadedmetadata", handleLoadedMetadata);
-    }
 
     window.addEventListener("resize", updateBounds);
     window.addEventListener("scroll", syncToScroll, { passive: true });
+    currentProgress = 0;
+    targetProgress = 0;
+    updateBounds();
+    void initializeDecoder();
 
     return () => {
+      mounted = false;
       window.removeEventListener("resize", updateBounds);
       window.removeEventListener("scroll", syncToScroll);
-      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
 
       if (frameId) {
         window.cancelAnimationFrame(frameId);
       }
+
+      for (const frame of frameCache.values()) {
+        frame.close?.();
+      }
+
+      frameCache.clear();
+      pendingFrames.clear();
+      decoder?.close?.();
     };
   }, []);
 
@@ -138,25 +336,33 @@ export default function App() {
       </header>
 
       <main id="home">
-        <section className="hero-scroll" ref={heroSectionRef}>
+        <section
+          className="hero-scroll"
+          data-decoder-ready="false"
+          ref={heroSectionRef}
+        >
           <div className="hero-pin">
-            <video
-              className="hero-video"
-              muted
-              playsInline
-              preload="auto"
-              ref={videoRef}
-            >
-              <source src={heroVideo} type="video/mp4" />
-            </video>
+            <canvas
+              aria-hidden="true"
+              className="hero-media hero-canvas"
+              ref={canvasRef}
+            />
+            <img
+              alt="Full-screen hero artwork"
+              className="hero-media hero-fallback"
+              decoding="async"
+              fetchPriority="high"
+              loading="eager"
+              src={heroPoster}
+            />
 
             <div className="hero-overlay">
               <p className="eyebrow">Scroll Trigger Hero</p>
-              <h1>Centered, full-screen video that scrubs with your scroll.</h1>
+              <h1>Animated WebP frames now move only when you scroll.</h1>
               <p className="hero-text">
-                Scroll down to move the reel forward and scroll up to pull it
-                backward. The hero stays pinned while the video follows your
-                position.
+                The hero uses `hero.webp` as a frame source and renders it onto
+                a canvas, so scroll position controls the animation instead of
+                letting the browser autoplay the image.
               </p>
 
               <div className="hero-actions">
@@ -175,7 +381,7 @@ export default function App() {
               </ul>
 
               <div className="scrub-status" aria-hidden="true">
-                <span>Scroll to scrub the timeline</span>
+                <span>Scroll to move through the scene</span>
                 <div className="progress-track">
                   <span className="progress-fill" />
                 </div>
@@ -187,8 +393,9 @@ export default function App() {
         <div className="content-shell">
           <section className="intro-panel" id="about">
             <p>
-              The hero is now centered and full screen, with scroll position
-              controlling video progress in both directions instead of autoplay.
+              The hero is centered and full screen, with animated WebP frames
+              decoded into a canvas so the motion stays tied to scroll instead
+              of autoplaying on its own.
             </p>
           </section>
 

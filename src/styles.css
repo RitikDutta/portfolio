@@ -88,7 +88,7 @@ a {
 .hero-scroll {
   --scroll-progress: 0;
   position: relative;
-  height: 320vh;
+  height: 360vh;
 }
 
 .hero-pin {
@@ -107,12 +107,12 @@ a {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(180deg, rgba(3, 7, 13, 0.28) 0%, rgba(3, 7, 13, 0.52) 100%),
+    linear-gradient(180deg, rgba(3, 7, 13, 0.18) 0%, rgba(3, 7, 13, 0.32) 45%, rgba(13, 24, 36, 0.82) 100%),
     radial-gradient(circle at center, transparent 0%, rgba(3, 7, 13, 0.35) 72%);
   pointer-events: none;
 }
 
-.hero-video {
+.hero-media {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -120,8 +120,32 @@ a {
   display: block;
   object-fit: cover;
   object-position: center;
-  transform: scale(calc(1.08 - (var(--scroll-progress) * 0.08)));
-  filter: saturate(1.06) contrast(1.02);
+  transform:
+    scale(calc(1.06 - (var(--scroll-progress) * 0.04)))
+    translateY(calc(var(--scroll-progress) * 3%));
+  filter: saturate(1.04) contrast(1.01);
+  will-change: transform, filter, opacity;
+}
+
+.hero-canvas,
+.hero-fallback {
+  transition: opacity 220ms ease;
+}
+
+.hero-canvas {
+  opacity: 0;
+}
+
+.hero-fallback {
+  opacity: 1;
+}
+
+.hero-scroll[data-decoder-ready="true"] .hero-canvas {
+  opacity: 1;
+}
+
+.hero-scroll[data-decoder-ready="true"] .hero-fallback {
+  opacity: 0;
 }
 
 .intro-panel,
@@ -139,8 +163,8 @@ a {
   width: min(920px, calc(100% - 2rem));
   padding: 6rem 0 3rem;
   text-align: center;
-  opacity: calc(1 - (var(--scroll-progress) * 0.35));
-  transform: translateY(calc(var(--scroll-progress) * 28px));
+  opacity: calc(1 - (var(--scroll-progress) * 0.3));
+  transform: translateY(calc(var(--scroll-progress) * 22px));
 }
 
 .eyebrow {
@@ -267,8 +291,23 @@ a {
   position: relative;
   z-index: 3;
   width: min(1180px, calc(100% - 2rem));
-  margin: -4rem auto 0;
-  padding: 0 0 3rem;
+  margin: -6rem auto 0;
+  padding: 2rem 0 3rem;
+}
+
+.content-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0 -2rem auto;
+  height: 10rem;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 24, 36, 0) 0%,
+    rgba(13, 24, 36, 0.42) 45%,
+    rgba(13, 24, 36, 0.82) 100%
+  );
+  filter: blur(28px);
 }
 
 .intro-panel,
@@ -356,7 +395,7 @@ a {
   }
 
   .hero-scroll {
-    height: 280vh;
+    height: 300vh;
   }
 
   .hero-overlay {
@@ -422,7 +461,7 @@ a {
 
   .content-shell {
     width: calc(100% - 1rem);
-    margin-top: -2.5rem;
+    margin-top: -3rem;
   }
 }
 
