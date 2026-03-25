@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&display=swap");
 
 :root {
   color-scheme: dark;
@@ -569,10 +569,8 @@ a {
   position: relative;
   z-index: 2;
   display: block;
-  width: auto;
-  max-width: 100rem;
-  min-width: 0;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   text-align: center;
   transform: translateY(calc((1 - var(--about-progress)) * 1.4rem));
   opacity: calc(0.64 + (var(--about-progress) * 0.36));
@@ -581,16 +579,29 @@ a {
 .about-line {
   margin: 0;
   color: #080808;
-  font-size: clamp(1.28rem, 2.05vw, 2.05rem);
-  font-weight: 500;
-  line-height: 1.45;
-  letter-spacing: -0.03em;
+  font-family: "Bungee Inline", "Space Grotesk", sans-serif;
+  font-size: clamp(2.1rem, 4.1vw, 4.8rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 0.055em;
   text-align: center;
+  text-transform: uppercase;
   text-wrap: balance;
+  text-shadow:
+    0.03em 0.03em 0 rgba(211, 111, 62, 0.24),
+    -0.03em -0.03em 0 rgba(16, 32, 51, 0.12);
 }
 
 .about-line + .about-line {
-  margin-top: 0.65rem;
+  margin-top: 0.9rem;
+}
+
+.about-line:nth-child(odd) {
+  transform: none;
+}
+
+.about-line:nth-child(even) {
+  transform: none;
 }
 
 .about-char {
@@ -599,7 +610,9 @@ a {
 
 .about-char-active {
   color: #f5f4f1;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
+  text-shadow:
+    0 0 14px rgba(255, 255, 255, 0.14),
+    0.03em 0.03em 0 rgba(255, 216, 174, 0.16);
 }
 
 .intro-panel,
@@ -929,8 +942,9 @@ a {
   }
 
   .about-line {
-    font-size: clamp(1.08rem, 5.2vw, 1.45rem);
-    line-height: 1.5;
+    font-size: clamp(1.45rem, 6.4vw, 2.3rem);
+    line-height: 1.14;
+    letter-spacing: 0.03em;
   }
 
   .intro-panel {
