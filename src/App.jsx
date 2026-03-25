@@ -3,26 +3,30 @@ import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
 import brainModelUrl from "../brain_hologram.glb?url";
 
-const featureCards = [
-  {
-    title: "Cinematic storytelling",
-    text: "A homepage designed to feel more like an opening scene than a static layout.",
-  },
-  {
-    title: "Performance-minded",
-    text: "Clear structure, reusable sections, and a straightforward React setup for future expansion.",
-  },
-  {
-    title: "Ready for your brand",
-    text: "Copy, colors, links, and featured work can be swapped without redesigning the page.",
-  },
-];
-
 const spotlightItems = [
   "Three.js brain handoff using a GLB asset",
   "Responsive layout for mobile and desktop",
   "Scroll-controlled frames instead of autoplay",
 ];
+
+const aboutLines = [
+  "As a data scientist, I turn raw data into decisions people can trust.",
+  "I design experiments, build models, and shape pipelines that stay useful in the real world.",
+  "My work balances statistical rigor, explainability, and outcomes that teams can act on.",
+  "I care about clear signals, honest metrics, and insight that leads to measurable impact.",
+];
+
+const aboutCharacterLines = [];
+let aboutCharacterCount = 0;
+
+for (const line of aboutLines) {
+  const characterLine = [...line].map((character) => ({
+    character,
+    index: aboutCharacterCount++,
+  }));
+
+  aboutCharacterLines.push(characterLine);
+}
 
 const neuralSparkItems = [
   { top: "18%", left: "18%", size: "10rem", delay: "-0.4s", duration: "1.9s", hue: "24deg" },
@@ -41,6 +45,7 @@ export default function App() {
   const heroSectionRef = useRef(null);
   const canvasRef = useRef(null);
   const brainMountRef = useRef(null);
+  const aboutSectionRef = useRef(null);
 
   useEffect(() => {
     const heroSection = heroSectionRef.current;
@@ -752,6 +757,121 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const section = aboutSectionRef.current;
+
+    if (!(section instanceof HTMLElement)) {
+      return undefined;
+    }
+
+    const frame = section.querySelector(".about-frame");
+    const characterNodes = [...section.querySelectorAll("[data-char-index]")];
+
+    if (!(frame instanceof HTMLElement) || !characterNodes.length) {
+      return undefined;
+    }
+
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const revealStart = 0.10;
+    const revealEnd = 0.98;
+    let frameId = 0;
+    let scrollRange = 1;
+    let stickyOffset = 0;
+    let previousActiveCount = -1;
+
+    const paintCharacters = () => {
+      frameId = 0;
+      const sectionRect = section.getBoundingClientRect();
+
+      const rawProgress = reducedMotionQuery.matches
+        ? 1
+        : clamp((stickyOffset - sectionRect.top) / scrollRange, 0, 1);
+      const progress = reducedMotionQuery.matches
+        ? 1
+        : clamp(
+            (rawProgress - revealStart) / (revealEnd - revealStart),
+            0,
+            1,
+          );
+      const activeCount = clamp(
+        Math.floor(progress * characterNodes.length),
+        0,
+        characterNodes.length,
+      );
+
+      section.style.setProperty("--about-progress", progress.toFixed(4));
+
+      if (activeCount === previousActiveCount) {
+        return;
+      }
+
+      if (previousActiveCount === -1) {
+        characterNodes.forEach((node, index) => {
+          node.classList.toggle("about-char-active", index < activeCount);
+        });
+      } else if (activeCount > previousActiveCount) {
+        characterNodes
+          .slice(previousActiveCount, activeCount)
+          .forEach((node) => node.classList.add("about-char-active"));
+      } else {
+        characterNodes
+          .slice(activeCount, previousActiveCount)
+          .forEach((node) => node.classList.remove("about-char-active"));
+      }
+
+      previousActiveCount = activeCount;
+    };
+
+    const requestPaint = () => {
+      if (!frameId) {
+        frameId = window.requestAnimationFrame(paintCharacters);
+      }
+    };
+
+    const updateBounds = () => {
+      stickyOffset = Number.parseFloat(window.getComputedStyle(frame).top) || 0;
+      scrollRange = Math.max(
+        section.offsetHeight - frame.offsetHeight - stickyOffset,
+        1,
+      );
+      requestPaint();
+    };
+
+    const handleMotionChange = () => {
+      updateBounds();
+    };
+
+    window.addEventListener("resize", updateBounds);
+    window.addEventListener("scroll", requestPaint, { passive: true });
+
+    if (typeof reducedMotionQuery.addEventListener === "function") {
+      reducedMotionQuery.addEventListener("change", handleMotionChange);
+    } else if (typeof reducedMotionQuery.addListener === "function") {
+      reducedMotionQuery.addListener(handleMotionChange);
+    }
+
+    updateBounds();
+
+    return () => {
+      window.removeEventListener("resize", updateBounds);
+      window.removeEventListener("scroll", requestPaint);
+
+      if (typeof reducedMotionQuery.removeEventListener === "function") {
+        reducedMotionQuery.removeEventListener("change", handleMotionChange);
+      } else if (typeof reducedMotionQuery.removeListener === "function") {
+        reducedMotionQuery.removeListener(handleMotionChange);
+      }
+
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, []);
+
   return (
     <div className="page-shell">
       <header className="topbar">
@@ -760,8 +880,6 @@ export default function App() {
         </a>
         <nav className="nav">
           <a href="#about">About</a>
-          <a href="#work">Work</a>
-          <a href="#contact">Contact</a>
         </nav>
       </header>
 
@@ -826,10 +944,7 @@ export default function App() {
 
               <div className="hero-actions">
                 <a className="button button-primary" href="#about">
-                  View the layout
-                </a>
-                <a className="button button-secondary" href="#contact">
-                  Use this homepage
+                  Read about me
                 </a>
               </div>
 
@@ -850,45 +965,29 @@ export default function App() {
         </section>
 
         <div className="content-shell">
-          <section className="intro-panel" id="about">
-            <div className="intro-receiver" aria-hidden="true">
-              <span className="receiver-ring receiver-ring-outer" />
-              <span className="receiver-ring receiver-ring-middle" />
-              <span className="receiver-ring receiver-ring-inner" />
-              <span className="receiver-core" />
+          <section className="about-scroll" id="about" ref={aboutSectionRef}>
+            <div className="about-frame">
+              <div className="about-copy">
+                {aboutCharacterLines.map((line, lineIndex) => (
+                  <p
+                    aria-label={aboutLines[lineIndex]}
+                    className="about-line"
+                    key={aboutLines[lineIndex]}
+                  >
+                    {line.map(({ character, index }) => (
+                      <span
+                        aria-hidden="true"
+                        className="about-char"
+                        data-char-index={index}
+                        key={`${index}-${character}`}
+                      >
+                        {character === " " ? "\u00A0" : character}
+                      </span>
+                    ))}
+                  </p>
+                ))}
+              </div>
             </div>
-            <div className="intro-copy">
-              <p className="eyebrow">Neural Transfer</p>
-              <h2>The extracted thought lands in the next section.</h2>
-              <p>
-                Once the playback finishes, the brain model leaves the head
-                area, drops through the transition, and settles into this panel
-                as the page moves on.
-              </p>
-            </div>
-          </section>
-
-          <section className="features" id="work">
-            {featureCards.map((card, index) => (
-              <article className="feature-card" key={card.title}>
-                <p className="feature-index">0{index + 1}</p>
-                <h2>{card.title}</h2>
-                <p>{card.text}</p>
-              </article>
-            ))}
-          </section>
-
-          <section className="contact-panel" id="contact">
-            <div>
-              <p className="eyebrow">Next Step</p>
-              <h2>Make this homepage your own.</h2>
-            </div>
-            <a
-              className="button button-primary"
-              href="mailto:hello@example.com"
-            >
-              hello@example.com
-            </a>
           </section>
         </div>
       </main>
