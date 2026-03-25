@@ -980,7 +980,7 @@ export default function App() {
                       data-char-index={index}
                       key={`${index}-${character}`}
                     >
-                      {character === " " ? "\u00A0" : character}
+                      {character}
                     </span>
                   ))}
                 </p>
