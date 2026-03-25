@@ -814,8 +814,9 @@ export default function App() {
             <div className="hero-overlay">
               <p className="eyebrow">Scroll Trigger Hero</p>
               <h1>
-                The playback holds the head at center, then releases the next
-                idea into the section below.
+                I build things that pretend to be intelligent&hellip;
+                <br />
+                and sometimes they accidentally are.
               </h1>
               <p className="hero-text">
                 As the scene reaches its end, a 3D brain model lifts out from
