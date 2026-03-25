@@ -66,12 +66,18 @@ export default function App() {
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const playbackEndProgress = 0.68;
     const zoomStartProgress = playbackEndProgress;
-    const brainReleaseStart = 0.84;
-    const brainTravelStart = 0.92;
+    const brainMotionStart = zoomStartProgress;
+    const brainPinnedEnd = 0.92;
+    const brainReleaseStart = brainMotionStart;
+    const brainReleaseEnd = 0.8;
+    const brainTravelStart = brainPinnedEnd;
+    const brainTravelEnd = 1;
     const brainDockStart = 0.96;
-    const screenDropStart = 0.92;
-    const brainFullscreenStart = brainReleaseStart;
-    const brainFullscreenEnd = brainDockStart;
+    const screenDropStart = brainPinnedEnd;
+    const screenDropEnd = 1;
+    const brainFullscreenStart = brainMotionStart;
+    const brainFullscreenEnd = brainPinnedEnd;
+    const brainSpinStart = brainMotionStart;
     const brainSpinEnd = 1;
 
     const trimFrameCache = (focusIndex) => {
@@ -235,11 +241,21 @@ export default function App() {
       );
       mainElement.style.setProperty(
         "--brain-release",
-        clamp((currentProgress - brainReleaseStart) / 0.08, 0, 1).toFixed(4),
+        clamp(
+          (currentProgress - brainReleaseStart) /
+            (brainReleaseEnd - brainReleaseStart),
+          0,
+          1,
+        ).toFixed(4),
       );
       mainElement.style.setProperty(
         "--brain-travel",
-        clamp((currentProgress - brainTravelStart) / 0.08, 0, 1).toFixed(4),
+        clamp(
+          (currentProgress - brainTravelStart) /
+            (brainTravelEnd - brainTravelStart),
+          0,
+          1,
+        ).toFixed(4),
       );
       mainElement.style.setProperty(
         "--brain-dock",
@@ -247,7 +263,11 @@ export default function App() {
       );
       mainElement.style.setProperty(
         "--screen-drop",
-        clamp((currentProgress - screenDropStart) / 0.08, 0, 1).toFixed(4),
+        clamp(
+          (currentProgress - screenDropStart) / (screenDropEnd - screenDropStart),
+          0,
+          1,
+        ).toFixed(4),
       );
       mainElement.style.setProperty(
         "--brain-fullscreen",
@@ -261,8 +281,7 @@ export default function App() {
       mainElement.style.setProperty(
         "--brain-spin",
         clamp(
-          (currentProgress - brainReleaseStart) /
-            (brainSpinEnd - brainReleaseStart),
+          (currentProgress - brainSpinStart) / (brainSpinEnd - brainSpinStart),
           0,
           1,
         ).toFixed(4),

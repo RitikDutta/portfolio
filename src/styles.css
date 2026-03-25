@@ -184,15 +184,14 @@ a {
   aspect-ratio: 1;
   pointer-events: none;
   opacity: calc(var(--brain-release) * (1 - (var(--brain-dock) * 0.15)));
+  transform-origin: center center;
   transform:
     translate(
       -50%,
       calc(
         -50% +
-        (
-          ((var(--brain-travel) * 44vh) + (var(--screen-drop) * 10vh)) *
-          (1 - var(--brain-fullscreen))
-        )
+        (var(--brain-travel) * 52vh) +
+        (var(--screen-drop) * 12vh)
       )
     )
     scale(calc(0.14 + (var(--brain-fullscreen) * 0.86)));
