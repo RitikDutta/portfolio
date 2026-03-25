@@ -176,10 +176,10 @@ a {
 }
 
 .brain-transfer {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
-  z-index: 4;
+  z-index: 40;
   width: 100vw;
   aspect-ratio: 1;
   pointer-events: none;
