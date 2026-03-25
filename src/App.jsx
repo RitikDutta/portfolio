@@ -24,6 +24,19 @@ const spotlightItems = [
   "Scroll-controlled frames instead of autoplay",
 ];
 
+const neuralSparkItems = [
+  { top: "18%", left: "18%", size: "10rem", delay: "-0.4s", duration: "1.9s", hue: "24deg" },
+  { top: "24%", left: "72%", size: "8.25rem", delay: "-1.2s", duration: "1.4s", hue: "338deg" },
+  { top: "36%", left: "52%", size: "12rem", delay: "-0.8s", duration: "2.3s", hue: "12deg" },
+  { top: "42%", left: "16%", size: "7rem", delay: "-1.5s", duration: "1.2s", hue: "48deg" },
+  { top: "48%", left: "80%", size: "9rem", delay: "-0.1s", duration: "1.6s", hue: "352deg" },
+  { top: "58%", left: "28%", size: "11rem", delay: "-1.8s", duration: "2.1s", hue: "18deg" },
+  { top: "62%", left: "64%", size: "7.5rem", delay: "-0.6s", duration: "1.3s", hue: "32deg" },
+  { top: "70%", left: "46%", size: "13rem", delay: "-1s", duration: "2.4s", hue: "6deg" },
+  { top: "78%", left: "74%", size: "8rem", delay: "-1.7s", duration: "1.1s", hue: "44deg" },
+  { top: "82%", left: "22%", size: "9.5rem", delay: "-0.3s", duration: "1.8s", hue: "346deg" },
+];
+
 export default function App() {
   const heroSectionRef = useRef(null);
   const canvasRef = useRef(null);
@@ -67,18 +80,22 @@ export default function App() {
     const playbackEndProgress = 0.68;
     const zoomStartProgress = playbackEndProgress;
     const brainMotionStart = zoomStartProgress;
-    const brainPinnedEnd = 0.92;
     const brainReleaseStart = brainMotionStart;
-    const brainReleaseEnd = 0.8;
-    const brainTravelStart = brainPinnedEnd;
-    const brainTravelEnd = 1;
-    const brainDockStart = 0.96;
-    const screenDropStart = brainPinnedEnd;
-    const screenDropEnd = 1;
+    const brainReleaseEnd = 0.76;
     const brainFullscreenStart = brainMotionStart;
-    const brainFullscreenEnd = brainPinnedEnd;
+    const brainFullscreenEnd = 0.86;
+    const brainImmersionStart = 0.82;
+    const brainImmersionEnd = 0.9;
+    const neuralBurstStart = brainImmersionEnd;
+    const neuralBurstEnd = 0.96;
+    const brainTravelStart = neuralBurstEnd;
+    const brainTravelEnd = 1;
+    const brainDockStart = brainTravelStart;
+    const brainDockEnd = 1;
+    const screenDropStart = brainTravelStart;
+    const screenDropEnd = 1;
     const brainSpinStart = brainMotionStart;
-    const brainSpinEnd = 1;
+    const brainSpinEnd = brainImmersionEnd;
 
     const trimFrameCache = (focusIndex) => {
       if (frameCache.size <= maxCachedFrames) {
@@ -259,7 +276,11 @@ export default function App() {
       );
       mainElement.style.setProperty(
         "--brain-dock",
-        clamp((currentProgress - brainDockStart) / 0.04, 0, 1).toFixed(4),
+        clamp(
+          (currentProgress - brainDockStart) / (brainDockEnd - brainDockStart),
+          0,
+          1,
+        ).toFixed(4),
       );
       mainElement.style.setProperty(
         "--screen-drop",
@@ -282,6 +303,24 @@ export default function App() {
         "--brain-spin",
         clamp(
           (currentProgress - brainSpinStart) / (brainSpinEnd - brainSpinStart),
+          0,
+          1,
+        ).toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--brain-immersion",
+        clamp(
+          (currentProgress - brainImmersionStart) /
+            (brainImmersionEnd - brainImmersionStart),
+          0,
+          1,
+        ).toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--neural-burst",
+        clamp(
+          (currentProgress - neuralBurstStart) /
+            (neuralBurstEnd - neuralBurstStart),
           0,
           1,
         ).toFixed(4),
@@ -447,6 +486,10 @@ export default function App() {
         let resizeObserver = null;
         let brainModel = null;
         let disposed = false;
+        let fittedCameraDistance = 5.6;
+        let innerCameraDistance = 0.28;
+
+        const pointMaterials = [];
 
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -482,7 +525,7 @@ export default function App() {
 
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
-          camera.position.z = 5.6;
+          camera.position.z = fittedCameraDistance;
 
           if (brainModel) {
             const bounds = new THREE.Box3().setFromObject(brainModel);
@@ -494,9 +537,11 @@ export default function App() {
             const fitFov = Math.min(verticalFov, horizontalFov);
             const distance = radius / Math.tan(fitFov / 2);
 
-            camera.position.z = distance * 1.12;
-            camera.near = Math.max(distance / 100, 0.01);
-            camera.far = distance * 10;
+            fittedCameraDistance = distance * 1.12;
+            innerCameraDistance = Math.max(radius * 0.18, 0.2);
+            camera.position.z = fittedCameraDistance;
+            camera.near = Math.max(fittedCameraDistance / 100, 0.01);
+            camera.far = fittedCameraDistance * 10;
           }
 
           camera.updateProjectionMatrix();
@@ -523,10 +568,38 @@ export default function App() {
             Number.parseFloat(styles.getPropertyValue("--brain-spin")) || 0;
           const brainFullscreen =
             Number.parseFloat(styles.getPropertyValue("--brain-fullscreen")) || 0;
+          const brainImmersion =
+            Number.parseFloat(styles.getPropertyValue("--brain-immersion")) || 0;
+          const neuralBurst =
+            Number.parseFloat(styles.getPropertyValue("--neural-burst")) || 0;
 
-          pivot.rotation.x = THREE.MathUtils.lerp(0.24, 0.04, brainFullscreen);
-          pivot.rotation.y = brainSpin * Math.PI * 1.75;
-          pivot.rotation.z = THREE.MathUtils.lerp(-0.12, 0, brainFullscreen);
+          pivot.rotation.x = THREE.MathUtils.lerp(0.22, 0.03, brainFullscreen);
+          pivot.rotation.y = brainSpin * Math.PI * 1.18;
+          pivot.rotation.z = THREE.MathUtils.lerp(-0.12, 0.06, neuralBurst);
+          root.rotation.z = neuralBurst * 0.05;
+          camera.position.z = THREE.MathUtils.lerp(
+            fittedCameraDistance,
+            innerCameraDistance,
+            brainImmersion,
+          );
+          camera.near = THREE.MathUtils.lerp(
+            Math.max(fittedCameraDistance / 100, 0.01),
+            Math.max(innerCameraDistance / 18, 0.005),
+            brainImmersion,
+          );
+          camera.far = THREE.MathUtils.lerp(
+            fittedCameraDistance * 10,
+            fittedCameraDistance * 4,
+            brainImmersion,
+          );
+          camera.updateProjectionMatrix();
+          renderer.toneMappingExposure = 1.08 + neuralBurst * 0.52;
+
+          pointMaterials.forEach((material) => {
+            material.size = THREE.MathUtils.lerp(0.018, 0.05, brainImmersion);
+            material.opacity = THREE.MathUtils.lerp(0.94, 1, neuralBurst);
+          });
+
           renderScene();
         };
 
@@ -581,6 +654,19 @@ export default function App() {
 
               child.castShadow = false;
               child.receiveShadow = false;
+
+              if (child.isPoints && child.material) {
+                child.material.transparent = true;
+                child.material.depthWrite = false;
+                child.material.opacity = 0.94;
+
+                if ("size" in child.material) {
+                  child.material.size = 0.018;
+                  child.material.sizeAttenuation = true;
+                }
+
+                pointMaterials.push(child.material);
+              }
             });
 
             pivot.add(model);
@@ -683,6 +769,26 @@ export default function App() {
         <div className="brain-transfer" aria-hidden="true">
           <span className="brain-trail" />
           <div className="brain-stage" ref={brainMountRef} />
+        </div>
+        <div className="neural-burst" aria-hidden="true">
+          <span className="neural-burst-cloud neural-burst-cloud-a" />
+          <span className="neural-burst-cloud neural-burst-cloud-b" />
+          <span className="neural-burst-ring neural-burst-ring-a" />
+          <span className="neural-burst-ring neural-burst-ring-b" />
+          {neuralSparkItems.map((spark, index) => (
+            <span
+              className="neural-spark"
+              key={`${spark.left}-${spark.top}-${index}`}
+              style={{
+                "--spark-top": spark.top,
+                "--spark-left": spark.left,
+                "--spark-size": spark.size,
+                "--spark-delay": spark.delay,
+                "--spark-duration": spark.duration,
+                "--spark-hue": spark.hue,
+              }}
+            />
+          ))}
         </div>
 
         <section

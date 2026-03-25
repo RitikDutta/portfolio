@@ -41,6 +41,8 @@ main#home {
   --brain-dock: 0;
   --brain-fullscreen: 0;
   --brain-spin: 0;
+  --brain-immersion: 0;
+  --neural-burst: 0;
   --screen-drop: 0;
 }
 
@@ -99,7 +101,7 @@ a {
 .hero-scroll {
   --scroll-progress: 0;
   position: relative;
-  height: 430vh;
+  height: 500vh;
 }
 
 .hero-pin {
@@ -130,8 +132,8 @@ a {
   inset: 0;
   z-index: 2;
   background:
-    radial-gradient(circle at 50% 47%, rgba(0, 0, 0, calc(var(--hero-zoom) * 0.72)) 0%, rgba(0, 0, 0, calc(var(--hero-zoom) * 0.24)) 22%, transparent 44%),
-    linear-gradient(180deg, rgba(3, 7, 13, 0) 0%, rgba(3, 7, 13, calc(var(--screen-drop) * 0.18)) 100%);
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, calc((var(--hero-zoom) * 0.72) + (var(--brain-immersion) * 0.94))) 0%, rgba(0, 0, 0, calc((var(--hero-zoom) * 0.28) + (var(--neural-burst) * 0.34))) 26%, transparent 54%),
+    linear-gradient(180deg, rgba(3, 7, 13, 0) 0%, rgba(3, 7, 13, calc((var(--screen-drop) * 0.18) + (var(--neural-burst) * 0.36))) 100%);
   pointer-events: none;
 }
 
@@ -150,6 +152,7 @@ a {
     saturate(calc(1.04 - (var(--hero-zoom) * 0.18)))
     contrast(calc(1.01 + (var(--hero-zoom) * 0.14)))
     brightness(calc(1 - (var(--hero-zoom) * 0.3)));
+  opacity: calc(1 - (var(--brain-immersion) * 0.88) - (var(--brain-dock) * 0.12));
   will-change: transform, filter, opacity;
 }
 
@@ -183,7 +186,7 @@ a {
   width: 100vw;
   aspect-ratio: 1;
   pointer-events: none;
-  opacity: calc(var(--brain-release) * (1 - (var(--brain-dock) * 0.15)));
+  opacity: calc(var(--brain-release) * (1 - var(--brain-dock)));
   transform-origin: center center;
   transform:
     translate(
@@ -194,7 +197,13 @@ a {
         (var(--screen-drop) * 12vh)
       )
     )
-    scale(calc(0.14 + (var(--brain-fullscreen) * 0.86)));
+    scale(
+      calc(
+        0.14 +
+        (var(--brain-fullscreen) * 1.02) +
+        (var(--brain-immersion) * 0.32)
+      )
+    );
   filter: drop-shadow(0 24px 42px rgba(72, 14, 32, 0.3));
   will-change: transform, opacity, filter;
 }
@@ -220,12 +229,7 @@ a {
   background:
     linear-gradient(180deg, rgba(255, 223, 170, 0) 0%, rgba(255, 201, 145, 0.62) 26%, rgba(214, 104, 86, 0.6) 58%, rgba(91, 18, 39, 0.08) 100%);
   filter: blur(6px);
-  opacity:
-    calc(
-      var(--brain-release) *
-      (1 - (var(--brain-dock) * 0.2)) *
-      (1 - (var(--brain-fullscreen) * 0.9))
-    );
+  opacity: calc(var(--brain-travel) * (1 - var(--brain-dock)) * 0.72);
 }
 
 .brain-stage {
@@ -254,6 +258,105 @@ a {
   height: 100%;
 }
 
+.neural-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: calc(var(--neural-burst) * (1 - var(--brain-dock)));
+  will-change: opacity;
+}
+
+.neural-burst-cloud,
+.neural-burst-ring,
+.neural-spark {
+  position: absolute;
+}
+
+.neural-burst-cloud {
+  inset: -12%;
+  mix-blend-mode: screen;
+  filter: blur(calc(22px + (var(--neural-burst) * 40px)));
+}
+
+.neural-burst-cloud-a {
+  background:
+    radial-gradient(circle at 48% 50%, rgba(255, 126, 80, 0.38), transparent 18%),
+    radial-gradient(circle at 36% 42%, rgba(255, 228, 168, 0.24), transparent 12%),
+    radial-gradient(circle at 64% 58%, rgba(255, 82, 132, 0.2), transparent 14%);
+  transform: scale(calc(0.82 + (var(--brain-immersion) * 0.22)));
+}
+
+.neural-burst-cloud-b {
+  background:
+    conic-gradient(from 24deg at 50% 50%, rgba(255, 183, 107, 0) 0deg, rgba(255, 183, 107, 0.34) 60deg, rgba(255, 88, 125, 0.12) 122deg, rgba(255, 183, 107, 0) 360deg);
+  opacity: calc(0.1 + (var(--neural-burst) * 0.72));
+  transform: scale(calc(0.74 + (var(--brain-immersion) * 0.34))) rotate(calc(var(--neural-burst) * 36deg));
+}
+
+.neural-burst-ring {
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 205, 126, 0.38);
+  mix-blend-mode: screen;
+}
+
+.neural-burst-ring-a {
+  width: 38vw;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(calc(0.65 + (var(--neural-burst) * 0.55)));
+  opacity: calc(0.08 + (var(--neural-burst) * 0.42));
+  filter: blur(1px);
+  animation: burst-ring 1.8s ease-in-out infinite;
+}
+
+.neural-burst-ring-b {
+  width: 62vw;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(calc(0.5 + (var(--neural-burst) * 0.72)));
+  opacity: calc(0.04 + (var(--neural-burst) * 0.26));
+  border-color: rgba(255, 97, 136, 0.26);
+  animation: burst-ring 2.3s ease-in-out infinite reverse;
+}
+
+.neural-spark {
+  top: var(--spark-top);
+  left: var(--spark-left);
+  width: var(--spark-size);
+  aspect-ratio: 1;
+  transform:
+    translate(-50%, -50%)
+    scale(calc(0.34 + (var(--brain-immersion) * 0.62) + (var(--neural-burst) * 0.44)));
+  animation:
+    spark-flash var(--spark-duration) steps(2, end) infinite,
+    spark-drift calc(var(--spark-duration) * 1.7) ease-in-out infinite;
+  animation-delay: var(--spark-delay);
+  mix-blend-mode: screen;
+}
+
+.neural-spark::before,
+.neural-spark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.neural-spark::before {
+  background:
+    radial-gradient(circle at center, rgba(255, 247, 218, 0.92) 0 10%, rgba(255, 196, 114, 0.58) 10% 28%, rgba(255, 88, 126, 0.18) 28% 46%, transparent 46% 100%);
+  filter: blur(2px);
+}
+
+.neural-spark::after {
+  inset: 20%;
+  background:
+    conic-gradient(from 90deg, transparent 0 16%, hsla(var(--spark-hue), 100%, 74%, 0.98) 16% 20%, transparent 20% 36%, hsla(calc(var(--spark-hue) + 12deg), 100%, 70%, 0.9) 36% 42%, transparent 42% 58%, hsla(calc(var(--spark-hue) - 8deg), 100%, 80%, 0.92) 58% 64%, transparent 64% 100%);
+  filter: blur(0.8px);
+}
+
 .intro-panel,
 .feature-card,
 .contact-panel {
@@ -269,7 +372,7 @@ a {
   width: min(920px, calc(100% - 2rem));
   padding: 6rem 0 3rem;
   text-align: center;
-  opacity: calc(1 - (var(--scroll-progress) * 0.3));
+  opacity: calc((1 - (var(--scroll-progress) * 0.3)) * (1 - (var(--brain-fullscreen) * 0.96)));
   transform: translateY(calc((var(--scroll-progress) * 22px) + (var(--screen-drop) * 90px)));
 }
 
@@ -399,6 +502,8 @@ a {
   width: min(1180px, calc(100% - 2rem));
   margin: -6rem auto 0;
   padding: 2rem 0 3rem;
+  opacity: calc(0.44 + (var(--brain-dock) * 0.56));
+  transform: translateY(calc((1 - var(--brain-dock)) * 2.2rem));
 }
 
 .content-shell::before {
@@ -475,6 +580,7 @@ a {
   position: absolute;
   top: -4rem;
   left: 50%;
+  z-index: 1;
   width: clamp(8.5rem, 19vw, 12rem);
   aspect-ratio: 1;
   transform: translateX(-50%) scale(calc(0.88 + (var(--brain-dock) * 0.18)));
@@ -520,6 +626,8 @@ a {
 }
 
 .intro-copy {
+  position: relative;
+  z-index: 3;
   display: grid;
   justify-items: center;
   gap: 1rem;
@@ -596,6 +704,55 @@ a {
   }
 }
 
+@keyframes spark-flash {
+  0%,
+  100% {
+    opacity: 0.08;
+  }
+
+  20% {
+    opacity: 0.88;
+  }
+
+  38% {
+    opacity: 0.18;
+  }
+
+  56% {
+    opacity: 0.96;
+  }
+
+  74% {
+    opacity: 0.24;
+  }
+}
+
+@keyframes spark-drift {
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(calc(0.34 + (var(--brain-immersion) * 0.62) + (var(--neural-burst) * 0.44)));
+  }
+
+  50% {
+    transform:
+      translate(calc(-50% + 1.4rem), calc(-50% - 1rem))
+      scale(calc(0.56 + (var(--brain-immersion) * 0.74) + (var(--neural-burst) * 0.6)));
+  }
+}
+
+@keyframes burst-ring {
+  0%,
+  100% {
+    opacity: 0.08;
+  }
+
+  50% {
+    opacity: 0.32;
+  }
+}
+
 @media (max-width: 960px) {
   .topbar,
   .intro-panel,
@@ -604,7 +761,7 @@ a {
   }
 
   .hero-scroll {
-    height: 360vh;
+    height: 430vh;
   }
 
   .hero-overlay {
@@ -644,7 +801,7 @@ a {
   }
 
   .hero-scroll {
-    height: 300vh;
+    height: 360vh;
   }
 
   .hero-overlay {
