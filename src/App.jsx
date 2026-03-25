@@ -30,8 +30,9 @@ export default function App() {
   useEffect(() => {
     const heroSection = heroSectionRef.current;
     const canvas = canvasRef.current;
+    const mainElement = heroSection?.parentElement;
 
-    if (!heroSection || !canvas) {
+    if (!heroSection || !canvas || !(mainElement instanceof HTMLElement)) {
       return undefined;
     }
 
@@ -61,6 +62,12 @@ export default function App() {
     );
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const playbackEndProgress = 0.68;
+    const zoomStartProgress = playbackEndProgress;
+    const brainReleaseStart = 0.84;
+    const brainTravelStart = 0.88;
+    const brainDockStart = 0.96;
+    const screenDropStart = 0.91;
 
     const trimFrameCache = (focusIndex) => {
       if (frameCache.size <= maxCachedFrames) {
@@ -104,7 +111,7 @@ export default function App() {
       const drawWidth = sourceWidth * scale;
       const drawHeight = sourceHeight * scale;
       const extraVerticalCrop = Math.max(drawHeight - height, 0);
-      const verticalShiftStrength = 0.21;
+      const verticalShiftStrength = 0.24;
       const offsetX = (width - drawWidth) / 2;
       const offsetY =
         (height - drawHeight) / 2 +
@@ -170,8 +177,13 @@ export default function App() {
         return;
       }
 
+      const playbackProgress = clamp(
+        currentProgress / playbackEndProgress,
+        0,
+        1,
+      );
       const nextFrameIndex = clamp(
-        Math.round(currentProgress * (frameCount - 1)),
+        Math.round(playbackProgress * (frameCount - 1)),
         0,
         frameCount - 1,
       );
@@ -207,6 +219,30 @@ export default function App() {
       heroSection.style.setProperty(
         "--scroll-progress",
         currentProgress.toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--scroll-progress",
+        currentProgress.toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--hero-zoom",
+        clamp((currentProgress - zoomStartProgress) / 0.16, 0, 1).toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--brain-release",
+        clamp((currentProgress - brainReleaseStart) / 0.08, 0, 1).toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--brain-travel",
+        clamp((currentProgress - brainTravelStart) / 0.12, 0, 1).toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--brain-dock",
+        clamp((currentProgress - brainDockStart) / 0.04, 0, 1).toFixed(4),
+      );
+      mainElement.style.setProperty(
+        "--screen-drop",
+        clamp((currentProgress - screenDropStart) / 0.09, 0, 1).toFixed(4),
       );
 
       if (activeFrameIndex >= 0 && frameCache.has(activeFrameIndex)) {
@@ -364,13 +400,24 @@ export default function App() {
               src={heroPoster}
             />
 
+            <div className="brain-transfer" aria-hidden="true">
+              <span className="brain-trail" />
+              <span className="brain-aura" />
+              <span className="brain-core">
+                <span className="brain-core-inner" />
+              </span>
+            </div>
+
             <div className="hero-overlay">
               <p className="eyebrow">Scroll Trigger Hero</p>
-              <h1>Animated WebP frames now move only when you scroll.</h1>
+              <h1>
+                The playback holds the head at center, then releases the next
+                idea into the section below.
+              </h1>
               <p className="hero-text">
-                The hero uses `hero.webp` as a frame source and renders it onto
-                a canvas, so scroll position controls the animation instead of
-                letting the browser autoplay the image.
+                As the scene reaches its end, a neural form lifts out from the
+                center of the playback and drops into the next section while
+                the page continues scrolling.
               </p>
 
               <div className="hero-actions">
@@ -400,11 +447,21 @@ export default function App() {
 
         <div className="content-shell">
           <section className="intro-panel" id="about">
-            <p>
-              The hero is centered and full screen, with animated WebP frames
-              decoded into a canvas so the motion stays tied to scroll instead
-              of autoplaying on its own.
-            </p>
+            <div className="intro-receiver" aria-hidden="true">
+              <span className="receiver-ring receiver-ring-outer" />
+              <span className="receiver-ring receiver-ring-middle" />
+              <span className="receiver-ring receiver-ring-inner" />
+              <span className="receiver-core" />
+            </div>
+            <div className="intro-copy">
+              <p className="eyebrow">Neural Transfer</p>
+              <h2>The extracted thought lands in the next section.</h2>
+              <p>
+                Once the playback finishes, the brain-like form leaves the head
+                area, drops through the transition, and settles into this panel
+                as the page moves on.
+              </p>
+            </div>
           </section>
 
           <section className="features" id="work">
