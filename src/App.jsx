@@ -680,6 +680,11 @@ export default function App() {
       </header>
 
       <main id="home">
+        <div className="brain-transfer" aria-hidden="true">
+          <span className="brain-trail" />
+          <div className="brain-stage" ref={brainMountRef} />
+        </div>
+
         <section
           className="hero-scroll"
           data-decoder-ready="false"
@@ -699,11 +704,6 @@ export default function App() {
               loading="eager"
               src={heroPoster}
             />
-
-            <div className="brain-transfer" aria-hidden="true">
-              <span className="brain-trail" />
-              <div className="brain-stage" ref={brainMountRef} />
-            </div>
 
             <div className="hero-overlay">
               <p className="eyebrow">Scroll Trigger Hero</p>
