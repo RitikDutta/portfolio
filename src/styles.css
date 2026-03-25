@@ -523,55 +523,54 @@ a {
 
 .about-scroll {
   --about-progress: 0;
+  --about-sticky-top: clamp(5.75rem, 10vh, 7rem);
   position: relative;
+  left: 50%;
+  width: 100vw;
   height: 320vh;
-}
-
-.about-frame {
-  position: sticky;
-  top: clamp(5.75rem, 10vh, 7rem);
-  display: grid;
-  place-items: center;
-  min-height: min(74vh, 46rem);
-  padding: clamp(2rem, 5vw, 4.5rem);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 2rem;
+  margin-left: -50vw;
+  overflow: clip;
   background: linear-gradient(135deg, #f0e1d2 0%, #dcc4b0 100%);
-  box-shadow: 0 32px 80px rgba(4, 9, 16, 0.28);
-  isolation: isolate;
 }
 
-.about-frame::before,
-.about-frame::after {
+.about-scroll::before {
   content: "";
   position: absolute;
-  pointer-events: none;
-}
-
-.about-frame::before {
   inset: 0;
   z-index: 0;
+  pointer-events: none;
   background:
     radial-gradient(circle at 50% 22%, rgba(255, 255, 255, 0.2), transparent 24%),
     linear-gradient(135deg, #03070d 0%, #121820 48%, #05070a 100%);
   opacity: calc(0.08 + (var(--about-progress) * 0.96));
 }
 
-.about-frame::after {
-  inset: clamp(0.9rem, 2vw, 1.4rem);
+.about-frame {
+  position: sticky;
+  top: var(--about-sticky-top);
   z-index: 1;
-  border: 1px solid
-    rgba(15, 15, 15, calc(0.12 + ((1 - var(--about-progress)) * 0.22)));
-  border-radius: clamp(1.1rem, 2vw, 1.5rem);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: calc(100vh - var(--about-sticky-top));
+  padding: clamp(2rem, 5vw, 4.5rem);
+}
+
+.about-frame::before,
+.about-frame::after {
+  content: none;
 }
 
 .about-copy {
   position: relative;
   z-index: 2;
   display: grid;
+  justify-items: center;
+  align-content: center;
   gap: 0.65rem;
-  max-width: 58rem;
+  width: min(100%, 58rem);
+  min-height: 100%;
+  margin: 0 auto;
   text-align: center;
   transform: translateY(calc((1 - var(--about-progress)) * 1.4rem));
   opacity: calc(0.64 + (var(--about-progress) * 0.36));
@@ -584,6 +583,7 @@ a {
   font-weight: 500;
   line-height: 1.45;
   letter-spacing: -0.03em;
+  text-align: center;
   text-wrap: balance;
 }
 
@@ -851,10 +851,6 @@ a {
     height: 280vh;
   }
 
-  .about-frame {
-    border-radius: 1.6rem;
-  }
-
   .features {
     grid-template-columns: 1fr;
   }
@@ -917,14 +913,12 @@ a {
   }
 
   .about-scroll {
+    --about-sticky-top: 6.5rem;
     height: 240vh;
   }
 
   .about-frame {
-    top: 6.5rem;
-    min-height: min(68vh, 32rem);
     padding: 1.5rem;
-    border-radius: 1.4rem;
   }
 
   .about-line {
