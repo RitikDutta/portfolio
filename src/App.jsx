@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
 import brainModelUrl from "../brain_hologram.glb?url";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 const spotlightItems = [
   "Three.js brain handoff using a GLB asset",
@@ -132,6 +133,9 @@ const impactTransitionSettings = {
 };
 
 export default function App() {
+  const pageShellRef = useRef(null);
+  const smoothWrapperRef = useRef(null);
+  const smoothContentRef = useRef(null);
   const heroSectionRef = useRef(null);
   const canvasRef = useRef(null);
   const brainMountRef = useRef(null);
@@ -143,12 +147,101 @@ export default function App() {
   const impactWordOutlineRef = useRef(null);
   const impactSceneRef = useRef(null);
 
+  useLayoutEffect(() => {
+    const pageShell = pageShellRef.current;
+    const wrapper = smoothWrapperRef.current;
+    const content = smoothContentRef.current;
+
+    if (
+      !(pageShell instanceof HTMLElement) ||
+      !(wrapper instanceof HTMLElement) ||
+      !(content instanceof HTMLElement)
+    ) {
+      return undefined;
+    }
+
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    if (reducedMotionQuery.matches) {
+      return undefined;
+    }
+
+    ScrollSmoother.get()?.kill();
+
+    const smoother = ScrollSmoother.create({
+      wrapper,
+      content,
+      smooth: 1.05,
+      smoothTouch: 0,
+      effects: false,
+      normalizeScroll: true,
+    });
+
+    const internalLinks = [...pageShell.querySelectorAll('a[href^="#"]')];
+
+    const handleAnchorClick = (event) => {
+      const anchor = event.currentTarget;
+
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      const href = anchor.getAttribute("href");
+
+      if (!href || href === "#") {
+        return;
+      }
+
+      const target = document.querySelector(href);
+
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+
+      event.preventDefault();
+      smoother.scrollTo(target, true, "top top");
+
+      if (window.location.hash !== href) {
+        window.history.pushState(null, "", href);
+      }
+    };
+
+    internalLinks.forEach((link) => {
+      link.addEventListener("click", handleAnchorClick);
+    });
+
+    if (window.location.hash) {
+      const initialTarget = document.querySelector(window.location.hash);
+
+      if (initialTarget instanceof HTMLElement) {
+        window.requestAnimationFrame(() => {
+          smoother.scrollTo(initialTarget, false, "top top");
+        });
+      }
+    }
+
+    return () => {
+      internalLinks.forEach((link) => {
+        link.removeEventListener("click", handleAnchorClick);
+      });
+      smoother.kill();
+    };
+  }, []);
+
   useEffect(() => {
     const heroSection = heroSectionRef.current;
     const canvas = canvasRef.current;
-    const mainElement = heroSection?.parentElement;
+    const pageShell = pageShellRef.current;
+    const heroPin = heroSection?.querySelector(".hero-pin");
 
-    if (!heroSection || !canvas || !(mainElement instanceof HTMLElement)) {
+    if (
+      !heroSection ||
+      !canvas ||
+      !(pageShell instanceof HTMLElement) ||
+      !(heroPin instanceof HTMLElement)
+    ) {
       return undefined;
     }
 
@@ -338,7 +431,8 @@ export default function App() {
     const renderFrame = () => {
       frameId = 0;
 
-      const easing = reducedMotionQuery.matches ? 1 : 0.12;
+      const easing =
+        reducedMotionQuery.matches || ScrollSmoother.get() ? 1 : 0.12;
       currentProgress += (targetProgress - currentProgress) * easing;
 
       if (Math.abs(targetProgress - currentProgress) <= 0.0004) {
@@ -349,15 +443,15 @@ export default function App() {
         "--scroll-progress",
         currentProgress.toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--scroll-progress",
         currentProgress.toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--hero-zoom",
         clamp((currentProgress - zoomStartProgress) / 0.16, 0, 1).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--brain-release",
         clamp(
           (currentProgress - brainReleaseStart) /
@@ -366,7 +460,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--brain-travel",
         clamp(
           (currentProgress - brainTravelStart) /
@@ -375,7 +469,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--brain-dock",
         clamp(
           (currentProgress - brainDockStart) / (brainDockEnd - brainDockStart),
@@ -383,7 +477,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--screen-drop",
         clamp(
           (currentProgress - screenDropStart) / (screenDropEnd - screenDropStart),
@@ -391,7 +485,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--brain-fullscreen",
         clamp(
           (currentProgress - brainFullscreenStart) /
@@ -400,7 +494,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--brain-spin",
         clamp(
           (currentProgress - brainSpinStart) / (brainSpinEnd - brainSpinStart),
@@ -408,7 +502,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--brain-immersion",
         clamp(
           (currentProgress - brainImmersionStart) /
@@ -417,7 +511,7 @@ export default function App() {
           1,
         ).toFixed(4),
       );
-      mainElement.style.setProperty(
+      pageShell.style.setProperty(
         "--neural-burst",
         clamp(
           (currentProgress - neuralBurstStart) /
@@ -463,6 +557,16 @@ export default function App() {
 
       syncToScroll();
     };
+
+    const heroPinTrigger = ScrollTrigger.create({
+      trigger: heroSection,
+      start: "top top",
+      end: "bottom bottom",
+      pin: heroPin,
+      pinSpacing: false,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+    });
 
     const initializeDecoder = async () => {
       const ImageDecoderClass = window.ImageDecoder;
@@ -538,6 +642,8 @@ export default function App() {
         window.cancelAnimationFrame(frameId);
       }
 
+      heroPinTrigger.kill();
+
       for (const frame of frameCache.values()) {
         frame.close?.();
       }
@@ -550,9 +656,9 @@ export default function App() {
 
   useEffect(() => {
     const mountNode = brainMountRef.current;
-    const mainElement = heroSectionRef.current?.parentElement;
+    const pageShell = pageShellRef.current;
 
-    if (!mountNode || !(mainElement instanceof HTMLElement)) {
+    if (!mountNode || !(pageShell instanceof HTMLElement)) {
       return undefined;
     }
 
@@ -664,7 +770,7 @@ export default function App() {
             return;
           }
 
-          const styles = window.getComputedStyle(mainElement);
+          const styles = window.getComputedStyle(pageShell);
           const brainSpin =
             Number.parseFloat(styles.getPropertyValue("--brain-spin")) || 0;
           const brainFullscreen =
@@ -797,7 +903,7 @@ export default function App() {
         }
 
         styleObserver = new MutationObserver(requestScrollSync);
-        styleObserver.observe(mainElement, {
+        styleObserver.observe(pageShell, {
           attributes: true,
           attributeFilter: ["style"],
         });
@@ -854,6 +960,7 @@ export default function App() {
   }, []);
 
   useLayoutEffect(() => {
+    const pageShell = pageShellRef.current;
     const section = impactSectionRef.current;
     const aboutFrame = aboutFrameRef.current;
     const aboutFrameContent = aboutFrameContentRef.current;
@@ -863,6 +970,7 @@ export default function App() {
     const scene = impactSceneRef.current;
 
     if (
+      !(pageShell instanceof HTMLElement) ||
       !(section instanceof HTMLElement) ||
       !(aboutFrame instanceof HTMLElement) ||
       !(aboutFrameContent instanceof HTMLElement) ||
@@ -898,8 +1006,59 @@ export default function App() {
     const sectionScrollStart = 0.7;
     const sectionScrollDuration = 0.2;
     const zoomStart = sectionScrollStart + sectionScrollDuration + 0.06;
+    const brainAfterglowFadeEnd = 0.24;
+    const brainAfterglowDriftEnd = 0.22;
+    const brainEntryDriftMax = 0.5;
     let previousActiveCount = -1;
     let syncFrameId = 0;
+    let sectionEnteringViewport = false;
+    let sectionEntryProgress = 0;
+    let sectionTimelineTrigger = null;
+
+    const setBrainAfterglow = (opacity, drift = 0) => {
+      pageShell.style.setProperty("--brain-afterglow", opacity.toFixed(4));
+      pageShell.style.setProperty(
+        "--brain-afterglow-drift",
+        drift.toFixed(4),
+      );
+    };
+
+    const syncBrainAfterglow = (trigger) => {
+      const sectionStarted = trigger.isActive || trigger.progress > 0;
+
+      if (!sectionStarted) {
+        const entryDrift = sectionEnteringViewport
+          ? sectionEntryProgress * brainEntryDriftMax
+          : 0;
+        setBrainAfterglow(sectionEnteringViewport ? 1 : 0, entryDrift);
+        return;
+      }
+
+      const afterglowOpacity =
+        1 - gsap.utils.clamp(0, 1, trigger.progress / brainAfterglowFadeEnd);
+      const timelineDriftProgress = gsap.utils.clamp(
+        0,
+        1,
+        trigger.progress / brainAfterglowDriftEnd,
+      );
+      const afterglowDrift =
+        brainEntryDriftMax +
+        timelineDriftProgress * (1 - brainEntryDriftMax);
+
+      setBrainAfterglow(afterglowOpacity, afterglowDrift);
+    };
+
+    const syncAfterglowState = () => {
+      if (sectionTimelineTrigger) {
+        syncBrainAfterglow(sectionTimelineTrigger);
+        return;
+      }
+
+      const entryDrift = sectionEnteringViewport
+        ? sectionEntryProgress * brainEntryDriftMax
+        : 0;
+      setBrainAfterglow(sectionEnteringViewport ? 1 : 0, entryDrift);
+    };
 
     const paintCharacters = (timelineProgress) => {
       const revealProgress = gsap.utils.clamp(
@@ -1023,6 +1182,7 @@ export default function App() {
 
     syncMaskLayout();
     aboutFrameContent.scrollTop = 0;
+    setBrainAfterglow(0, 0);
 
     if (reducedMotionQuery.matches) {
       gsap.set(scene, {
@@ -1056,6 +1216,7 @@ export default function App() {
       aboutFrameContent.scrollTop = 0;
       paintCharacters(1);
       syncMaskLayout();
+      setBrainAfterglow(0, 0);
 
       return undefined;
     }
@@ -1114,17 +1275,55 @@ export default function App() {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefresh: (self) => {
+            sectionTimelineTrigger = self;
             paintCharacters(self.progress);
+            syncAfterglowState();
             requestMaskSync();
           },
           onUpdate: (self) => {
+            sectionTimelineTrigger = self;
             paintCharacters(self.progress);
+            syncAfterglowState();
             requestMaskSync();
           },
         },
       });
 
+      sectionTimelineTrigger = timeline.scrollTrigger;
+
+      const entryTrigger = ScrollTrigger.create({
+        trigger: section,
+        start: "top bottom",
+        end: "top top",
+        onEnter: () => {
+          sectionEnteringViewport = true;
+          syncAfterglowState();
+        },
+        onEnterBack: () => {
+          sectionEnteringViewport = true;
+          syncAfterglowState();
+        },
+        onUpdate: (self) => {
+          sectionEntryProgress = self.progress;
+          sectionEnteringViewport = self.isActive || self.progress >= 1;
+          syncAfterglowState();
+        },
+        onLeaveBack: () => {
+          sectionEnteringViewport = false;
+          sectionEntryProgress = 0;
+          syncAfterglowState();
+        },
+        onRefresh: (self) => {
+          sectionEntryProgress = self.progress;
+          sectionEnteringViewport = self.isActive || self.progress >= 1;
+          syncAfterglowState();
+        },
+      });
+
+      teardown.push(() => entryTrigger.kill());
+
       paintCharacters(0);
+      syncAfterglowState();
 
       timeline
         .to(
@@ -1248,13 +1447,14 @@ export default function App() {
     teardown.push(() => window.cancelAnimationFrame(syncFrameId));
 
     return () => {
+      setBrainAfterglow(0, 0);
       teardown.forEach((dispose) => dispose());
       ctx.revert();
     };
   }, []);
 
   return (
-    <div className="page-shell">
+    <div className="page-shell" ref={pageShellRef}>
       <header className="topbar">
         <a className="brand" href="#home">
           FrameCraft
@@ -1265,310 +1465,312 @@ export default function App() {
         </nav>
       </header>
 
-      <main id="home">
-        <div className="brain-transfer" aria-hidden="true">
-          <span className="brain-trail" />
-          <div className="brain-stage" ref={brainMountRef} />
-        </div>
-        <div className="neural-burst" aria-hidden="true">
-          <span className="neural-burst-cloud neural-burst-cloud-a" />
-          <span className="neural-burst-cloud neural-burst-cloud-b" />
-          <span className="neural-burst-ring neural-burst-ring-a" />
-          <span className="neural-burst-ring neural-burst-ring-b" />
-          {neuralSparkItems.map((spark, index) => (
-            <span
-              className="neural-spark"
-              key={`${spark.left}-${spark.top}-${index}`}
-              style={{
-                "--spark-top": spark.top,
-                "--spark-left": spark.left,
-                "--spark-size": spark.size,
-                "--spark-delay": spark.delay,
-                "--spark-duration": spark.duration,
-                "--spark-hue": spark.hue,
-              }}
-            />
-          ))}
-        </div>
+      <div className="brain-transfer" aria-hidden="true">
+        <span className="brain-trail" />
+        <div className="brain-stage" ref={brainMountRef} />
+      </div>
+      <div className="neural-burst" aria-hidden="true">
+        <span className="neural-burst-cloud neural-burst-cloud-a" />
+        <span className="neural-burst-cloud neural-burst-cloud-b" />
+        <span className="neural-burst-ring neural-burst-ring-a" />
+        <span className="neural-burst-ring neural-burst-ring-b" />
+        {neuralSparkItems.map((spark, index) => (
+          <span
+            className="neural-spark"
+            key={`${spark.left}-${spark.top}-${index}`}
+            style={{
+              "--spark-top": spark.top,
+              "--spark-left": spark.left,
+              "--spark-size": spark.size,
+              "--spark-delay": spark.delay,
+              "--spark-duration": spark.duration,
+              "--spark-hue": spark.hue,
+            }}
+          />
+        ))}
+      </div>
 
-        <section
-          className="hero-scroll"
-          data-decoder-ready="false"
-          ref={heroSectionRef}
-        >
-          <div className="hero-pin">
-            <canvas
-              aria-hidden="true"
-              className="hero-media hero-canvas"
-              ref={canvasRef}
-            />
-            <img
-              alt="Full-screen hero artwork"
-              className="hero-media hero-fallback"
-              decoding="async"
-              fetchPriority="high"
-              loading="eager"
-              src={heroPoster}
-            />
+      <div className="smooth-wrapper" ref={smoothWrapperRef}>
+        <main className="smooth-content" id="home" ref={smoothContentRef}>
+          <section
+            className="hero-scroll"
+            data-decoder-ready="false"
+            ref={heroSectionRef}
+          >
+            <div className="hero-pin">
+              <canvas
+                aria-hidden="true"
+                className="hero-media hero-canvas"
+                ref={canvasRef}
+              />
+              <img
+                alt="Full-screen hero artwork"
+                className="hero-media hero-fallback"
+                decoding="async"
+                fetchPriority="high"
+                loading="eager"
+                src={heroPoster}
+              />
 
-            <div className="hero-overlay">
-              <p className="eyebrow">Scroll Trigger Hero</p>
-              <h1>
-                I build things that pretend to be intelligent&hellip;
-                <br />
-                and sometimes they accidentally are.
-              </h1>
-              <p className="hero-text">
-                The hero scene hands off into a masked typographic transition,
-                where the next section already exists underneath the frame and
-                takes over through a single word.
-              </p>
+              <div className="hero-overlay">
+                <p className="eyebrow">Scroll Trigger Hero</p>
+                <h1>
+                  I build things that pretend to be intelligent&hellip;
+                  <br />
+                  and sometimes they accidentally are.
+                </h1>
+                <p className="hero-text">
+                  The hero scene hands off into a masked typographic transition,
+                  where the next section already exists underneath the frame and
+                  takes over through a single word.
+                </p>
 
-              <div className="hero-actions">
-                <a className="button button-primary" href="#about">
-                  Read about me
-                </a>
-              </div>
+                <div className="hero-actions">
+                  <a className="button button-primary" href="#about">
+                    Read about me
+                  </a>
+                </div>
 
-              <ul className="spotlight-list">
-                {spotlightItems.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+                <ul className="spotlight-list">
+                  {spotlightItems.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
 
-              <div className="scrub-status" aria-hidden="true">
-                <span>Scroll to move through the scene</span>
-                <div className="progress-track">
-                  <span className="progress-fill" />
+                <div className="scrub-status" aria-hidden="true">
+                  <span>Scroll to move through the scene</span>
+                  <div className="progress-track">
+                    <span className="progress-fill" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="impact-scroll" id="about" ref={impactSectionRef}>
-          <div className="impact-stage">
-            <section
-              className="impact-scene"
-              id="selected-work"
-              aria-labelledby="selected-work-title"
-              ref={impactSceneRef}
-            >
-              <div className="impact-scene-grid impact-scene-layer" aria-hidden="true" />
-              <div className="impact-scene-orb impact-scene-layer" aria-hidden="true" />
-              <div className="impact-scene-beam impact-scene-layer" aria-hidden="true" />
+          <section className="impact-scroll" id="about" ref={impactSectionRef}>
+            <div className="impact-stage">
+              <section
+                className="impact-scene"
+                id="selected-work"
+                aria-labelledby="selected-work-title"
+                ref={impactSceneRef}
+              >
+                <div className="impact-scene-grid impact-scene-layer" aria-hidden="true" />
+                <div className="impact-scene-orb impact-scene-layer" aria-hidden="true" />
+                <div className="impact-scene-beam impact-scene-layer" aria-hidden="true" />
 
-              <div className="impact-scene-content">
-                <div className="impact-scene-header">
-                  <p className="eyebrow">Section 03 / Selected Work</p>
-                  <h2 id="selected-work-title">
-                    Interfaces that change the room, not just the page.
-                  </h2>
-                  <p>
-                    Brand systems, motion-rich launches, and immersive product
-                    surfaces built to feel inevitable once the transition lands.
-                  </p>
+                <div className="impact-scene-content">
+                  <div className="impact-scene-header">
+                    <p className="eyebrow">Section 03 / Selected Work</p>
+                    <h2 id="selected-work-title">
+                      Interfaces that change the room, not just the page.
+                    </h2>
+                    <p>
+                      Brand systems, motion-rich launches, and immersive product
+                      surfaces built to feel inevitable once the transition lands.
+                    </p>
+                  </div>
+
+                  <div className="impact-project-grid">
+                    {workCards.map((card) => (
+                      <article className="impact-project-card" key={card.title}>
+                        <span className="impact-project-index">{card.index}</span>
+                        <h3>{card.title}</h3>
+                        <p>{card.copy}</p>
+                        <span className="impact-project-meta">{card.meta}</span>
+                      </article>
+                    ))}
+                  </div>
                 </div>
+              </section>
 
-                <div className="impact-project-grid">
-                  {workCards.map((card) => (
-                    <article className="impact-project-card" key={card.title}>
-                      <span className="impact-project-index">{card.index}</span>
-                      <h3>{card.title}</h3>
-                      <p>{card.copy}</p>
-                      <span className="impact-project-meta">{card.meta}</span>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </section>
+              <section
+                aria-labelledby="about-title"
+                className="about-foreground"
+              >
+                <div className="about-foreground-frame" ref={aboutFrameRef}>
+                  <div className="about-surface-mask" aria-hidden="true">
+                    <svg
+                      className="impact-mask-svg"
+                      preserveAspectRatio="none"
+                      viewBox="0 0 100 100"
+                    >
+                      <defs>
+                        {/* The foreground panel is real geometry; the mask cuts IMPACT
+                            out of it so the background scene is visible through the word. */}
+                        <linearGradient id="about-surface-gradient" x1="10%" x2="90%" y1="0%" y2="100%">
+                          <stop offset="0%" stopColor="#faf4ee" stopOpacity="0.98" />
+                          <stop offset="100%" stopColor="#dcc8b6" stopOpacity="0.96" />
+                        </linearGradient>
+                        <linearGradient
+                          id="about-surface-dark-gradient"
+                          x1="8%"
+                          x2="92%"
+                          y1="0%"
+                          y2="100%"
+                        >
+                          <stop offset="0%" stopColor="#0f1926" stopOpacity="0.96" />
+                          <stop offset="100%" stopColor="#03070d" stopOpacity="0.98" />
+                        </linearGradient>
+                        <radialGradient id="about-sheen" cx="50%" cy="0%" r="70%">
+                          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.42" />
+                          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                        </radialGradient>
+                        <mask
+                          height="100"
+                          id="impact-window-mask"
+                          maskContentUnits="userSpaceOnUse"
+                          maskUnits="userSpaceOnUse"
+                          width="100"
+                          x="0"
+                          y="0"
+                        >
+                          <rect fill="white" height="100" width="100" x="0" y="0" />
+                          <text
+                            className="impact-mask-text"
+                            dominantBaseline="middle"
+                            fill="black"
+                            ref={impactMaskTextRef}
+                            textAnchor="middle"
+                            x="50"
+                            y="50"
+                          >
+                            IMPACT
+                          </text>
+                        </mask>
+                      </defs>
 
-            <section
-              aria-labelledby="about-title"
-              className="about-foreground"
-            >
-              <div className="about-foreground-frame" ref={aboutFrameRef}>
-                <div className="about-surface-mask" aria-hidden="true">
-                  <svg
-                    className="impact-mask-svg"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 100 100"
-                  >
-                    <defs>
-                      {/* The foreground panel is real geometry; the mask cuts IMPACT
-                          out of it so the background scene is visible through the word. */}
-                      <linearGradient id="about-surface-gradient" x1="10%" x2="90%" y1="0%" y2="100%">
-                        <stop offset="0%" stopColor="#faf4ee" stopOpacity="0.98" />
-                        <stop offset="100%" stopColor="#dcc8b6" stopOpacity="0.96" />
-                      </linearGradient>
-                      <linearGradient
-                        id="about-surface-dark-gradient"
-                        x1="8%"
-                        x2="92%"
-                        y1="0%"
-                        y2="100%"
-                      >
-                        <stop offset="0%" stopColor="#0f1926" stopOpacity="0.96" />
-                        <stop offset="100%" stopColor="#03070d" stopOpacity="0.98" />
-                      </linearGradient>
-                      <radialGradient id="about-sheen" cx="50%" cy="0%" r="70%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.42" />
-                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                      </radialGradient>
-                      <mask
+                      <rect
+                        className="about-surface-fill"
+                        fill="url(#about-surface-gradient)"
                         height="100"
-                        id="impact-window-mask"
-                        maskContentUnits="userSpaceOnUse"
-                        maskUnits="userSpaceOnUse"
+                        mask="url(#impact-window-mask)"
+                        rx="0"
+                        ry="0"
                         width="100"
                         x="0"
                         y="0"
-                      >
-                        <rect fill="white" height="100" width="100" x="0" y="0" />
-                        <text
-                          className="impact-mask-text"
-                          dominantBaseline="middle"
-                          fill="black"
-                          ref={impactMaskTextRef}
-                          textAnchor="middle"
-                          x="50"
-                          y="50"
-                        >
-                          IMPACT
-                        </text>
-                      </mask>
-                    </defs>
-
-                    <rect
-                      className="about-surface-fill"
-                      fill="url(#about-surface-gradient)"
-                      height="100"
-                      mask="url(#impact-window-mask)"
-                      rx="0"
-                      ry="0"
-                      width="100"
-                      x="0"
-                      y="0"
-                    />
-                    <rect
-                      className="about-surface-fill-dark"
-                      fill="url(#about-surface-dark-gradient)"
-                      height="100"
-                      mask="url(#impact-window-mask)"
-                      rx="0"
-                      ry="0"
-                      width="100"
-                      x="0"
-                      y="0"
-                    />
-                    <rect
-                      className="about-surface-sheen"
-                      fill="url(#about-sheen)"
-                      height="100"
-                      mask="url(#impact-window-mask)"
-                      rx="0"
-                      ry="0"
-                      width="100"
-                      x="0"
-                      y="0"
-                    />
-                    <rect
-                      className="about-surface-border"
-                      fill="none"
-                      height="100"
-                      mask="url(#impact-window-mask)"
-                      rx="0"
-                      ry="0"
-                      width="100"
-                      x="0"
-                      y="0"
-                    />
-                  </svg>
-                </div>
-
-                <div className="impact-word-overlay" aria-hidden="true">
-                  <svg
-                    aria-hidden="true"
-                    className="impact-word-svg"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 100 100"
-                  >
-                    <text
-                      className="impact-word-outline"
-                      dominantBaseline="middle"
-                      fill="transparent"
-                      ref={impactWordOutlineRef}
-                      textAnchor="middle"
-                      x="50"
-                      y="50"
-                    >
-                      IMPACT
-                    </text>
-                  </svg>
-                </div>
-
-                <div className="about-frame-content" ref={aboutFrameContentRef}>
-                  <div className="about-frame-head about-focus-fade">
-                    <p className="eyebrow">Section 02 / About</p>
-                    <h2 className="sr-only" id="about-title">
-                      About
-                    </h2>
+                      />
+                      <rect
+                        className="about-surface-fill-dark"
+                        fill="url(#about-surface-dark-gradient)"
+                        height="100"
+                        mask="url(#impact-window-mask)"
+                        rx="0"
+                        ry="0"
+                        width="100"
+                        x="0"
+                        y="0"
+                      />
+                      <rect
+                        className="about-surface-sheen"
+                        fill="url(#about-sheen)"
+                        height="100"
+                        mask="url(#impact-window-mask)"
+                        rx="0"
+                        ry="0"
+                        width="100"
+                        x="0"
+                        y="0"
+                      />
+                      <rect
+                        className="about-surface-border"
+                        fill="none"
+                        height="100"
+                        mask="url(#impact-window-mask)"
+                        rx="0"
+                        ry="0"
+                        width="100"
+                        x="0"
+                        y="0"
+                      />
+                    </svg>
                   </div>
 
-                  <div className="about-paragraph">
-                    {aboutParagraphLines.map((line) => (
-                      <p
-                        aria-label={line.ariaLabel}
-                        className="about-line"
-                        key={line.ariaLabel}
+                  <div className="impact-word-overlay" aria-hidden="true">
+                    <svg
+                      aria-hidden="true"
+                      className="impact-word-svg"
+                      preserveAspectRatio="none"
+                      viewBox="0 0 100 100"
+                    >
+                      <text
+                        className="impact-word-outline"
+                        dominantBaseline="middle"
+                        fill="transparent"
+                        ref={impactWordOutlineRef}
+                        textAnchor="middle"
+                        x="50"
+                        y="50"
                       >
-                        {line.segments.map((segment) => {
-                          if (segment.type === "impact") {
-                            return (
-                              <span className="about-impact-shell" key={segment.key}>
-                                <span
-                                  className="impact-word-slot"
-                                  ref={impactWordSlotRef}
-                                  aria-hidden="true"
-                                >
-                                  <span className="impact-word-measure">
-                                    IMPACT
+                        IMPACT
+                      </text>
+                    </svg>
+                  </div>
+
+                  <div className="about-frame-content" ref={aboutFrameContentRef}>
+                    <div className="about-frame-head about-focus-fade">
+                      <p className="eyebrow">Section 02 / About</p>
+                      <h2 className="sr-only" id="about-title">
+                        About
+                      </h2>
+                    </div>
+
+                    <div className="about-paragraph">
+                      {aboutParagraphLines.map((line) => (
+                        <p
+                          aria-label={line.ariaLabel}
+                          className="about-line"
+                          key={line.ariaLabel}
+                        >
+                          {line.segments.map((segment) => {
+                            if (segment.type === "impact") {
+                              return (
+                                <span className="about-impact-shell" key={segment.key}>
+                                  <span
+                                    className="impact-word-slot"
+                                    ref={impactWordSlotRef}
+                                    aria-hidden="true"
+                                  >
+                                    <span className="impact-word-measure">
+                                      IMPACT
+                                    </span>
                                   </span>
                                 </span>
+                              );
+                            }
+
+                            return (
+                              <span className="about-line-segment" key={segment.key}>
+                                {segment.characters.map(({ character, index }) => (
+                                  <span
+                                    aria-hidden="true"
+                                    className="about-char"
+                                    data-about-char-index={index}
+                                    key={`${segment.key}-${index}-${character}`}
+                                  >
+                                    {character}
+                                  </span>
+                                ))}
                               </span>
                             );
-                          }
+                          })}
+                        </p>
+                      ))}
+                    </div>
 
-                          return (
-                            <span className="about-line-segment" key={segment.key}>
-                              {segment.characters.map(({ character, index }) => (
-                                <span
-                                  aria-hidden="true"
-                                  className="about-char"
-                                  data-about-char-index={index}
-                                  key={`${segment.key}-${index}-${character}`}
-                                >
-                                  {character}
-                                </span>
-                              ))}
-                            </span>
-                          );
-                        })}
-                      </p>
-                    ))}
-                  </div>
-
-                  <div className="about-frame-bottom about-focus-fade">
-                    <span className="about-frame-note">
-                      Scroll to let the word open the next scene.
-                    </span>
+                    <div className="about-frame-bottom about-focus-fade">
+                      <span className="about-frame-note">
+                        Scroll to let the word open the next scene.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
-          </div>
-        </section>
-      </main>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   );
 }
