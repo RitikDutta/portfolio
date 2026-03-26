@@ -51,12 +51,13 @@ body {
   --hero-zoom: 0;
   --brain-release: 0;
   --brain-travel: 0;
+  --brain-fade: 0;
   --brain-dock: 0;
   --brain-fullscreen: 0;
   --brain-spin: 0;
   --brain-immersion: 0;
   --brain-afterglow: 0;
-  --brain-afterglow-drift: 0;
+  --brain-afterglow-progress: 0;
   --neural-burst: 0;
   --screen-drop: 0;
 }
@@ -204,24 +205,19 @@ a {
   width: 100vw;
   aspect-ratio: 1;
   pointer-events: none;
-  opacity: max(calc(var(--brain-release) * (1 - var(--brain-dock))), var(--brain-afterglow));
+  opacity: max(
+    calc(var(--brain-release) * (1 - var(--brain-fade))),
+    var(--brain-afterglow)
+  );
   transform-origin: center center;
   transform:
-    translate(
-      -50%,
-      calc(
-        -50% +
-        (var(--brain-travel) * 52vh) +
-        (var(--screen-drop) * 12vh) +
-        (var(--brain-afterglow-drift) * 14vh)
-      )
-    )
+    translate(-50%, -50%)
     scale(
       calc(
         0.14 +
         (var(--brain-fullscreen) * 1.02) +
         (var(--brain-immersion) * 0.32) -
-        (var(--brain-afterglow-drift) * 0.12)
+        (var(--brain-travel) * 0.08)
       )
     );
   filter: drop-shadow(0 24px 42px rgba(72, 14, 32, 0.3));
@@ -238,26 +234,10 @@ a {
   filter: blur(18px);
 }
 
-.brain-trail {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  width: 0.9rem;
-  height: calc(1.2rem + (var(--brain-travel) * 10rem));
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 223, 170, 0) 0%, rgba(255, 201, 145, 0.62) 26%, rgba(214, 104, 86, 0.6) 58%, rgba(91, 18, 39, 0.08) 100%);
-  filter: blur(6px);
-  opacity: calc(var(--brain-travel) * (1 - var(--brain-dock)) * 0.72);
-}
-
 .brain-stage {
   position: absolute;
   inset: 0;
-  transform: rotateX(calc(var(--brain-afterglow-drift) * 52deg));
   transform-origin: center center;
-  will-change: transform;
 }
 
 .brain-stage::before {

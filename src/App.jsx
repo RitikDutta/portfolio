@@ -284,6 +284,8 @@ export default function App() {
     const neuralBurstEnd = 0.96;
     const brainTravelStart = neuralBurstEnd;
     const brainTravelEnd = 1;
+    const brainFadeStart = 0.992;
+    const brainFadeEnd = 1;
     const brainDockStart = brainTravelStart;
     const brainDockEnd = 1;
     const screenDropStart = brainTravelStart;
@@ -465,6 +467,15 @@ export default function App() {
         clamp(
           (currentProgress - brainTravelStart) /
             (brainTravelEnd - brainTravelStart),
+          0,
+          1,
+        ).toFixed(4),
+      );
+      pageShell.style.setProperty(
+        "--brain-fade",
+        clamp(
+          (currentProgress - brainFadeStart) /
+            (brainFadeEnd - brainFadeStart),
           0,
           1,
         ).toFixed(4),
@@ -773,14 +784,30 @@ export default function App() {
           const styles = window.getComputedStyle(pageShell);
           const brainSpin =
             Number.parseFloat(styles.getPropertyValue("--brain-spin")) || 0;
+          const brainTravel =
+            Number.parseFloat(styles.getPropertyValue("--brain-travel")) || 0;
+          const brainAfterglowProgress =
+            Number.parseFloat(
+              styles.getPropertyValue("--brain-afterglow-progress"),
+            ) || 0;
           const brainFullscreen =
             Number.parseFloat(styles.getPropertyValue("--brain-fullscreen")) || 0;
           const brainImmersion =
             Number.parseFloat(styles.getPropertyValue("--brain-immersion")) || 0;
           const neuralBurst =
             Number.parseFloat(styles.getPropertyValue("--neural-burst")) || 0;
+          const basePivotX = THREE.MathUtils.lerp(0.22, 0.03, brainFullscreen);
+          const heroExitRotationX = THREE.MathUtils.lerp(
+            basePivotX,
+            -1.08,
+            brainTravel,
+          );
 
-          pivot.rotation.x = THREE.MathUtils.lerp(0.22, 0.03, brainFullscreen);
+          pivot.rotation.x = THREE.MathUtils.lerp(
+            heroExitRotationX,
+            -2.18,
+            brainAfterglowProgress,
+          );
           pivot.rotation.y = brainSpin * Math.PI * 1.18;
           pivot.rotation.z = THREE.MathUtils.lerp(-0.12, 0.06, neuralBurst);
           root.rotation.z = neuralBurst * 0.05;
@@ -1006,20 +1033,19 @@ export default function App() {
     const sectionScrollStart = 0.7;
     const sectionScrollDuration = 0.2;
     const zoomStart = sectionScrollStart + sectionScrollDuration + 0.06;
-    const brainAfterglowFadeEnd = 0.24;
-    const brainAfterglowDriftEnd = 0.22;
-    const brainEntryDriftMax = 0.5;
+    const brainAfterglowFadeEnd = 0.12;
+    const brainEntryRotationProgressMax = 0.32;
     let previousActiveCount = -1;
     let syncFrameId = 0;
-    let sectionEnteringViewport = false;
     let sectionEntryProgress = 0;
+    let sectionEnteringViewport = false;
     let sectionTimelineTrigger = null;
 
-    const setBrainAfterglow = (opacity, drift = 0) => {
+    const setBrainAfterglow = (opacity, progress = 0) => {
       pageShell.style.setProperty("--brain-afterglow", opacity.toFixed(4));
       pageShell.style.setProperty(
-        "--brain-afterglow-drift",
-        drift.toFixed(4),
+        "--brain-afterglow-progress",
+        progress.toFixed(4),
       );
     };
 
@@ -1027,25 +1053,26 @@ export default function App() {
       const sectionStarted = trigger.isActive || trigger.progress > 0;
 
       if (!sectionStarted) {
-        const entryDrift = sectionEnteringViewport
-          ? sectionEntryProgress * brainEntryDriftMax
+        const entryRotationProgress = sectionEnteringViewport
+          ? sectionEntryProgress * brainEntryRotationProgressMax
           : 0;
-        setBrainAfterglow(sectionEnteringViewport ? 1 : 0, entryDrift);
+        setBrainAfterglow(
+          sectionEnteringViewport ? 1 : 0,
+          entryRotationProgress,
+        );
         return;
       }
 
-      const afterglowOpacity =
-        1 - gsap.utils.clamp(0, 1, trigger.progress / brainAfterglowFadeEnd);
-      const timelineDriftProgress = gsap.utils.clamp(
+      const afterglowFadeProgress = gsap.utils.clamp(
         0,
         1,
-        trigger.progress / brainAfterglowDriftEnd,
+        trigger.progress / brainAfterglowFadeEnd,
       );
-      const afterglowDrift =
-        brainEntryDriftMax +
-        timelineDriftProgress * (1 - brainEntryDriftMax);
-
-      setBrainAfterglow(afterglowOpacity, afterglowDrift);
+      const afterglowOpacity = 1 - afterglowFadeProgress;
+      const afterglowRotationProgress =
+        brainEntryRotationProgressMax +
+        afterglowFadeProgress * (1 - brainEntryRotationProgressMax);
+      setBrainAfterglow(afterglowOpacity, afterglowRotationProgress);
     };
 
     const syncAfterglowState = () => {
@@ -1054,10 +1081,13 @@ export default function App() {
         return;
       }
 
-      const entryDrift = sectionEnteringViewport
-        ? sectionEntryProgress * brainEntryDriftMax
+      const entryRotationProgress = sectionEnteringViewport
+        ? sectionEntryProgress * brainEntryRotationProgressMax
         : 0;
-      setBrainAfterglow(sectionEnteringViewport ? 1 : 0, entryDrift);
+      setBrainAfterglow(
+        sectionEnteringViewport ? 1 : 0,
+        entryRotationProgress,
+      );
     };
 
     const paintCharacters = (timelineProgress) => {
@@ -1309,8 +1339,8 @@ export default function App() {
           syncAfterglowState();
         },
         onLeaveBack: () => {
-          sectionEnteringViewport = false;
           sectionEntryProgress = 0;
+          sectionEnteringViewport = false;
           syncAfterglowState();
         },
         onRefresh: (self) => {
@@ -1466,7 +1496,6 @@ export default function App() {
       </header>
 
       <div className="brain-transfer" aria-hidden="true">
-        <span className="brain-trail" />
         <div className="brain-stage" ref={brainMountRef} />
       </div>
       <div className="neural-burst" aria-hidden="true">
