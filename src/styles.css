@@ -744,6 +744,13 @@ a {
   z-index: 1;
 }
 
+.impact-word-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
 .impact-mask-svg,
 .impact-word-svg {
   display: block;
@@ -770,6 +777,15 @@ a {
   font-family: "Bungee Inline", "Space Grotesk", sans-serif;
   font-weight: 400;
   letter-spacing: 0.03em;
+}
+
+.impact-word-outline {
+  stroke: rgba(255, 247, 239, 0.92);
+  fill: transparent;
+  paint-order: stroke fill;
+  filter:
+    drop-shadow(0 0 14px rgba(255, 255, 255, 0.18))
+    drop-shadow(0 0 22px rgba(223, 117, 83, 0.16));
 }
 
 .about-frame-content {
@@ -834,34 +850,33 @@ a {
 }
 
 .about-impact-shell {
-  display: inline-flex;
-  align-items: center;
-  margin: 0 0.12em;
+  display: inline-block;
+  margin: 0 0.08em;
+  line-height: inherit;
+  vertical-align: baseline;
 }
 
 .impact-word-slot {
-  position: relative;
   display: inline-block;
-  width: 6.4em;
-  max-width: 100%;
-  aspect-ratio: 5.8 / 1;
-  vertical-align: middle;
-  transform: translateY(0.04em);
+  position: relative;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+  vertical-align: baseline;
   isolation: isolate;
 }
 
-.impact-word-fill {
-  fill: transparent;
-}
-
-.impact-word-outline {
-  fill: none;
-  stroke: rgba(255, 247, 239, 0.92);
-  stroke-width: 0.66;
-  paint-order: stroke;
-  filter:
-    drop-shadow(0 0 14px rgba(255, 255, 255, 0.18))
-    drop-shadow(0 0 22px rgba(223, 117, 83, 0.16));
+.impact-word-measure {
+  display: inline-block;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: transparent;
+  text-shadow: none;
+  visibility: hidden;
+  user-select: none;
 }
 
 .about-frame-bottom {
@@ -963,9 +978,6 @@ a {
     font-size: clamp(1.45rem, 4.6vw, 3.1rem);
   }
 
-  .impact-word-slot {
-    width: 6.2em;
-  }
 }
 
 @media (max-width: 640px) {
@@ -1048,10 +1060,6 @@ a {
     font-size: clamp(1.12rem, 5.9vw, 2.05rem);
     line-height: 1.14;
     letter-spacing: 0.035em;
-  }
-
-  .impact-word-slot {
-    width: 6em;
   }
 
   .impact-project-card {

@@ -139,6 +139,7 @@ export default function App() {
   const aboutFrameRef = useRef(null);
   const impactWordSlotRef = useRef(null);
   const impactMaskTextRef = useRef(null);
+  const impactWordOutlineRef = useRef(null);
   const impactSceneRef = useRef(null);
 
   useEffect(() => {
@@ -856,6 +857,7 @@ export default function App() {
     const aboutFrame = aboutFrameRef.current;
     const wordSlot = impactWordSlotRef.current;
     const maskText = impactMaskTextRef.current;
+    const wordOutline = impactWordOutlineRef.current;
     const scene = impactSceneRef.current;
 
     if (
@@ -863,6 +865,7 @@ export default function App() {
       !(aboutFrame instanceof HTMLElement) ||
       !(wordSlot instanceof HTMLElement) ||
       !(maskText instanceof SVGTextElement) ||
+      !(wordOutline instanceof SVGTextElement) ||
       !(scene instanceof HTMLElement)
     ) {
       return undefined;
@@ -877,14 +880,12 @@ export default function App() {
     const characterNodes = [
       ...aboutFrame.querySelectorAll("[data-about-char-index]"),
     ];
-    const wordFill = aboutFrame.querySelector(".impact-word-fill");
-    const wordOutline = aboutFrame.querySelector(".impact-word-outline");
+    const wordMeasure = aboutFrame.querySelector(".impact-word-measure");
 
     if (
       !(sceneContent instanceof HTMLElement) ||
       !characterNodes.length ||
-      !(wordFill instanceof SVGTextElement) ||
-      !(wordOutline instanceof SVGTextElement)
+      !(wordMeasure instanceof HTMLElement)
     ) {
       return undefined;
     }
@@ -940,24 +941,49 @@ export default function App() {
         return;
       }
 
-      // The visible word slot uses a 100x20 SVG, so the mask mirrors the same ratios.
+      // Mirror the actual rendered word so the cutout follows the paragraph typography.
+      const wordStyles = window.getComputedStyle(wordMeasure);
+      const fontSizePx = Number.parseFloat(wordStyles.fontSize || "0");
+      const verticalOffset =
+        ((fontSizePx * 0.1) / frameBounds.height) * 100;
       const centerX =
         ((wordBounds.left - frameBounds.left + wordBounds.width / 2) /
           frameBounds.width) *
         100;
       const centerY =
-        ((wordBounds.top - frameBounds.top + wordBounds.height * 0.525) /
+        ((wordBounds.top -
+          frameBounds.top +
+          wordBounds.height * 0.525 +
+          (verticalOffset / 100) * frameBounds.height) /
           frameBounds.height) *
         100;
-      const fontSize =
-        ((wordBounds.height / frameBounds.height) * 100 * 14) / 20;
-      const textLength = ((wordBounds.width / frameBounds.width) * 100 * 94) / 100;
+      const fontSize = (fontSizePx / frameBounds.height) * 100;
+      const textLength = (wordBounds.width / frameBounds.width) * 100;
+      const outlineStrokeWidthPx =
+        Number.parseFloat(wordStyles.webkitTextStrokeWidth || "0") ||
+        Number.parseFloat(
+          wordStyles.getPropertyValue("-webkit-text-stroke-width") || "0",
+        ) ||
+        1;
+      const outlineStrokeWidth =
+        (outlineStrokeWidthPx / frameBounds.height) * 100;
 
-      maskText.setAttribute("x", centerX.toFixed(4));
-      maskText.setAttribute("y", centerY.toFixed(4));
-      maskText.setAttribute("font-size", fontSize.toFixed(4));
-      maskText.setAttribute("textLength", textLength.toFixed(4));
-      maskText.setAttribute("lengthAdjust", "spacingAndGlyphs");
+      const syncWordGeometry = (textNode) => {
+        textNode.setAttribute("x", centerX.toFixed(4));
+        textNode.setAttribute("y", centerY.toFixed(4));
+        textNode.setAttribute("font-size", fontSize.toFixed(4));
+        textNode.setAttribute("textLength", textLength.toFixed(4));
+        textNode.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        textNode.setAttribute("font-family", wordStyles.fontFamily);
+        textNode.setAttribute("font-weight", wordStyles.fontWeight);
+        textNode.setAttribute("letter-spacing", wordStyles.letterSpacing);
+        textNode.setAttribute("stroke-width", outlineStrokeWidth.toFixed(4));
+        textNode.setAttribute("stroke-linejoin", "round");
+      };
+
+      syncWordGeometry(maskText);
+      syncWordGeometry(wordOutline);
+      maskText.setAttribute("stroke", "black");
 
       gsap.set(maskText, {
         svgOrigin: `${centerX} ${centerY}`,
@@ -990,9 +1016,6 @@ export default function App() {
       });
       gsap.set(wordSlot, {
         scale: 1,
-      });
-      gsap.set(wordFill, {
-        opacity: 0,
       });
       gsap.set(wordOutline, {
         opacity: 1,
@@ -1040,9 +1063,6 @@ export default function App() {
         rotationX: 0,
         force3D: true,
         transformPerspective: 1600,
-      });
-      gsap.set(wordFill, {
-        opacity: 0,
       });
       gsap.set(wordOutline, {
         opacity: 0.36,
@@ -1380,6 +1400,27 @@ export default function App() {
                   </svg>
                 </div>
 
+                <div className="impact-word-overlay" aria-hidden="true">
+                  <svg
+                    aria-hidden="true"
+                    className="impact-word-svg"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 100 100"
+                  >
+                    <text
+                      className="impact-word-outline"
+                      dominantBaseline="middle"
+                      fill="transparent"
+                      ref={impactWordOutlineRef}
+                      textAnchor="middle"
+                      x="50"
+                      y="50"
+                    >
+                      IMPACT
+                    </text>
+                  </svg>
+                </div>
+
                 <div className="about-frame-content">
                   <div className="about-frame-head about-focus-fade">
                     <p className="eyebrow">Section 02 / About</p>
@@ -1404,36 +1445,9 @@ export default function App() {
                                   ref={impactWordSlotRef}
                                   aria-hidden="true"
                                 >
-                                  <svg
-                                    className="impact-word-svg"
-                                    preserveAspectRatio="none"
-                                    viewBox="0 0 100 20"
-                                  >
-                                    <text
-                                      className="impact-word-fill"
-                                      dominantBaseline="middle"
-                                      fontSize="14"
-                                      lengthAdjust="spacingAndGlyphs"
-                                      textAnchor="middle"
-                                      textLength="94"
-                                      x="50"
-                                      y="10.5"
-                                    >
-                                      IMPACT
-                                    </text>
-                                    <text
-                                      className="impact-word-outline"
-                                      dominantBaseline="middle"
-                                      fontSize="14"
-                                      lengthAdjust="spacingAndGlyphs"
-                                      textAnchor="middle"
-                                      textLength="94"
-                                      x="50"
-                                      y="10.5"
-                                    >
-                                      IMPACT
-                                    </text>
-                                  </svg>
+                                  <span className="impact-word-measure">
+                                    IMPACT
+                                  </span>
                                 </span>
                               </span>
                             );
