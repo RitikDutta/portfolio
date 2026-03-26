@@ -985,10 +985,10 @@ export default function App() {
         yPercent: 0,
       });
       gsap.set(maskText, {
-        scale: 1.08,
+        scale: 1,
       });
       gsap.set(wordSlot, {
-        scale: 1.08,
+        scale: 1,
       });
       gsap.set(wordFill, {
         opacity: 0,
@@ -1107,20 +1107,12 @@ export default function App() {
           0.2,
         )
         .to(
-          [maskText, wordSlot],
-          {
-            scale: impactTransitionSettings.revealScale,
-            duration: 0.34,
-          },
-          0.22,
-        )
-        .to(
           wordOutline,
           {
             opacity: 1,
             duration: 0.24,
           },
-          0.48,
+          0.56,
         )
         .to(
           aboutFrame,
@@ -1132,16 +1124,7 @@ export default function App() {
             duration: 0.32,
             ease: "power2.in",
           },
-          0.66,
-        )
-        .to(
-          [maskText, wordSlot],
-          {
-            scale: 1.42,
-            duration: 0.32,
-            ease: "power2.in",
-          },
-          0.66,
+          0.68,
         )
         .to(
           {},
