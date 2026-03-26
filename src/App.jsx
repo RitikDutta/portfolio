@@ -1041,6 +1041,9 @@ export default function App() {
       gsap.set(maskText, {
         scale: 1,
       });
+      gsap.set(aboutFrame, {
+        "--about-surface-darkness": 1,
+      });
       gsap.set(wordSlot, {
         scale: 1,
       });
@@ -1090,6 +1093,7 @@ export default function App() {
         opacity: 1,
         z: 0,
         rotationX: 0,
+        "--about-surface-darkness": 0,
         force3D: true,
         transformPerspective: 1600,
       });
@@ -1161,6 +1165,14 @@ export default function App() {
             duration: 0.42,
           },
           0.2,
+        )
+        .to(
+          aboutFrame,
+          {
+            "--about-surface-darkness": 1,
+            duration: 1 - characterRevealStart,
+          },
+          characterRevealStart,
         )
         .to(
           wordOutline,
@@ -1389,6 +1401,16 @@ export default function App() {
                         <stop offset="0%" stopColor="#faf4ee" stopOpacity="0.98" />
                         <stop offset="100%" stopColor="#dcc8b6" stopOpacity="0.96" />
                       </linearGradient>
+                      <linearGradient
+                        id="about-surface-dark-gradient"
+                        x1="8%"
+                        x2="92%"
+                        y1="0%"
+                        y2="100%"
+                      >
+                        <stop offset="0%" stopColor="#0f1926" stopOpacity="0.96" />
+                        <stop offset="100%" stopColor="#03070d" stopOpacity="0.98" />
+                      </linearGradient>
                       <radialGradient id="about-sheen" cx="50%" cy="0%" r="70%">
                         <stop offset="0%" stopColor="#ffffff" stopOpacity="0.42" />
                         <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
@@ -1420,6 +1442,17 @@ export default function App() {
                     <rect
                       className="about-surface-fill"
                       fill="url(#about-surface-gradient)"
+                      height="100"
+                      mask="url(#impact-window-mask)"
+                      rx="0"
+                      ry="0"
+                      width="100"
+                      x="0"
+                      y="0"
+                    />
+                    <rect
+                      className="about-surface-fill-dark"
+                      fill="url(#about-surface-dark-gradient)"
                       height="100"
                       mask="url(#impact-window-mask)"
                       rx="0"
