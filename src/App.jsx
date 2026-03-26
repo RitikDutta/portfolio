@@ -126,7 +126,8 @@ const impactTransitionSettings = {
   sceneStartScale: 1.14,
   sceneStartY: 10,
   revealScale: 1.18,
-  exitScale: 2.35,
+  exitScale: 3.6,
+  exitDepth: 2000,
   exitTilt: 4,
 };
 
@@ -1118,9 +1119,8 @@ export default function App() {
           aboutFrame,
           {
             scale: impactTransitionSettings.exitScale,
-            z: 260,
+            z: impactTransitionSettings.exitDepth,
             rotationX: impactTransitionSettings.exitTilt,
-            opacity: 0,
             duration: 0.32,
             ease: "power2.in",
           },
