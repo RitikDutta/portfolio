@@ -137,6 +137,7 @@ export default function App() {
   const brainMountRef = useRef(null);
   const impactSectionRef = useRef(null);
   const aboutFrameRef = useRef(null);
+  const aboutFrameContentRef = useRef(null);
   const impactWordSlotRef = useRef(null);
   const impactMaskTextRef = useRef(null);
   const impactWordOutlineRef = useRef(null);
@@ -855,6 +856,7 @@ export default function App() {
   useLayoutEffect(() => {
     const section = impactSectionRef.current;
     const aboutFrame = aboutFrameRef.current;
+    const aboutFrameContent = aboutFrameContentRef.current;
     const wordSlot = impactWordSlotRef.current;
     const maskText = impactMaskTextRef.current;
     const wordOutline = impactWordOutlineRef.current;
@@ -863,6 +865,7 @@ export default function App() {
     if (
       !(section instanceof HTMLElement) ||
       !(aboutFrame instanceof HTMLElement) ||
+      !(aboutFrameContent instanceof HTMLElement) ||
       !(wordSlot instanceof HTMLElement) ||
       !(maskText instanceof SVGTextElement) ||
       !(wordOutline instanceof SVGTextElement) ||
@@ -891,8 +894,12 @@ export default function App() {
     }
 
     const characterRevealStart = 0.04;
-    const characterRevealEnd = 0.54;
+    const characterRevealEnd = 0.62;
+    const sectionScrollStart = 0.7;
+    const sectionScrollDuration = 0.2;
+    const zoomStart = sectionScrollStart + sectionScrollDuration + 0.06;
     let previousActiveCount = -1;
+    let syncFrameId = 0;
 
     const paintCharacters = (timelineProgress) => {
       const revealProgress = gsap.utils.clamp(
@@ -928,13 +935,21 @@ export default function App() {
       previousActiveCount = activeCount;
     };
 
+    const getFrameScrollMax = () =>
+      Math.max(aboutFrameContent.scrollHeight - aboutFrameContent.clientHeight, 0);
+
     const syncMaskLayout = () => {
       const frameBounds = aboutFrame.getBoundingClientRect();
       const wordBounds = wordSlot.getBoundingClientRect();
+      const baseFrameWidth = aboutFrame.clientWidth;
+      const baseFrameHeight = aboutFrame.clientHeight;
+      const wordWidthPx = wordMeasure.offsetWidth || wordSlot.offsetWidth || wordBounds.width;
 
       if (
         !frameBounds.width ||
         !frameBounds.height ||
+        !baseFrameWidth ||
+        !baseFrameHeight ||
         !wordBounds.width ||
         !wordBounds.height
       ) {
@@ -945,7 +960,7 @@ export default function App() {
       const wordStyles = window.getComputedStyle(wordMeasure);
       const fontSizePx = Number.parseFloat(wordStyles.fontSize || "0");
       const verticalOffset =
-        ((fontSizePx * 0.1) / frameBounds.height) * 100;
+        ((fontSizePx * 0.1) / baseFrameHeight) * 100;
       const centerX =
         ((wordBounds.left - frameBounds.left + wordBounds.width / 2) /
           frameBounds.width) *
@@ -957,8 +972,8 @@ export default function App() {
           (verticalOffset / 100) * frameBounds.height) /
           frameBounds.height) *
         100;
-      const fontSize = (fontSizePx / frameBounds.height) * 100;
-      const textLength = (wordBounds.width / frameBounds.width) * 100;
+      const fontSize = (fontSizePx / baseFrameHeight) * 100;
+      const textLength = (wordWidthPx / baseFrameWidth) * 100;
       const outlineStrokeWidthPx =
         Number.parseFloat(wordStyles.webkitTextStrokeWidth || "0") ||
         Number.parseFloat(
@@ -966,7 +981,7 @@ export default function App() {
         ) ||
         1;
       const outlineStrokeWidth =
-        (outlineStrokeWidthPx / frameBounds.height) * 100;
+        (outlineStrokeWidthPx / baseFrameHeight) * 100;
 
       const syncWordGeometry = (textNode) => {
         textNode.setAttribute("x", centerX.toFixed(4));
@@ -993,9 +1008,21 @@ export default function App() {
       });
     };
 
+    const requestMaskSync = () => {
+      if (syncFrameId) {
+        return;
+      }
+
+      syncFrameId = window.requestAnimationFrame(() => {
+        syncFrameId = 0;
+        syncMaskLayout();
+      });
+    };
+
     const teardown = [];
 
     syncMaskLayout();
+    aboutFrameContent.scrollTop = 0;
 
     if (reducedMotionQuery.matches) {
       gsap.set(scene, {
@@ -1023,7 +1050,9 @@ export default function App() {
       gsap.set(focusItems, {
         opacity: 1,
       });
+      aboutFrameContent.scrollTop = 0;
       paintCharacters(1);
+      syncMaskLayout();
 
       return undefined;
     }
@@ -1080,8 +1109,14 @@ export default function App() {
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onRefresh: (self) => paintCharacters(self.progress),
-          onUpdate: (self) => paintCharacters(self.progress),
+          onRefresh: (self) => {
+            paintCharacters(self.progress);
+            requestMaskSync();
+          },
+          onUpdate: (self) => {
+            paintCharacters(self.progress);
+            requestMaskSync();
+          },
         },
       });
 
@@ -1131,9 +1166,18 @@ export default function App() {
           wordOutline,
           {
             opacity: 1,
-            duration: 0.24,
+            duration: 0.18,
           },
-          0.56,
+          characterRevealEnd,
+        )
+        .to(
+          aboutFrameContent,
+          {
+            scrollTop: () => getFrameScrollMax(),
+            duration: sectionScrollDuration,
+            onUpdate: requestMaskSync,
+          },
+          sectionScrollStart,
         )
         .to(
           aboutFrame,
@@ -1141,19 +1185,26 @@ export default function App() {
             scale: impactTransitionSettings.exitScale,
             z: impactTransitionSettings.exitDepth,
             rotationX: impactTransitionSettings.exitTilt,
-            duration: 0.32,
+            duration: 0.28,
             ease: "power2.in",
           },
-          0.68,
+          zoomStart,
         )
         .to(
           {},
           {
-            duration: 0.18,
+            duration: 0.14,
           },
-          0.92,
+          zoomStart + 0.24,
         );
     }, section);
+
+    aboutFrameContent.addEventListener("scroll", requestMaskSync, {
+      passive: true,
+    });
+    teardown.push(() =>
+      aboutFrameContent.removeEventListener("scroll", requestMaskSync),
+    );
 
     const handleResize = () => {
       syncMaskLayout();
@@ -1166,6 +1217,7 @@ export default function App() {
     if (typeof ResizeObserver === "function") {
       const resizeObserver = new ResizeObserver(syncMaskLayout);
       resizeObserver.observe(aboutFrame);
+      resizeObserver.observe(aboutFrameContent);
       resizeObserver.observe(wordSlot);
       teardown.push(() => resizeObserver.disconnect());
     }
@@ -1181,6 +1233,7 @@ export default function App() {
 
     ScrollTrigger.addEventListener("refreshInit", syncMaskLayout);
     teardown.push(() => ScrollTrigger.removeEventListener("refreshInit", syncMaskLayout));
+    teardown.push(() => window.cancelAnimationFrame(syncFrameId));
 
     return () => {
       teardown.forEach((dispose) => dispose());
@@ -1421,7 +1474,7 @@ export default function App() {
                   </svg>
                 </div>
 
-                <div className="about-frame-content">
+                <div className="about-frame-content" ref={aboutFrameContentRef}>
                   <div className="about-frame-head about-focus-fade">
                     <p className="eyebrow">Section 02 / About</p>
                     <h2 className="sr-only" id="about-title">
