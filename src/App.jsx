@@ -1,7 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
 import brainModelUrl from "../brain_hologram.glb?url";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const spotlightItems = [
   "Three.js brain handoff using a GLB asset",
@@ -9,23 +13,99 @@ const spotlightItems = [
   "Scroll-controlled frames instead of autoplay",
 ];
 
-const aboutLines = [
-  "I’ve always been obsessed with patterns noticing what others usually miss.",
-  "And somewhere along the way, those patterns turned into something real… something with IMPACT.",
-  "Now I build systems that don’t just work they leave a mark.",
+const aboutLineSpecs = [
+  {
+    ariaLabel:
+      "I've always been obsessed with patterns noticing what others usually miss.",
+    segments: [
+      {
+        type: "text",
+        content:
+          "I've always been obsessed with patterns noticing what others usually miss.",
+      },
+    ],
+  },
+  {
+    ariaLabel:
+      "And somewhere along the way, those patterns turned into something real... something with IMPACT.",
+    segments: [
+      {
+        type: "text",
+        content:
+          "And somewhere along the way, those patterns turned into something real... something with ",
+      },
+      {
+        type: "impact",
+      },
+      {
+        type: "text",
+        content: ".",
+      },
+    ],
+  },
+  {
+    ariaLabel:
+      "Now I build systems that don't just work they leave a mark.",
+    segments: [
+      {
+        type: "text",
+        content: "Now I build systems that don't just work they leave a mark.",
+      },
+    ],
+  },
 ];
 
-const aboutCharacterLines = [];
+const aboutParagraphLines = [];
 let aboutCharacterCount = 0;
 
-for (const line of aboutLines) {
-  const characterLine = [...line].map((character) => ({
-    character,
-    index: aboutCharacterCount++,
-  }));
+for (const [lineIndex, line] of aboutLineSpecs.entries()) {
+  const renderedSegments = line.segments.map((segment, segmentIndex) => {
+    if (segment.type === "impact") {
+      return {
+        type: "impact",
+        key: `impact-${lineIndex}-${segmentIndex}`,
+      };
+    }
 
-  aboutCharacterLines.push(characterLine);
+    return {
+      type: "text",
+      key: `text-${lineIndex}-${segmentIndex}`,
+      characters: [...segment.content].map((character) => ({
+        character,
+        index: aboutCharacterCount++,
+      })),
+    };
+  });
+
+  aboutParagraphLines.push({
+    ariaLabel: line.ariaLabel,
+    segments: renderedSegments,
+  });
 }
+
+const workCards = [
+  {
+    index: "01",
+    title: "Signal House",
+    meta: "Identity / Motion / Launch",
+    copy:
+      "A cinematic portfolio system where typography, pacing, and depth cues carry the narrative before the case study even begins.",
+  },
+  {
+    index: "02",
+    title: "Atlas Console",
+    meta: "Dashboard / 3D / Interaction",
+    copy:
+      "A data-heavy control surface rebuilt around hierarchy and momentum, turning dense views into deliberate, readable motion.",
+  },
+  {
+    index: "03",
+    title: "Afterlight",
+    meta: "Campaign / Immersive Web",
+    copy:
+      "An immersive launch experience that used layered scenes, restrained glow, and hard-edged transitions to hold attention.",
+  },
+];
 
 const neuralSparkItems = [
   { top: "18%", left: "18%", size: "10rem", delay: "-0.4s", duration: "1.9s", hue: "24deg" },
@@ -40,11 +120,25 @@ const neuralSparkItems = [
   { top: "82%", left: "22%", size: "9.5rem", delay: "-0.3s", duration: "1.8s", hue: "346deg" },
 ];
 
+// These values are the main tuning points for the Section 2 -> 3 handoff.
+const impactTransitionSettings = {
+  scrollDistance: "+=250%",
+  sceneStartScale: 1.14,
+  sceneStartY: 10,
+  revealScale: 1.18,
+  exitScale: 2.35,
+  exitTilt: 4,
+};
+
 export default function App() {
   const heroSectionRef = useRef(null);
   const canvasRef = useRef(null);
   const brainMountRef = useRef(null);
-  const aboutSectionRef = useRef(null);
+  const impactSectionRef = useRef(null);
+  const aboutFrameRef = useRef(null);
+  const impactWordSlotRef = useRef(null);
+  const impactMaskTextRef = useRef(null);
+  const impactSceneRef = useRef(null);
 
   useEffect(() => {
     const heroSection = heroSectionRef.current;
@@ -756,53 +850,60 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const section = aboutSectionRef.current;
+  useLayoutEffect(() => {
+    const section = impactSectionRef.current;
+    const aboutFrame = aboutFrameRef.current;
+    const wordSlot = impactWordSlotRef.current;
+    const maskText = impactMaskTextRef.current;
+    const scene = impactSceneRef.current;
 
-    if (!(section instanceof HTMLElement)) {
-      return undefined;
-    }
-
-    const frame = section.querySelector(".about-frame");
-    const characterNodes = [...section.querySelectorAll("[data-char-index]")];
-
-    if (!(frame instanceof HTMLElement) || !characterNodes.length) {
+    if (
+      !(section instanceof HTMLElement) ||
+      !(aboutFrame instanceof HTMLElement) ||
+      !(wordSlot instanceof HTMLElement) ||
+      !(maskText instanceof SVGTextElement) ||
+      !(scene instanceof HTMLElement)
+    ) {
       return undefined;
     }
 
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
+    const sceneContent = scene.querySelector(".impact-scene-content");
+    const sceneDecor = scene.querySelectorAll(".impact-scene-layer");
+    const focusItems = aboutFrame.querySelectorAll(".about-focus-fade");
+    const characterNodes = [
+      ...aboutFrame.querySelectorAll("[data-about-char-index]"),
+    ];
+    const wordFill = aboutFrame.querySelector(".impact-word-fill");
+    const wordOutline = aboutFrame.querySelector(".impact-word-outline");
 
-    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-    const revealStart = 0.10;
-    const revealEnd = 0.98;
-    let frameId = 0;
-    let scrollRange = 1;
-    let stickyOffset = 0;
+    if (
+      !(sceneContent instanceof HTMLElement) ||
+      !characterNodes.length ||
+      !(wordFill instanceof SVGTextElement) ||
+      !(wordOutline instanceof SVGTextElement)
+    ) {
+      return undefined;
+    }
+
+    const characterRevealStart = 0.04;
+    const characterRevealEnd = 0.54;
     let previousActiveCount = -1;
 
-    const paintCharacters = () => {
-      frameId = 0;
-      const sectionRect = section.getBoundingClientRect();
-
-      const rawProgress = reducedMotionQuery.matches
-        ? 1
-        : clamp((stickyOffset - sectionRect.top) / scrollRange, 0, 1);
-      const progress = reducedMotionQuery.matches
-        ? 1
-        : clamp(
-            (rawProgress - revealStart) / (revealEnd - revealStart),
-            0,
-            1,
-          );
-      const activeCount = clamp(
-        Math.floor(progress * characterNodes.length),
+    const paintCharacters = (timelineProgress) => {
+      const revealProgress = gsap.utils.clamp(
+        0,
+        1,
+        (timelineProgress - characterRevealStart) /
+          (characterRevealEnd - characterRevealStart),
+      );
+      const activeCount = gsap.utils.clamp(
         0,
         characterNodes.length,
+        Math.floor(revealProgress * characterNodes.length),
       );
-
-      section.style.setProperty("--about-progress", progress.toFixed(4));
 
       if (activeCount === previousActiveCount) {
         return;
@@ -825,49 +926,262 @@ export default function App() {
       previousActiveCount = activeCount;
     };
 
-    const requestPaint = () => {
-      if (!frameId) {
-        frameId = window.requestAnimationFrame(paintCharacters);
+    const syncMaskLayout = () => {
+      const frameBounds = aboutFrame.getBoundingClientRect();
+      const wordBounds = wordSlot.getBoundingClientRect();
+
+      if (
+        !frameBounds.width ||
+        !frameBounds.height ||
+        !wordBounds.width ||
+        !wordBounds.height
+      ) {
+        return;
       }
+
+      // The visible word slot uses a 100x20 SVG, so the mask mirrors the same ratios.
+      const centerX =
+        ((wordBounds.left - frameBounds.left + wordBounds.width / 2) /
+          frameBounds.width) *
+        100;
+      const centerY =
+        ((wordBounds.top - frameBounds.top + wordBounds.height * 0.525) /
+          frameBounds.height) *
+        100;
+      const fontSize =
+        ((wordBounds.height / frameBounds.height) * 100 * 14) / 20;
+      const textLength = ((wordBounds.width / frameBounds.width) * 100 * 94) / 100;
+
+      maskText.setAttribute("x", centerX.toFixed(4));
+      maskText.setAttribute("y", centerY.toFixed(4));
+      maskText.setAttribute("font-size", fontSize.toFixed(4));
+      maskText.setAttribute("textLength", textLength.toFixed(4));
+      maskText.setAttribute("lengthAdjust", "spacingAndGlyphs");
+
+      gsap.set(maskText, {
+        svgOrigin: `${centerX} ${centerY}`,
+      });
+      gsap.set(aboutFrame, {
+        transformOrigin: `${centerX}% ${centerY}%`,
+      });
     };
 
-    const updateBounds = () => {
-      stickyOffset = Number.parseFloat(window.getComputedStyle(frame).top) || 0;
-      scrollRange = Math.max(
-        section.offsetHeight - frame.offsetHeight - stickyOffset,
-        1,
-      );
-      requestPaint();
-    };
+    const teardown = [];
 
-    const handleMotionChange = () => {
-      updateBounds();
-    };
+    syncMaskLayout();
 
-    window.addEventListener("resize", updateBounds);
-    window.addEventListener("scroll", requestPaint, { passive: true });
+    if (reducedMotionQuery.matches) {
+      gsap.set(scene, {
+        opacity: 1,
+        scale: 1,
+        yPercent: 0,
+      });
+      gsap.set(sceneContent, {
+        opacity: 1,
+        yPercent: 0,
+      });
+      gsap.set(sceneDecor, {
+        opacity: 1,
+        yPercent: 0,
+      });
+      gsap.set(maskText, {
+        scale: 1.08,
+      });
+      gsap.set(wordSlot, {
+        scale: 1.08,
+      });
+      gsap.set(wordFill, {
+        opacity: 0,
+      });
+      gsap.set(wordOutline, {
+        opacity: 1,
+      });
+      gsap.set(focusItems, {
+        opacity: 1,
+      });
+      paintCharacters(1);
 
-    if (typeof reducedMotionQuery.addEventListener === "function") {
-      reducedMotionQuery.addEventListener("change", handleMotionChange);
-    } else if (typeof reducedMotionQuery.addListener === "function") {
-      reducedMotionQuery.addListener(handleMotionChange);
+      return undefined;
     }
 
-    updateBounds();
+    const ctx = gsap.context(() => {
+      // Section 3 is already mounted underneath; the timeline only opens the
+      // word-shaped window and then removes the Section 2 frame from that origin.
+      gsap.set(scene, {
+        opacity: 0.72,
+        scale: impactTransitionSettings.sceneStartScale,
+        yPercent: impactTransitionSettings.sceneStartY,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set(sceneContent, {
+        opacity: 0.6,
+        yPercent: 10,
+        force3D: true,
+      });
+      gsap.set(sceneDecor, {
+        opacity: 0.55,
+        yPercent: 8,
+        force3D: true,
+      });
+      gsap.set(wordSlot, {
+        scale: 1,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set(maskText, {
+        scale: 1,
+      });
+      gsap.set(aboutFrame, {
+        scale: 1,
+        opacity: 1,
+        z: 0,
+        rotationX: 0,
+        force3D: true,
+        transformPerspective: 1600,
+      });
+      gsap.set(wordFill, {
+        opacity: 0,
+      });
+      gsap.set(wordOutline, {
+        opacity: 0.36,
+      });
+
+      const timeline = gsap.timeline({
+        defaults: {
+          ease: "none",
+        },
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: impactTransitionSettings.scrollDistance,
+          scrub: 1.1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onRefresh: (self) => paintCharacters(self.progress),
+          onUpdate: (self) => paintCharacters(self.progress),
+        },
+      });
+
+      paintCharacters(0);
+
+      timeline
+        .to(
+          focusItems,
+          {
+            opacity: 0.38,
+            y: -24,
+            stagger: 0.03,
+            duration: 0.18,
+          },
+          0.02,
+        )
+        .to(
+          scene,
+          {
+            opacity: 1,
+            scale: 1,
+            yPercent: 0,
+            duration: 0.48,
+          },
+          0.12,
+        )
+        .to(
+          sceneDecor,
+          {
+            opacity: 1,
+            yPercent: 0,
+            stagger: 0.04,
+            duration: 0.38,
+          },
+          0.18,
+        )
+        .to(
+          sceneContent,
+          {
+            opacity: 1,
+            yPercent: 0,
+            duration: 0.42,
+          },
+          0.2,
+        )
+        .to(
+          [maskText, wordSlot],
+          {
+            scale: impactTransitionSettings.revealScale,
+            duration: 0.34,
+          },
+          0.22,
+        )
+        .to(
+          wordOutline,
+          {
+            opacity: 1,
+            duration: 0.24,
+          },
+          0.48,
+        )
+        .to(
+          aboutFrame,
+          {
+            scale: impactTransitionSettings.exitScale,
+            z: 260,
+            rotationX: impactTransitionSettings.exitTilt,
+            opacity: 0,
+            duration: 0.32,
+            ease: "power2.in",
+          },
+          0.66,
+        )
+        .to(
+          [maskText, wordSlot],
+          {
+            scale: 1.42,
+            duration: 0.32,
+            ease: "power2.in",
+          },
+          0.66,
+        )
+        .to(
+          {},
+          {
+            duration: 0.18,
+          },
+          0.92,
+        );
+    }, section);
+
+    const handleResize = () => {
+      syncMaskLayout();
+      ScrollTrigger.refresh();
+    };
+
+    window.addEventListener("resize", handleResize);
+    teardown.push(() => window.removeEventListener("resize", handleResize));
+
+    if (typeof ResizeObserver === "function") {
+      const resizeObserver = new ResizeObserver(syncMaskLayout);
+      resizeObserver.observe(aboutFrame);
+      resizeObserver.observe(wordSlot);
+      teardown.push(() => resizeObserver.disconnect());
+    }
+
+    if (document.fonts?.ready) {
+      const fontsReady = () => {
+        syncMaskLayout();
+        ScrollTrigger.refresh();
+      };
+
+      document.fonts.ready.then(fontsReady).catch(() => {});
+    }
+
+    ScrollTrigger.addEventListener("refreshInit", syncMaskLayout);
+    teardown.push(() => ScrollTrigger.removeEventListener("refreshInit", syncMaskLayout));
 
     return () => {
-      window.removeEventListener("resize", updateBounds);
-      window.removeEventListener("scroll", requestPaint);
-
-      if (typeof reducedMotionQuery.removeEventListener === "function") {
-        reducedMotionQuery.removeEventListener("change", handleMotionChange);
-      } else if (typeof reducedMotionQuery.removeListener === "function") {
-        reducedMotionQuery.removeListener(handleMotionChange);
-      }
-
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
-      }
+      teardown.forEach((dispose) => dispose());
+      ctx.revert();
     };
   }, []);
 
@@ -879,6 +1193,7 @@ export default function App() {
         </a>
         <nav className="nav">
           <a href="#about">About</a>
+          <a href="#selected-work">Work</a>
         </nav>
       </header>
 
@@ -936,9 +1251,9 @@ export default function App() {
                 and sometimes they accidentally are.
               </h1>
               <p className="hero-text">
-                As the scene reaches its end, a 3D brain model lifts out from
-                the center of the playback and drops into the next section
-                while the page continues scrolling.
+                The hero scene hands off into a masked typographic transition,
+                where the next section already exists underneath the frame and
+                takes over through a single word.
               </p>
 
               <div className="hero-actions">
@@ -963,28 +1278,211 @@ export default function App() {
           </div>
         </section>
 
-        <section className="about-scroll" id="about" ref={aboutSectionRef}>
-          <div className="about-frame">
-            <div className="about-copy">
-              {aboutCharacterLines.map((line, lineIndex) => (
-                <p
-                  aria-label={aboutLines[lineIndex]}
-                  className="about-line"
-                  key={aboutLines[lineIndex]}
-                >
-                  {line.map(({ character, index }) => (
-                    <span
-                      aria-hidden="true"
-                      className="about-char"
-                      data-char-index={index}
-                      key={`${index}-${character}`}
-                    >
-                      {character}
-                    </span>
+        <section className="impact-scroll" id="about" ref={impactSectionRef}>
+          <div className="impact-stage">
+            <section
+              className="impact-scene"
+              id="selected-work"
+              aria-labelledby="selected-work-title"
+              ref={impactSceneRef}
+            >
+              <div className="impact-scene-grid impact-scene-layer" aria-hidden="true" />
+              <div className="impact-scene-orb impact-scene-layer" aria-hidden="true" />
+              <div className="impact-scene-beam impact-scene-layer" aria-hidden="true" />
+
+              <div className="impact-scene-content">
+                <div className="impact-scene-header">
+                  <p className="eyebrow">Section 03 / Selected Work</p>
+                  <h2 id="selected-work-title">
+                    Interfaces that change the room, not just the page.
+                  </h2>
+                  <p>
+                    Brand systems, motion-rich launches, and immersive product
+                    surfaces built to feel inevitable once the transition lands.
+                  </p>
+                </div>
+
+                <div className="impact-project-grid">
+                  {workCards.map((card) => (
+                    <article className="impact-project-card" key={card.title}>
+                      <span className="impact-project-index">{card.index}</span>
+                      <h3>{card.title}</h3>
+                      <p>{card.copy}</p>
+                      <span className="impact-project-meta">{card.meta}</span>
+                    </article>
                   ))}
-                </p>
-              ))}
-            </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              aria-labelledby="about-title"
+              className="about-foreground"
+            >
+              <div className="about-foreground-frame" ref={aboutFrameRef}>
+                <div className="about-surface-mask" aria-hidden="true">
+                  <svg
+                    className="impact-mask-svg"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 100 100"
+                  >
+                    <defs>
+                      {/* The foreground panel is real geometry; the mask cuts IMPACT
+                          out of it so the background scene is visible through the word. */}
+                      <linearGradient id="about-surface-gradient" x1="10%" x2="90%" y1="0%" y2="100%">
+                        <stop offset="0%" stopColor="#faf4ee" stopOpacity="0.98" />
+                        <stop offset="100%" stopColor="#dcc8b6" stopOpacity="0.96" />
+                      </linearGradient>
+                      <radialGradient id="about-sheen" cx="50%" cy="0%" r="70%">
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.42" />
+                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                      </radialGradient>
+                      <mask
+                        height="100"
+                        id="impact-window-mask"
+                        maskContentUnits="userSpaceOnUse"
+                        maskUnits="userSpaceOnUse"
+                        width="100"
+                        x="0"
+                        y="0"
+                      >
+                        <rect fill="white" height="100" width="100" x="0" y="0" />
+                        <text
+                          className="impact-mask-text"
+                          dominantBaseline="middle"
+                          fill="black"
+                          ref={impactMaskTextRef}
+                          textAnchor="middle"
+                          x="50"
+                          y="50"
+                        >
+                          IMPACT
+                        </text>
+                      </mask>
+                    </defs>
+
+                    <rect
+                      className="about-surface-fill"
+                      fill="url(#about-surface-gradient)"
+                      height="100"
+                      mask="url(#impact-window-mask)"
+                      rx="0"
+                      ry="0"
+                      width="100"
+                      x="0"
+                      y="0"
+                    />
+                    <rect
+                      className="about-surface-sheen"
+                      fill="url(#about-sheen)"
+                      height="100"
+                      mask="url(#impact-window-mask)"
+                      rx="0"
+                      ry="0"
+                      width="100"
+                      x="0"
+                      y="0"
+                    />
+                    <rect
+                      className="about-surface-border"
+                      fill="none"
+                      height="100"
+                      mask="url(#impact-window-mask)"
+                      rx="0"
+                      ry="0"
+                      width="100"
+                      x="0"
+                      y="0"
+                    />
+                  </svg>
+                </div>
+
+                <div className="about-frame-content">
+                  <div className="about-frame-head about-focus-fade">
+                    <p className="eyebrow">Section 02 / About</p>
+                    <h2 className="sr-only" id="about-title">
+                      About
+                    </h2>
+                  </div>
+
+                  <div className="about-paragraph">
+                    {aboutParagraphLines.map((line) => (
+                      <p
+                        aria-label={line.ariaLabel}
+                        className="about-line"
+                        key={line.ariaLabel}
+                      >
+                        {line.segments.map((segment) => {
+                          if (segment.type === "impact") {
+                            return (
+                              <span className="about-impact-shell" key={segment.key}>
+                                <span
+                                  className="impact-word-slot"
+                                  ref={impactWordSlotRef}
+                                  aria-hidden="true"
+                                >
+                                  <svg
+                                    className="impact-word-svg"
+                                    preserveAspectRatio="none"
+                                    viewBox="0 0 100 20"
+                                  >
+                                    <text
+                                      className="impact-word-fill"
+                                      dominantBaseline="middle"
+                                      fontSize="14"
+                                      lengthAdjust="spacingAndGlyphs"
+                                      textAnchor="middle"
+                                      textLength="94"
+                                      x="50"
+                                      y="10.5"
+                                    >
+                                      IMPACT
+                                    </text>
+                                    <text
+                                      className="impact-word-outline"
+                                      dominantBaseline="middle"
+                                      fontSize="14"
+                                      lengthAdjust="spacingAndGlyphs"
+                                      textAnchor="middle"
+                                      textLength="94"
+                                      x="50"
+                                      y="10.5"
+                                    >
+                                      IMPACT
+                                    </text>
+                                  </svg>
+                                </span>
+                              </span>
+                            );
+                          }
+
+                          return (
+                            <span className="about-line-segment" key={segment.key}>
+                              {segment.characters.map(({ character, index }) => (
+                                <span
+                                  aria-hidden="true"
+                                  className="about-char"
+                                  data-about-char-index={index}
+                                  key={`${segment.key}-${index}-${character}`}
+                                >
+                                  {character}
+                                </span>
+                              ))}
+                            </span>
+                          );
+                        })}
+                      </p>
+                    ))}
+                  </div>
+
+                  <div className="about-frame-bottom about-focus-fade">
+                    <span className="about-frame-note">
+                      Scroll to let the word open the next scene.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </main>
