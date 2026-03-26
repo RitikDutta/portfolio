@@ -1032,6 +1032,31 @@ a {
     aspect-ratio: auto;
   }
 
+  .neural-burst-cloud {
+    inset: -4%;
+    filter: blur(calc(18px + (var(--neural-burst) * 28px)));
+  }
+
+  .neural-burst-cloud-a {
+    transform: scale(calc(0.68 + (var(--brain-immersion) * 0.18)));
+  }
+
+  .neural-burst-cloud-b {
+    transform: scale(calc(0.6 + (var(--brain-immersion) * 0.24))) rotate(calc(var(--neural-burst) * 36deg));
+  }
+
+  .neural-burst-ring-a {
+    width: 30vw;
+  }
+
+  .neural-burst-ring-b {
+    width: 50vw;
+  }
+
+  .neural-spark {
+    width: calc(var(--spark-size) * 0.7);
+  }
+
   .hero-scroll {
     height: 360vh;
   }
