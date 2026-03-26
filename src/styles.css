@@ -32,7 +32,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
@@ -45,7 +45,8 @@ body {
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
 }
 
-main#home {
+.page-shell {
+  width: 100%;
   --scroll-progress: 0;
   --hero-zoom: 0;
   --brain-release: 0;
@@ -54,6 +55,8 @@ main#home {
   --brain-fullscreen: 0;
   --brain-spin: 0;
   --brain-immersion: 0;
+  --brain-afterglow: 0;
+  --brain-afterglow-drift: 0;
   --neural-burst: 0;
   --screen-drop: 0;
 }
@@ -73,8 +76,12 @@ a {
     opacity 180ms ease;
 }
 
-.page-shell {
+.smooth-wrapper {
   width: 100%;
+}
+
+.smooth-content {
+  min-height: 100%;
 }
 
 .topbar {
@@ -117,8 +124,7 @@ a {
 }
 
 .hero-pin {
-  position: sticky;
-  top: 0;
+  position: relative;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -198,7 +204,7 @@ a {
   width: 100vw;
   aspect-ratio: 1;
   pointer-events: none;
-  opacity: calc(var(--brain-release) * (1 - var(--brain-dock)));
+  opacity: max(calc(var(--brain-release) * (1 - var(--brain-dock))), var(--brain-afterglow));
   transform-origin: center center;
   transform:
     translate(
@@ -206,14 +212,16 @@ a {
       calc(
         -50% +
         (var(--brain-travel) * 52vh) +
-        (var(--screen-drop) * 12vh)
+        (var(--screen-drop) * 12vh) +
+        (var(--brain-afterglow-drift) * 14vh)
       )
     )
     scale(
       calc(
         0.14 +
         (var(--brain-fullscreen) * 1.02) +
-        (var(--brain-immersion) * 0.32)
+        (var(--brain-immersion) * 0.32) -
+        (var(--brain-afterglow-drift) * 0.12)
       )
     );
   filter: drop-shadow(0 24px 42px rgba(72, 14, 32, 0.3));
@@ -247,6 +255,9 @@ a {
 .brain-stage {
   position: absolute;
   inset: 0;
+  transform: rotateX(calc(var(--brain-afterglow-drift) * 52deg));
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .brain-stage::before {
@@ -276,7 +287,10 @@ a {
   z-index: 45;
   overflow: hidden;
   pointer-events: none;
-  opacity: calc(var(--neural-burst) * (1 - var(--brain-dock)));
+  opacity: max(
+    calc(var(--neural-burst) * (1 - var(--brain-dock))),
+    calc(var(--brain-afterglow) * 0.9)
+  );
   will-change: opacity;
 }
 
@@ -515,13 +529,11 @@ a {
   height: 340vh;
   margin-top: -6rem;
   opacity: calc(0.44 + (var(--brain-dock) * 0.56));
-  transform: translateY(calc((1 - var(--brain-dock)) * 2.2rem));
   overflow: clip;
 }
 
 .impact-stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100vh;
   overflow: hidden;
   isolation: isolate;
