@@ -1026,6 +1026,12 @@ a {
     gap: 0.8rem 1rem;
   }
 
+  .brain-transfer {
+    width: min(108vw, 48rem);
+    height: min(118vh, 130vw);
+    aspect-ratio: auto;
+  }
+
   .hero-scroll {
     height: 360vh;
   }
