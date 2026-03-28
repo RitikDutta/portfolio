@@ -525,12 +525,8 @@ a {
 .impact-scene {
   position: absolute;
   inset: 0;
-  display: grid;
-  align-items: end;
-  background:
-    radial-gradient(circle at 50% 40%, rgba(229, 108, 72, 0.18), transparent 22%),
-    radial-gradient(circle at 50% 18%, rgba(255, 227, 182, 0.1), transparent 16%),
-    linear-gradient(180deg, #05080f 0%, #09121f 58%, #05080f 100%);
+  overflow: hidden;
+  background: #05080f;
 }
 
 .impact-scene::before,
@@ -538,167 +534,40 @@ a {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
 .impact-scene::before {
   background:
-    linear-gradient(180deg, rgba(4, 8, 15, 0.08) 0%, rgba(4, 8, 15, 0.38) 40%, rgba(4, 8, 15, 0.78) 100%),
-    radial-gradient(circle at center, transparent 0%, rgba(4, 8, 15, 0.24) 68%, rgba(4, 8, 15, 0.74) 100%);
+    linear-gradient(180deg, rgba(4, 8, 15, 0.08) 0%, rgba(4, 8, 15, 0.28) 42%, rgba(4, 8, 15, 0.72) 100%),
+    radial-gradient(circle at center, transparent 28%, rgba(4, 8, 15, 0.18) 70%, rgba(4, 8, 15, 0.58) 100%);
 }
 
 .impact-scene::after {
   background:
-    linear-gradient(180deg, rgba(4, 8, 15, 0.52) 0%, transparent 24%),
-    linear-gradient(0deg, rgba(4, 8, 15, 0.72) 0%, transparent 26%);
+    linear-gradient(180deg, rgba(4, 8, 15, 0.48) 0%, transparent 22%),
+    linear-gradient(0deg, rgba(4, 8, 15, 0.7) 0%, transparent 24%);
 }
 
-.impact-scene-layer {
-  position: absolute;
-  pointer-events: none;
-}
-
-.impact-scene-grid {
-  inset: 38% -8% -14%;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: clamp(2.8rem, 5vw, 4.8rem) clamp(2.8rem, 5vw, 4.8rem);
-  mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 12%, black 38%, transparent 92%);
-  opacity: 0.8;
-  transform: perspective(1100px) rotateX(76deg);
-  transform-origin: center top;
-}
-
-.impact-scene-orb {
-  top: 48%;
-  left: 50%;
-  width: min(46rem, 58vw);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(255, 236, 209, 0.78), rgba(235, 118, 82, 0.44) 28%, rgba(109, 23, 39, 0.22) 54%, transparent 72%),
-    radial-gradient(circle at 32% 34%, rgba(255, 255, 255, 0.56), transparent 20%);
-  filter: blur(10px);
-  transform: translate(-50%, -50%);
-}
-
-.impact-scene-beam {
-  top: 6%;
-  left: 50%;
-  width: min(48rem, 82vw);
-  height: min(42rem, 66vh);
-  background:
-    linear-gradient(180deg, rgba(255, 214, 170, 0.06) 0%, rgba(255, 214, 170, 0) 20%),
-    radial-gradient(circle at 50% 20%, rgba(255, 229, 183, 0.22), transparent 32%),
-    radial-gradient(circle at 50% 50%, rgba(231, 110, 75, 0.18), transparent 46%);
-  filter: blur(36px);
-  transform: translateX(-50%);
-}
-
-.impact-scene-content {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: clamp(1.4rem, 3.8vh, 3rem);
-  width: min(1220px, calc(100% - 2rem));
-  margin: auto auto 0;
-  padding: clamp(6.5rem, 10vh, 8rem) 0 clamp(1.2rem, 4vh, 2.4rem);
-}
-
-.impact-scene-header {
-  display: grid;
-  gap: 1rem;
-  max-width: min(44rem, 100%);
-}
-
-.impact-scene-header .eyebrow {
-  color: rgba(255, 217, 172, 0.86);
-}
-
-.impact-scene-header h2 {
-  margin: 0;
-  max-width: 11ch;
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: clamp(3.4rem, 7vw, 6.3rem);
-  font-weight: 400;
-  line-height: 0.92;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
-}
-
-.impact-scene-header p,
-.impact-project-card p {
-  margin: 0;
-  color: rgba(248, 241, 230, 0.76);
-  line-height: 1.75;
-}
-
-.impact-project-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.impact-project-card {
-  position: relative;
-  display: grid;
-  gap: 0.9rem;
-  min-height: 14rem;
-  padding: 1.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 1.45rem;
-  background:
-    linear-gradient(180deg, rgba(13, 21, 34, 0.7) 0%, rgba(8, 12, 22, 0.88) 100%);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(16px);
-}
-
-.impact-project-card::before {
-  content: "";
+.impact-scene-media {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  background:
-    radial-gradient(circle at top left, rgba(255, 234, 203, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 34%);
+  z-index: 0;
   pointer-events: none;
 }
 
-.impact-project-index,
-.impact-project-meta,
+.impact-scene-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
 .about-frame-note {
   letter-spacing: 0.16em;
   text-transform: uppercase;
-}
-
-.impact-project-index {
-  position: relative;
-  z-index: 1;
-  color: rgba(255, 218, 168, 0.84);
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.impact-project-card h3 {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  font-size: 1.4rem;
-  line-height: 1.08;
-}
-
-.impact-project-card p {
-  position: relative;
-  z-index: 1;
-}
-
-.impact-project-meta {
-  position: relative;
-  z-index: 1;
-  align-self: end;
-  color: rgba(255, 255, 255, 0.46);
-  font-size: 0.74rem;
 }
 
 .about-foreground {
@@ -994,14 +863,6 @@ a {
     height: 320vh;
   }
 
-  .impact-scene-content {
-    gap: 1.4rem;
-  }
-
-  .impact-project-grid {
-    grid-template-columns: 1fr;
-  }
-
   .about-foreground-frame {
     min-height: 100vh;
   }
@@ -1090,16 +951,6 @@ a {
     margin-top: -3rem;
   }
 
-  .impact-scene-content {
-    width: calc(100% - 1rem);
-    padding-top: 7.4rem;
-    padding-bottom: 1rem;
-  }
-
-  .impact-scene-header h2 {
-    font-size: clamp(2.8rem, 13vw, 4.4rem);
-  }
-
   .about-foreground {
     padding: 0;
   }
@@ -1113,20 +964,14 @@ a {
     padding: 1.15rem;
   }
 
-  .impact-scene-header p,
-  .impact-project-card p {
-    font-size: 0.96rem;
-    line-height: 1.7;
-  }
-
   .about-line {
     font-size: clamp(1.12rem, 5.9vw, 2.05rem);
     line-height: 1.14;
     letter-spacing: 0.035em;
   }
 
-  .impact-project-card {
-    min-height: auto;
+  .impact-scene-media img {
+    object-position: center top;
   }
 }
 
