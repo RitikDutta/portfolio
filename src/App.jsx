@@ -4,6 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
+import impactPortraitImage from "../portrait.png";
+import impactWideImage from "../wide.png";
 import brainModelUrl from "../brain_hologram.glb?url";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
@@ -83,30 +85,6 @@ for (const [lineIndex, line] of aboutLineSpecs.entries()) {
     segments: renderedSegments,
   });
 }
-
-const workCards = [
-  {
-    index: "01",
-    title: "Signal House",
-    meta: "Identity / Motion / Launch",
-    copy:
-      "A cinematic portfolio system where typography, pacing, and depth cues carry the narrative before the case study even begins.",
-  },
-  {
-    index: "02",
-    title: "Atlas Console",
-    meta: "Dashboard / 3D / Interaction",
-    copy:
-      "A data-heavy control surface rebuilt around hierarchy and momentum, turning dense views into deliberate, readable motion.",
-  },
-  {
-    index: "03",
-    title: "Afterlight",
-    meta: "Campaign / Immersive Web",
-    copy:
-      "An immersive launch experience that used layered scenes, restrained glow, and hard-edged transitions to hold attention.",
-  },
-];
 
 const neuralSparkItems = [
   { top: "18%", left: "18%", size: "10rem", delay: "-0.4s", duration: "1.9s", hue: "24deg" },
@@ -1012,8 +990,6 @@ export default function App() {
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
-    const sceneContent = scene.querySelector(".impact-scene-content");
-    const sceneDecor = scene.querySelectorAll(".impact-scene-layer");
     const focusItems = aboutFrame.querySelectorAll(".about-focus-fade");
     const characterNodes = [
       ...aboutFrame.querySelectorAll("[data-about-char-index]"),
@@ -1021,7 +997,6 @@ export default function App() {
     const wordMeasure = aboutFrame.querySelector(".impact-word-measure");
 
     if (
-      !(sceneContent instanceof HTMLElement) ||
       !characterNodes.length ||
       !(wordMeasure instanceof HTMLElement)
     ) {
@@ -1220,14 +1195,6 @@ export default function App() {
         scale: 1,
         yPercent: 0,
       });
-      gsap.set(sceneContent, {
-        opacity: 1,
-        yPercent: 0,
-      });
-      gsap.set(sceneDecor, {
-        opacity: 1,
-        yPercent: 0,
-      });
       gsap.set(maskText, {
         scale: 1,
       });
@@ -1259,16 +1226,6 @@ export default function App() {
         scale: impactTransitionSettings.sceneStartScale,
         yPercent: impactTransitionSettings.sceneStartY,
         transformOrigin: "center center",
-        force3D: true,
-      });
-      gsap.set(sceneContent, {
-        opacity: 0.6,
-        yPercent: 10,
-        force3D: true,
-      });
-      gsap.set(sceneDecor, {
-        opacity: 0.55,
-        yPercent: 8,
         force3D: true,
       });
       gsap.set(wordSlot, {
@@ -1375,25 +1332,6 @@ export default function App() {
             duration: 0.48,
           },
           0.12,
-        )
-        .to(
-          sceneDecor,
-          {
-            opacity: 1,
-            yPercent: 0,
-            stagger: 0.04,
-            duration: 0.38,
-          },
-          0.18,
-        )
-        .to(
-          sceneContent,
-          {
-            opacity: 1,
-            yPercent: 0,
-            duration: 0.42,
-          },
-          0.2,
         )
         .to(
           aboutFrame,
@@ -1578,40 +1516,17 @@ export default function App() {
 
           <section className="impact-scroll" id="about" ref={impactSectionRef}>
             <div className="impact-stage">
-              <section
+              <div
                 className="impact-scene"
                 id="selected-work"
-                aria-labelledby="selected-work-title"
+                aria-hidden="true"
                 ref={impactSceneRef}
               >
-                <div className="impact-scene-grid impact-scene-layer" aria-hidden="true" />
-                <div className="impact-scene-orb impact-scene-layer" aria-hidden="true" />
-                <div className="impact-scene-beam impact-scene-layer" aria-hidden="true" />
-
-                <div className="impact-scene-content">
-                  <div className="impact-scene-header">
-                    <p className="eyebrow">Section 03 / Selected Work</p>
-                    <h2 id="selected-work-title">
-                      Interfaces that change the room, not just the page.
-                    </h2>
-                    <p>
-                      Brand systems, motion-rich launches, and immersive product
-                      surfaces built to feel inevitable once the transition lands.
-                    </p>
-                  </div>
-
-                  <div className="impact-project-grid">
-                    {workCards.map((card) => (
-                      <article className="impact-project-card" key={card.title}>
-                        <span className="impact-project-index">{card.index}</span>
-                        <h3>{card.title}</h3>
-                        <p>{card.copy}</p>
-                        <span className="impact-project-meta">{card.meta}</span>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </section>
+                <picture className="impact-scene-media">
+                  <source media="(max-width: 900px)" srcSet={impactPortraitImage} />
+                  <img alt="" src={impactWideImage} />
+                </picture>
+              </div>
 
               <section
                 aria-labelledby="about-title"
