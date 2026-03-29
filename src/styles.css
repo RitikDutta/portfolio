@@ -85,39 +85,6 @@ a {
   min-height: 100%;
 }
 
-.topbar {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: min(1180px, calc(100% - 2rem));
-  padding: 0.85rem 1.2rem;
-  transform: translateX(-50%);
-  backdrop-filter: blur(18px);
-  background: rgba(6, 13, 21, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
-}
-
-.brand {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.nav {
-  display: flex;
-  gap: 1.2rem;
-  color: rgba(248, 241, 230, 0.78);
-  font-size: 0.95rem;
-}
-
 .hero-scroll {
   --scroll-progress: 0;
   position: relative;
@@ -376,7 +343,7 @@ a {
   justify-items: center;
   gap: 1.25rem;
   width: min(920px, calc(100% - 2rem));
-  padding: 6rem 0 3rem;
+  padding: 5.25rem 0 3rem;
   text-align: center;
   opacity: calc((1 - (var(--scroll-progress) * 0.3)) * (1 - (var(--brain-fullscreen) * 0.96)));
   transform: translateY(calc((var(--scroll-progress) * 22px) + (var(--screen-drop) * 90px)));
@@ -388,10 +355,6 @@ a {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.hero-overlay .eyebrow {
-  color: #ffd7a5;
 }
 
 .contact-panel .eyebrow {
@@ -997,10 +960,6 @@ a {
 }
 
 @media (max-width: 960px) {
-  .topbar {
-    border-radius: 1.4rem;
-  }
-
   .hero-scroll {
     height: 430vh;
   }
@@ -1028,19 +987,6 @@ a {
 }
 
 @media (max-width: 640px) {
-  .topbar {
-    top: 0.5rem;
-    width: calc(100% - 1rem);
-    padding: 0.85rem 1rem;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .nav {
-    flex-wrap: wrap;
-    gap: 0.8rem 1rem;
-  }
-
   .brain-transfer {
     width: min(108vw, 48rem);
     height: min(118vh, 130vw);
@@ -1078,7 +1024,7 @@ a {
 
   .hero-overlay {
     width: calc(100% - 1rem);
-    padding-top: 6.5rem;
+    padding-top: 5.75rem;
   }
 
   .hero-overlay h1 {
