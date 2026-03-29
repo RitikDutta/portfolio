@@ -1470,16 +1470,6 @@ export default function App() {
 
   return (
     <div className="page-shell" ref={pageShellRef}>
-      <header className="topbar">
-        <a className="brand" href="#home">
-          FrameCraft
-        </a>
-        <nav className="nav">
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-        </nav>
-      </header>
-
       <div className="brain-transfer" aria-hidden="true">
         <div className="brain-stage" ref={brainMountRef} />
       </div>
@@ -1527,7 +1517,6 @@ export default function App() {
               />
 
               <div className="hero-overlay">
-                <p className="eyebrow">Scroll Trigger Hero</p>
                 <h1>
                   I build things that pretend to be intelligent&hellip;
                   <br />
