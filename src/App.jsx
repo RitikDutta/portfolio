@@ -1576,8 +1576,8 @@ export default function App() {
                         {/* The foreground panel is real geometry; the mask cuts IMPACT
                             out of it so the background scene is visible through the word. */}
                         <linearGradient id="about-surface-gradient" x1="10%" x2="90%" y1="0%" y2="100%">
-                          <stop offset="0%" stopColor="#faf4ee" stopOpacity="0.98" />
-                          <stop offset="100%" stopColor="#dcc8b6" stopOpacity="0.96" />
+                          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.98" />
+                          <stop offset="100%" stopColor="#ffffff" stopOpacity="0.98" />
                         </linearGradient>
                         <linearGradient
                           id="about-surface-dark-gradient"
@@ -1586,8 +1586,8 @@ export default function App() {
                           y1="0%"
                           y2="100%"
                         >
-                          <stop offset="0%" stopColor="#0f1926" stopOpacity="0.96" />
-                          <stop offset="100%" stopColor="#03070d" stopOpacity="0.98" />
+                          <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.98" />
+                          <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.98" />
                         </linearGradient>
                         <radialGradient id="about-sheen" cx="50%" cy="0%" r="70%">
                           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.42" />
