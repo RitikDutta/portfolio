@@ -1150,38 +1150,35 @@ export default function App() {
     };
 
     const syncMaskLayout = () => {
-      const frameBounds = aboutFrame.getBoundingClientRect();
-      const wordBounds = wordSlot.getBoundingClientRect();
       const baseFrameWidth = aboutFrame.clientWidth;
       const baseFrameHeight = aboutFrame.clientHeight;
-      const wordWidthPx = wordMeasure.offsetWidth || wordSlot.offsetWidth || wordBounds.width;
+      const wordWidthPx = wordMeasure.offsetWidth || wordSlot.offsetWidth;
+      const wordHeightPx = wordSlot.offsetHeight || wordMeasure.offsetHeight;
+      const visibleWordOffsetTop =
+        aboutFrameContent.offsetTop +
+        wordSlot.offsetTop -
+        aboutFrameContent.scrollTop;
+      const visibleWordOffsetLeft =
+        aboutFrameContent.offsetLeft + wordSlot.offsetLeft;
 
       if (
-        !frameBounds.width ||
-        !frameBounds.height ||
         !baseFrameWidth ||
         !baseFrameHeight ||
-        !wordBounds.width ||
-        !wordBounds.height
+        !wordWidthPx ||
+        !wordHeightPx
       ) {
         return;
       }
 
-      // Mirror the actual rendered word so the cutout follows the paragraph typography.
+      // Use layout-space measurements so the cutout stays locked while the frame scales.
       const wordStyles = window.getComputedStyle(wordMeasure);
       const fontSizePx = Number.parseFloat(wordStyles.fontSize || "0");
-      const verticalOffset =
-        ((fontSizePx * 0.1) / baseFrameHeight) * 100;
+      const verticalOffsetPx = fontSizePx * 0.1;
       const centerX =
-        ((wordBounds.left - frameBounds.left + wordBounds.width / 2) /
-          frameBounds.width) *
-        100;
+        ((visibleWordOffsetLeft + wordWidthPx / 2) / baseFrameWidth) * 100;
       const centerY =
-        ((wordBounds.top -
-          frameBounds.top +
-          wordBounds.height * 0.525 +
-          (verticalOffset / 100) * frameBounds.height) /
-          frameBounds.height) *
+        ((visibleWordOffsetTop + wordHeightPx * 0.525 + verticalOffsetPx) /
+          baseFrameHeight) *
         100;
       const fontSize = (fontSizePx / baseFrameHeight) * 100;
       const textLength = (wordWidthPx / baseFrameWidth) * 100;
