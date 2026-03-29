@@ -16,6 +16,39 @@ const spotlightItems = [
   "Scroll-controlled frames instead of autoplay",
 ];
 
+const projectItems = [
+  {
+    number: "01",
+    category: "Immersive Frontend",
+    title: "Neural Handoff",
+    summary:
+      "A cinematic portfolio experiment where a scroll-driven hero transfers directly into editorial content through a typographic mask.",
+    stack: ["React", "GSAP", "Three.js"],
+    outcome:
+      "Built to prove that motion-heavy storytelling can still stay readable, responsive, and intentional.",
+  },
+  {
+    number: "02",
+    category: "Product Interface",
+    title: "Signal Room",
+    summary:
+      "A real-time monitoring surface for live operations, combining status streams, alerts, and decision history into one focused control view.",
+    stack: ["React", "Node", "WebSockets"],
+    outcome:
+      "Designed around fast triage, clearer escalation paths, and less context switching during high-pressure moments.",
+  },
+  {
+    number: "03",
+    category: "AI Workflow",
+    title: "Prompt Router",
+    summary:
+      "An internal tool that routes prompts, tracks experiments, and compares outputs so teams can ship LLM features with less guesswork.",
+    stack: ["TypeScript", "OpenAI", "Postgres"],
+    outcome:
+      "Turned scattered prompt testing into a single system with reusable patterns, audit trails, and faster iteration.",
+  },
+];
+
 const aboutLineSpecs = [
   {
     ariaLabel:
@@ -101,7 +134,8 @@ const neuralSparkItems = [
 
 // These values are the main tuning points for the Section 2 -> 3 handoff.
 const impactTransitionSettings = {
-  scrollDistance: "+=250%",
+  scrollDistanceViewportFactor: 1.45,
+  maxExtraContentScrollFactor: 0.35,
   sceneStartScale: 1.14,
   sceneStartY: 10,
   revealScale: 1.18,
@@ -1005,9 +1039,9 @@ export default function App() {
 
     const characterRevealStart = 0.04;
     const characterRevealEnd = 0.62;
-    const sectionScrollStart = 0.7;
-    const sectionScrollDuration = 0.2;
-    const zoomStart = sectionScrollStart + sectionScrollDuration + 0.06;
+    const sectionScrollStart = 0.58;
+    const sectionScrollDuration = 0.14;
+    const zoomStart = sectionScrollStart + sectionScrollDuration + 0.02;
     const brainAfterglowFadeEnd = 0.12;
     const brainEntryRotationProgressMax = 0.32;
     let previousActiveCount = -1;
@@ -1101,6 +1135,19 @@ export default function App() {
 
     const getFrameScrollMax = () =>
       Math.max(aboutFrameContent.scrollHeight - aboutFrameContent.clientHeight, 0);
+
+    const getPinnedScrollDistance = () => {
+      const viewportHeight = window.innerHeight || 1;
+      const extraContentScroll = Math.min(
+        getFrameScrollMax(),
+        viewportHeight * impactTransitionSettings.maxExtraContentScrollFactor,
+      );
+
+      return Math.round(
+        viewportHeight * impactTransitionSettings.scrollDistanceViewportFactor +
+          extraContentScroll,
+      );
+    };
 
     const syncMaskLayout = () => {
       const frameBounds = aboutFrame.getBoundingClientRect();
@@ -1256,7 +1303,7 @@ export default function App() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: impactTransitionSettings.scrollDistance,
+          end: () => `+=${getPinnedScrollDistance()}`,
           scrub: 1.1,
           pin: true,
           anticipatePin: 1,
@@ -1372,9 +1419,9 @@ export default function App() {
         .to(
           {},
           {
-            duration: 0.14,
+            duration: 0.06,
           },
-          zoomStart + 0.24,
+          zoomStart + 0.18,
         );
     }, section);
 
@@ -1429,7 +1476,7 @@ export default function App() {
         </a>
         <nav className="nav">
           <a href="#about">About</a>
-          <a href="#selected-work">Work</a>
+          <a href="#projects">Projects</a>
         </nav>
       </header>
 
@@ -1711,6 +1758,51 @@ export default function App() {
                   </div>
                 </div>
               </section>
+            </div>
+          </section>
+
+          <section
+            aria-labelledby="projects-title"
+            className="projects-section"
+            id="projects"
+          >
+            <div className="projects-shell">
+              <div className="projects-head intro-panel">
+                <p className="eyebrow">Section 04 / Projects</p>
+                <h2 id="projects-title">
+                  Projects that turn visual experiments into usable products.
+                </h2>
+                <p className="projects-intro">
+                  A focused set of builds across motion design, live product
+                  interfaces, and AI tooling. Each one starts with a strong
+                  interaction idea and ends as something practical enough to
+                  ship.
+                </p>
+              </div>
+
+              <div className="projects-grid">
+                {projectItems.map((project) => (
+                  <article className="project-card feature-card" key={project.title}>
+                    <div className="project-card-top">
+                      <span className="project-number">{project.number}</span>
+                      <span className="project-category">{project.category}</span>
+                    </div>
+
+                    <div className="project-copy">
+                      <h3>{project.title}</h3>
+                      <p className="project-summary">{project.summary}</p>
+                    </div>
+
+                    <ul className="project-stack" aria-label={`${project.title} stack`}>
+                      {project.stack.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+
+                    <p className="project-outcome">{project.outcome}</p>
+                  </article>
+                ))}
+              </div>
             </div>
           </section>
         </main>

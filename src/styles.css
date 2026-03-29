@@ -506,7 +506,7 @@ a {
   position: relative;
   z-index: 3;
   width: 100%;
-  height: 340vh;
+  min-height: 100vh;
   margin-top: -6rem;
   opacity: calc(0.44 + (var(--brain-dock) * 0.56));
   overflow: clip;
@@ -793,6 +793,160 @@ a {
   white-space: nowrap;
 }
 
+.projects-section {
+  position: relative;
+  z-index: 2;
+  padding: clamp(5rem, 9vw, 8rem) 0 clamp(5.5rem, 10vw, 8.5rem);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(211, 111, 62, 0.2), transparent 24%),
+    radial-gradient(circle at 85% 0%, rgba(255, 191, 131, 0.08), transparent 26%),
+    linear-gradient(180deg, #060c14 0%, #09121d 100%);
+}
+
+.projects-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 8, 15, 0.12) 0%, rgba(4, 8, 15, 0.74) 100%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.018) 0 1px,
+      transparent 1px 26px
+    );
+  pointer-events: none;
+}
+
+.projects-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.projects-head {
+  display: grid;
+  gap: 1rem;
+  max-width: 50rem;
+}
+
+.projects-head .eyebrow {
+  color: #ffd7a5;
+}
+
+.projects-head h2 {
+  margin: 0;
+  color: #f8f1e6;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.projects-intro {
+  margin: 0;
+  max-width: 40rem;
+  color: rgba(248, 241, 230, 0.76);
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.project-card {
+  display: grid;
+  gap: 1.4rem;
+  min-height: 100%;
+  padding: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 239, 0.07) 0%, rgba(255, 248, 239, 0.03) 100%),
+    rgba(10, 18, 29, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 24px 60px rgba(1, 4, 10, 0.36);
+  backdrop-filter: blur(14px);
+}
+
+.project-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.project-number {
+  color: rgba(255, 215, 165, 0.92);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.project-category {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: rgba(248, 241, 230, 0.72);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-copy {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.project-copy h3 {
+  margin: 0;
+  color: #fff8ef;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.project-summary,
+.project-outcome {
+  margin: 0;
+  color: rgba(248, 241, 230, 0.76);
+  line-height: 1.72;
+}
+
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.project-stack li {
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 248, 239, 0.88);
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.project-outcome {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 @keyframes spark-flash {
   0%,
   100% {
@@ -859,8 +1013,8 @@ a {
     max-width: 11ch;
   }
 
-  .impact-scroll {
-    height: 320vh;
+  .projects-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .about-foreground-frame {
@@ -947,8 +1101,24 @@ a {
   }
 
   .impact-scroll {
-    height: 300vh;
     margin-top: -3rem;
+  }
+
+  .projects-shell {
+    width: calc(100% - 1rem);
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    padding: 1.15rem;
+  }
+
+  .project-card-top {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .about-foreground {
