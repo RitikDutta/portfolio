@@ -595,7 +595,7 @@ a {
 }
 
 .about-surface-fill {
-  fill: rgba(243, 229, 214, 0.98);
+  fill: #ffffff;
 }
 
 .about-surface-fill-dark {
@@ -670,7 +670,12 @@ a {
 }
 
 .about-frame-head .eyebrow {
-  color: rgba(36, 48, 62, 0.62);
+  color: rgb(
+    calc(36 + (211 * var(--about-surface-darkness)))
+    calc(48 + (195 * var(--about-surface-darkness)))
+    calc(62 + (175 * var(--about-surface-darkness)))
+    / calc(0.62 + (0.1 * var(--about-surface-darkness)))
+  );
 }
 
 .about-paragraph {
@@ -684,7 +689,7 @@ a {
 
 .about-line {
   margin: 0;
-  color: #111820;
+  color: #DB0000;
   font-family: "Bungee Inline", "Space Grotesk", sans-serif;
   font-size: clamp(1.6rem, 3.75vw, 4rem);
   font-weight: 400;
@@ -703,7 +708,7 @@ a {
 }
 
 .about-char {
-  color: #111820;
+  color: #DB0000;
 }
 
 .about-char-active {
@@ -750,7 +755,12 @@ a {
 }
 
 .about-frame-note {
-  color: rgba(16, 32, 51, 0.48);
+  color: rgb(
+    calc(16 + (231 * var(--about-surface-darkness)))
+    calc(32 + (211 * var(--about-surface-darkness)))
+    calc(51 + (186 * var(--about-surface-darkness)))
+    / calc(0.48 + (0.08 * var(--about-surface-darkness)))
+  );
   font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
