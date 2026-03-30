@@ -49,7 +49,246 @@ const projectItems = [
   },
 ];
 
-const processWordItems = ["love what you do", "create real impact", "never stop learning", "work smarter not harder"];
+const processWordItems = [
+  { number: "01", text: "love what you do" },
+  { number: "02", text: "create real impact" },
+  { number: "03", text: "never stop learning" },
+  { number: "04", text: "work smarter not harder" },
+];
+
+const processWordMotionSpecs = [
+  {
+    enter: {
+      x: -168,
+      y: -96,
+      rotation: -12,
+      rotationX: 10,
+      skewX: 18,
+      scale: 0.72,
+      opacity: 0,
+      blur: 26,
+      letterSpacing: "0.18em",
+      trailX: -92,
+      trailY: 18,
+      trailScale: 1.1,
+      trailOpacity: 0.3,
+      trailBlur: 20,
+      trailRotation: -8,
+      numberY: -16,
+    },
+    settle: {
+      x: -34,
+      y: -30,
+      rotation: -7,
+      scale: 0.74,
+      opacity: 0.18,
+      blur: 4.8,
+      letterSpacing: "0.04em",
+      trailX: -20,
+      trailY: 6,
+      trailScale: 1.04,
+      trailOpacity: 0.08,
+      trailBlur: 12,
+      trailRotation: -4,
+      numberOpacity: 0.18,
+    },
+    compose: {
+      x: -26,
+      y: -24,
+      rotation: -4,
+      scale: 0.8,
+      opacity: 0.32,
+      blur: 1.6,
+      letterSpacing: "0.015em",
+      trailX: -8,
+      trailY: 2,
+      trailScale: 1,
+      trailOpacity: 0.04,
+      trailBlur: 8,
+      trailRotation: -2,
+      numberOpacity: 0.24,
+    },
+    overlay: {
+      glow: 0.42,
+      grid: 0.16,
+      chaos: 0.22,
+      resolve: 0.08,
+    },
+  },
+  {
+    enter: {
+      x: 210,
+      y: -54,
+      rotation: 10,
+      rotationY: -10,
+      skewX: -14,
+      scale: 0.78,
+      opacity: 0,
+      blur: 28,
+      letterSpacing: "0.12em",
+      trailX: 110,
+      trailY: -14,
+      trailScale: 0.96,
+      trailOpacity: 0.34,
+      trailBlur: 18,
+      trailRotation: 8,
+      numberY: -10,
+    },
+    settle: {
+      x: 42,
+      y: -18,
+      rotation: 6,
+      scale: 0.78,
+      opacity: 0.22,
+      blur: 4,
+      letterSpacing: "0.02em",
+      trailX: 18,
+      trailY: -6,
+      trailScale: 0.98,
+      trailOpacity: 0.1,
+      trailBlur: 10,
+      trailRotation: 4,
+      numberOpacity: 0.22,
+    },
+    compose: {
+      x: 34,
+      y: -18,
+      rotation: 3,
+      scale: 0.82,
+      opacity: 0.38,
+      blur: 1.2,
+      letterSpacing: "0.005em",
+      trailX: 10,
+      trailY: -2,
+      trailScale: 0.98,
+      trailOpacity: 0.05,
+      trailBlur: 7,
+      trailRotation: 2,
+      numberOpacity: 0.3,
+    },
+    overlay: {
+      glow: 0.56,
+      grid: 0.24,
+      chaos: 0.34,
+      resolve: 0.14,
+    },
+  },
+  {
+    enter: {
+      x: -58,
+      y: 146,
+      rotation: -4,
+      rotationX: 20,
+      skewX: 8,
+      scale: 0.66,
+      opacity: 0,
+      blur: 30,
+      letterSpacing: "0.16em",
+      trailX: -30,
+      trailY: 58,
+      trailScale: 1.18,
+      trailOpacity: 0.36,
+      trailBlur: 22,
+      trailRotation: -2,
+      numberY: 12,
+    },
+    settle: {
+      x: -12,
+      y: 34,
+      rotation: -2,
+      scale: 0.84,
+      opacity: 0.28,
+      blur: 3,
+      letterSpacing: "0.03em",
+      trailX: -8,
+      trailY: 16,
+      trailScale: 1.06,
+      trailOpacity: 0.12,
+      trailBlur: 12,
+      trailRotation: -1,
+      numberOpacity: 0.28,
+    },
+    compose: {
+      x: -2,
+      y: 18,
+      rotation: -1,
+      scale: 0.9,
+      opacity: 0.46,
+      blur: 0.8,
+      letterSpacing: "0.01em",
+      trailX: 0,
+      trailY: 8,
+      trailScale: 1.02,
+      trailOpacity: 0.06,
+      trailBlur: 8,
+      trailRotation: 0,
+      numberOpacity: 0.34,
+    },
+    overlay: {
+      glow: 0.72,
+      grid: 0.34,
+      chaos: 0.48,
+      resolve: 0.22,
+    },
+  },
+  {
+    enter: {
+      x: 0,
+      y: 170,
+      rotation: 2,
+      rotationX: 24,
+      scale: 0.58,
+      opacity: 0,
+      blur: 34,
+      letterSpacing: "0.22em",
+      trailX: 0,
+      trailY: 72,
+      trailScale: 1.22,
+      trailOpacity: 0.42,
+      trailBlur: 28,
+      trailRotation: 0,
+      numberY: 16,
+    },
+    settle: {
+      x: 0,
+      y: 0,
+      rotation: 0,
+      scale: 1.08,
+      opacity: 1,
+      blur: 0,
+      letterSpacing: "0em",
+      trailX: 0,
+      trailY: 12,
+      trailScale: 1.06,
+      trailOpacity: 0.16,
+      trailBlur: 16,
+      trailRotation: 0,
+      numberOpacity: 0.92,
+    },
+    compose: {
+      x: 0,
+      y: 0,
+      rotation: 0,
+      scale: 1.04,
+      opacity: 1,
+      blur: 0,
+      letterSpacing: "0em",
+      trailX: 0,
+      trailY: 8,
+      trailScale: 1.02,
+      trailOpacity: 0.12,
+      trailBlur: 12,
+      trailRotation: 0,
+      numberOpacity: 0.92,
+    },
+    overlay: {
+      glow: 1,
+      grid: 0.5,
+      chaos: 0.68,
+      resolve: 0.52,
+    },
+  },
+];
 
 const aboutLineSpecs = [
   {
@@ -137,7 +376,7 @@ const neuralSparkItems = [
 // These values are the main tuning points for the About-section cinematic handoff.
 const impactTransitionSettings = {
   scrollDistanceViewportFactor: 1.45,
-  processSequenceViewportFactor: 1.55,
+  processSequenceViewportFactor: 2.05,
   maxExtraContentScrollFactor: 0.35,
   sceneStartScale: 1.14,
   sceneStartY: 10,
@@ -1037,6 +1276,8 @@ export default function App() {
     }
 
     const processOverlay = section.querySelector(".process-overlay");
+    const processStage = section.querySelector(".process-stage");
+    const processShell = section.querySelector(".process-shell");
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
@@ -1045,13 +1286,27 @@ export default function App() {
       ...aboutFrame.querySelectorAll("[data-about-char-index]"),
     ];
     const wordMeasure = aboutFrame.querySelector(".impact-word-measure");
+    const processSequenceChrome = [
+      ...section.querySelectorAll("[data-process-chrome]"),
+    ];
+    const processWordLines = [...section.querySelectorAll(".process-word-line")];
+    const processWordCopies = [...section.querySelectorAll(".process-word-copy")];
+    const processWordTrails = [...section.querySelectorAll(".process-word-trail")];
+    const processWordNumbers = [
+      ...section.querySelectorAll(".process-word-number"),
+    ];
     const processWords = [...section.querySelectorAll(".process-word")];
-    const processShell = section.querySelector(".process-shell");
 
     if (
       !(processOverlay instanceof HTMLElement) ||
+      !(processStage instanceof HTMLElement) ||
       !(processShell instanceof HTMLElement) ||
       !processWords.length ||
+      processWords.length !== processWordMotionSpecs.length ||
+      processWords.length !== processWordLines.length ||
+      processWords.length !== processWordCopies.length ||
+      processWords.length !== processWordTrails.length ||
+      processWords.length !== processWordNumbers.length ||
       !characterNodes.length ||
       !(wordMeasure instanceof HTMLElement)
     ) {
@@ -1063,20 +1318,32 @@ export default function App() {
     const sectionScrollStart = 0.46;
     const sectionScrollDuration = 0.1;
     const zoomStart = 0.6;
-    const processIntroStart = 0.92;
-    const processWordStart = 0.99;
-    const processWordSpacing = 0.08;
+    const processIntroStart = 0.87;
+    const processWordStart = 1;
+    const processWordSpacing = 0.155;
+    const processWordRevealDurations = [0.11, 0.125, 0.145, 0.18];
+    const processWordSettleDelay = 0.04;
+    const processWordSettleDuration = 0.14;
+    const processFinalComposeOffset = 0.05;
+    const processFinalHoldDuration = 0.18;
     const sceneRevealStartY = 0;
     const sceneParallaxStartY = 0;
-    const sceneParallaxEndY = -3.25;
+    const sceneParallaxEndY = -5.2;
     const sceneParallaxStartScale = 1.06;
-    const sceneParallaxEndScale = 1.03;
-    const processShellEntryY = 9;
-    const processShellParallaxEndY = -18;
-    const projectsSectionEntryY = 12;
-    const projectsShellEntryY = 84;
+    const sceneParallaxEndScale = 1.01;
+    const processShellEntryY = 12;
+    const processShellParallaxEndY = -14;
+    const processStageEntryY = 10;
+    const processStageEntryScale = 0.94;
+    const processStageParallaxEndY = -8;
+    const processStageFinalScale = 1.025;
+    const projectsSectionEntryY = 10;
+    const projectsShellEntryY = 72;
     const brainAfterglowFadeEnd = 0.12;
     const brainEntryRotationProgressMax = 0.32;
+    const finalProcessWordIndex = processWords.length - 1;
+    const processParallaxDuration =
+      processWordSpacing * processWords.length + processFinalHoldDuration + 0.26;
     let previousActiveCount = -1;
     let syncFrameId = 0;
     let sectionEntryProgress = 0;
@@ -1261,6 +1528,169 @@ export default function App() {
       });
     };
 
+    const normalizeProcessState = (state = {}) => ({
+      x: state.x ?? 0,
+      y: state.y ?? 0,
+      rotation: state.rotation ?? 0,
+      rotationX: state.rotationX ?? 0,
+      rotationY: state.rotationY ?? 0,
+      skewX: state.skewX ?? 0,
+      scale: state.scale ?? 1,
+      opacity: state.opacity ?? 1,
+      blur: state.blur ?? 0,
+      letterSpacing: state.letterSpacing ?? "0em",
+      trailX: state.trailX ?? 0,
+      trailY: state.trailY ?? 0,
+      trailScale: state.trailScale ?? 1,
+      trailOpacity: state.trailOpacity ?? 0,
+      trailBlur: state.trailBlur ?? 0,
+      trailRotation: state.trailRotation ?? 0,
+      numberOpacity:
+        state.numberOpacity ?? (typeof state.opacity === "number" && state.opacity <= 0 ? 0 : 0.72),
+      numberY: state.numberY ?? 0,
+    });
+
+    const createProcessRevealState = (spec, index) => ({
+      x: 0,
+      y: 0,
+      rotation: 0,
+      rotationX: 0,
+      rotationY: 0,
+      skewX: 0,
+      scale: index === finalProcessWordIndex ? 1.08 : 1,
+      opacity: 1,
+      blur: 0,
+      letterSpacing: index === finalProcessWordIndex ? "-0.01em" : "0em",
+      trailX: (spec.enter.trailX ?? 0) * 0.14,
+      trailY: (spec.enter.trailY ?? 0) * 0.14,
+      trailScale: index === finalProcessWordIndex ? 1.08 : 1.02,
+      trailOpacity: index === finalProcessWordIndex ? 0.18 : 0.24,
+      trailBlur: index === finalProcessWordIndex ? 18 : 10,
+      trailRotation: (spec.enter.trailRotation ?? 0) * 0.15,
+      numberOpacity: index === finalProcessWordIndex ? 0.92 : 0.72,
+      numberY: 0,
+    });
+
+    const setOverlayState = (state) => {
+      processOverlay.style.setProperty(
+        "--process-glow-strength",
+        `${state.glow ?? 0}`,
+      );
+      processOverlay.style.setProperty(
+        "--process-grid-strength",
+        `${state.grid ?? 0}`,
+      );
+      processOverlay.style.setProperty(
+        "--process-chaos-strength",
+        `${state.chaos ?? 0}`,
+      );
+      processOverlay.style.setProperty(
+        "--process-resolve-strength",
+        `${state.resolve ?? 0}`,
+      );
+    };
+
+    const setProcessLineState = (index, rawState) => {
+      const state = normalizeProcessState(rawState);
+
+      gsap.set(processWordLines[index], {
+        autoAlpha: state.opacity <= 0 ? 0 : 1,
+        x: state.x,
+        y: state.y,
+        rotation: state.rotation,
+        rotationX: state.rotationX,
+        rotationY: state.rotationY,
+        skewX: state.skewX,
+        scale: state.scale,
+        opacity: state.opacity,
+      });
+      gsap.set(processWordCopies[index], {
+        filter: `blur(${state.blur}px)`,
+        letterSpacing: state.letterSpacing,
+      });
+      gsap.set(processWordTrails[index], {
+        x: state.trailX,
+        y: state.trailY,
+        scale: state.trailScale,
+        opacity: state.trailOpacity,
+        rotation: state.trailRotation,
+        filter: `blur(${state.trailBlur}px)`,
+      });
+      gsap.set(processWordNumbers[index], {
+        autoAlpha: state.numberOpacity <= 0 ? 0 : 1,
+        opacity: state.numberOpacity,
+        y: state.numberY,
+      });
+    };
+
+    const tweenProcessLineState = (
+      timeline,
+      index,
+      rawState,
+      position,
+      options = {},
+    ) => {
+      const state = normalizeProcessState(rawState);
+      const duration = options.duration ?? 0.12;
+      const ease = options.ease ?? "power3.out";
+
+      timeline.to(
+        processWordLines[index],
+        {
+          autoAlpha: state.opacity <= 0 ? 0 : 1,
+          x: state.x,
+          y: state.y,
+          rotation: state.rotation,
+          rotationX: state.rotationX,
+          rotationY: state.rotationY,
+          skewX: state.skewX,
+          scale: state.scale,
+          opacity: state.opacity,
+          duration,
+          ease,
+        },
+        position,
+      );
+
+      timeline.to(
+        processWordCopies[index],
+        {
+          filter: `blur(${state.blur}px)`,
+          letterSpacing: state.letterSpacing,
+          duration,
+          ease,
+        },
+        position,
+      );
+
+      timeline.to(
+        processWordTrails[index],
+        {
+          x: state.trailX,
+          y: state.trailY,
+          scale: state.trailScale,
+          opacity: state.trailOpacity,
+          rotation: state.trailRotation,
+          filter: `blur(${state.trailBlur}px)`,
+          duration,
+          ease,
+        },
+        position + (options.trailDelay ?? 0.015),
+      );
+
+      timeline.to(
+        processWordNumbers[index],
+        {
+          autoAlpha: state.numberOpacity <= 0 ? 0 : 1,
+          opacity: state.numberOpacity,
+          y: state.numberY,
+          duration: options.numberDuration ?? Math.min(duration, 0.1),
+          ease: options.numberEase ?? ease,
+        },
+        position + (options.numberDelay ?? 0.01),
+      );
+    };
+
     const teardown = [];
 
     syncMaskLayout();
@@ -1293,14 +1723,21 @@ export default function App() {
       gsap.set(processOverlay, {
         autoAlpha: 0,
       });
+      setOverlayState({
+        glow: 0.12,
+        grid: 0.08,
+        chaos: 0.12,
+        resolve: 0.24,
+      });
       gsap.set(processShell, {
         yPercent: 0,
       });
-      gsap.set(processWords, {
-        autoAlpha: 1,
-        y: 0,
+      gsap.set(processStage, {
+        yPercent: 0,
         scale: 1,
-        filter: "blur(0px)",
+      });
+      processWordMotionSpecs.forEach((spec, index) => {
+        setProcessLineState(index, spec.compose);
       });
       gsap.set(processProgressFill, {
         scaleX: 1,
@@ -1365,20 +1802,46 @@ export default function App() {
       gsap.set(processOverlay, {
         autoAlpha: 0,
       });
+      setOverlayState({
+        glow: 0.14,
+        grid: 0.08,
+        chaos: 0.12,
+        resolve: 0,
+      });
       gsap.set(processShell, {
         yPercent: processShellEntryY,
+        force3D: true,
+      });
+      gsap.set(processStage, {
+        yPercent: processStageEntryY,
+        scale: processStageEntryScale,
+        rotationX: 8,
+        transformPerspective: 1800,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set(processSequenceChrome, {
+        autoAlpha: 0,
+        y: 18,
         force3D: true,
       });
       gsap.set(processProgressFill, {
         scaleX: 0,
         transformOrigin: "left center",
       });
-      gsap.set(processWords, {
-        autoAlpha: 0,
-        y: 56,
-        scale: 0.965,
-        filter: "blur(18px)",
+      gsap.set(processWordLines, {
+        transformPerspective: 1400,
+        transformOrigin: "center center",
         force3D: true,
+      });
+      gsap.set(processWordCopies, {
+        force3D: true,
+      });
+      gsap.set(processWordTrails, {
+        force3D: true,
+      });
+      processWordMotionSpecs.forEach((spec, index) => {
+        setProcessLineState(index, spec.enter);
       });
       gsap.set(projectsShell, {
         opacity: 0.62,
@@ -1521,91 +1984,172 @@ export default function App() {
           processOverlay,
           {
             autoAlpha: 1,
-            duration: 0.12,
+            duration: 0.16,
             ease: "power2.out",
           },
           processIntroStart,
+        )
+        .to(
+          processSequenceChrome,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.14,
+            stagger: 0.03,
+            ease: "power2.out",
+          },
+          processIntroStart + 0.02,
         )
         .to(
           processShell,
           {
             yPercent: 0,
-            duration: 0.08,
-            ease: "power2.out",
+            duration: 0.12,
+            ease: "power3.out",
           },
           processIntroStart,
+        )
+        .to(
+          processStage,
+          {
+            yPercent: 0,
+            scale: 1,
+            rotationX: 0,
+            duration: 0.18,
+            ease: "power3.out",
+          },
+          processIntroStart + 0.01,
         )
         .to(
           processShell,
           {
             yPercent: processShellParallaxEndY,
-            duration: 0.28,
+            duration: processParallaxDuration,
             ease: "none",
           },
-          processIntroStart + 0.04,
+          processIntroStart + 0.06,
+        )
+        .to(
+          processStage,
+          {
+            yPercent: processStageParallaxEndY,
+            duration: processParallaxDuration,
+            ease: "none",
+          },
+          processIntroStart + 0.06,
         )
         .to(
           sceneMedia,
           {
             yPercent: sceneParallaxEndY,
             scale: sceneParallaxEndScale,
-            duration: 0.28,
+            duration: processParallaxDuration,
             ease: "none",
           },
-          processIntroStart + 0.04,
+          processIntroStart + 0.06,
         );
 
-      processWords.forEach((word, index) => {
+      processWords.forEach((_, index) => {
+        const spec = processWordMotionSpecs[index];
         const revealPosition = processWordStart + index * processWordSpacing;
-        const previousWords = processWords.slice(0, index);
         const progressScale = (index + 1) / processWords.length;
+        const revealState = createProcessRevealState(spec, index);
 
-        timeline.to(
-          word,
-          {
-            autoAlpha: 1,
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            filter: "blur(0px)",
-            duration: 0.08,
-            ease: "power2.out",
-          },
-          revealPosition,
-        );
+        tweenProcessLineState(timeline, index, revealState, revealPosition, {
+          duration: processWordRevealDurations[index] ?? 0.12,
+          ease: index === finalProcessWordIndex ? "power4.out" : "power3.out",
+          trailDelay: index === finalProcessWordIndex ? 0.02 : 0.012,
+          numberDelay: 0.015,
+        });
 
         timeline.to(
           processProgressFill,
           {
             scaleX: progressScale,
-            duration: 0.08,
+            duration: 0.1,
+            ease: "power3.out",
+          },
+          revealPosition,
+        );
+
+        timeline.to(
+          processOverlay,
+          {
+            "--process-glow-strength": spec.overlay.glow,
+            "--process-grid-strength": spec.overlay.grid,
+            "--process-chaos-strength": spec.overlay.chaos,
+            "--process-resolve-strength": spec.overlay.resolve,
+            duration: processWordRevealDurations[index] ?? 0.12,
             ease: "power2.out",
           },
           revealPosition,
         );
 
-        if (previousWords.length) {
-          timeline.to(
-            previousWords,
-            {
-              opacity: 0.3,
-              y: -12,
-              scale: 0.95,
-              duration: 0.08,
-              ease: "power2.out",
-              stagger: 0.02,
-            },
-            revealPosition + 0.015,
-          );
+        if (index > 0) {
+          processWordMotionSpecs.slice(0, index).forEach((previousSpec, previousIndex) => {
+            tweenProcessLineState(
+              timeline,
+              previousIndex,
+              previousSpec.settle,
+              revealPosition + processWordSettleDelay + previousIndex * 0.01,
+              {
+                duration: processWordSettleDuration,
+                ease: "power2.out",
+              },
+            );
+          });
         }
       });
+
+      const finalComposePosition =
+        processWordStart +
+        processWordSpacing * finalProcessWordIndex +
+        processFinalComposeOffset;
+
+      processWordMotionSpecs.forEach((spec, index) => {
+        tweenProcessLineState(
+          timeline,
+          index,
+          spec.compose,
+          finalComposePosition + (index === finalProcessWordIndex ? 0 : index * 0.012),
+          {
+            duration: index === finalProcessWordIndex ? 0.16 : 0.14,
+            ease: index === finalProcessWordIndex ? "power3.out" : "power2.out",
+            trailDelay: 0.012,
+            numberDelay: 0.012,
+          },
+        );
+      });
+
+      timeline.to(
+        processStage,
+        {
+          scale: processStageFinalScale,
+          duration: 0.16,
+          ease: "power2.out",
+        },
+        finalComposePosition,
+      );
+
+      timeline.to(
+        processOverlay,
+        {
+          "--process-glow-strength": 0.98,
+          "--process-grid-strength": 0.54,
+          "--process-chaos-strength": 0.64,
+          "--process-resolve-strength": 0.58,
+          duration: 0.16,
+          ease: "power2.out",
+        },
+        finalComposePosition,
+      );
 
       timeline.to(
         {},
         {
-          duration: 0.06,
+          duration: processFinalHoldDuration,
         },
-        1.12,
+        finalComposePosition + 0.08,
       );
 
       gsap.timeline({
@@ -1780,21 +2324,47 @@ export default function App() {
 
               <div className="process-overlay" aria-label="Process words">
                 <div className="process-shell">
+                  <div className="process-sequence-head" aria-hidden="true">
+                    <span className="process-sequence-label" data-process-chrome>
+                      Section 03 / Controlled Tension
+                    </span>
+                    <span className="process-sequence-count" data-process-chrome>
+                      Four beats under pressure
+                    </span>
+                  </div>
+
                   <div className="process-stage">
                     <div className="process-word-column" aria-label="Process words">
-                      {processWordItems.map((word) => (
-                        <span className="process-word" key={word}>
-                          {word}
+                      {processWordItems.map((item, index) => (
+                        <span
+                          className={`process-word-line process-word-line-${index + 1}`}
+                          key={item.text}
+                        >
+                          <span className="process-word-number" aria-hidden="true">
+                            {item.number}
+                          </span>
+                          <span className="process-word-copy">
+                            <span className="process-word-trail" aria-hidden="true">
+                              {item.text}
+                            </span>
+                            <span className="process-word">{item.text}</span>
+                          </span>
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="process-progress" aria-hidden="true">
-                    <span
-                      className="process-progress-fill"
-                      ref={processProgressRef}
-                    />
+                  <div className="process-footer" aria-hidden="true">
+                    <span className="process-footer-note" data-process-chrome>
+                      Disorder sharpens into intent.
+                    </span>
+
+                    <div className="process-progress">
+                      <span
+                        className="process-progress-fill"
+                        ref={processProgressRef}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
