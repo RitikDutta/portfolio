@@ -49,7 +49,7 @@ const projectItems = [
   },
 ];
 
-const processWordItems = ["love what you do", "never stop learning", "Create real impact", "work smarter not harder"];
+const processWordItems = ["love what you do", "create real impact", "never stop learning", "work smarter not harder"];
 
 const aboutLineSpecs = [
   {
