@@ -692,7 +692,7 @@ a {
 
 .about-line {
   margin: 0;
-  color: #DB0000;
+  color: #f7f3ed;
   font-family: "Bungee Inline", "Space Grotesk", sans-serif;
   font-size: clamp(1.6rem, 3.75vw, 4rem);
   font-weight: 400;
@@ -711,14 +711,14 @@ a {
 }
 
 .about-char {
-  color: #DB0000;
+  color: inherit;
 }
 
 .about-char-active {
-  color: #f7f3ed;
+  color: #db0000;
   text-shadow:
-    0 0 14px rgba(255, 255, 255, 0.16),
-    0.025em 0.025em 0 rgba(255, 230, 196, 0.12);
+    0 0 14px rgba(219, 0, 0, 0.18),
+    0.025em 0.025em 0 rgba(89, 0, 0, 0.16);
 }
 
 .about-impact-shell {
