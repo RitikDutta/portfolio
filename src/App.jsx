@@ -161,7 +161,10 @@ export default function App() {
   const impactMaskTextRef = useRef(null);
   const impactWordOutlineRef = useRef(null);
   const impactSceneRef = useRef(null);
+  const impactSceneMediaRef = useRef(null);
   const processProgressRef = useRef(null);
+  const projectsSectionRef = useRef(null);
+  const projectsShellRef = useRef(null);
 
   useLayoutEffect(() => {
     const pageShell = pageShellRef.current;
@@ -1011,7 +1014,10 @@ export default function App() {
     const maskText = impactMaskTextRef.current;
     const wordOutline = impactWordOutlineRef.current;
     const scene = impactSceneRef.current;
+    const sceneMedia = impactSceneMediaRef.current;
     const processProgressFill = processProgressRef.current;
+    const projectsSection = projectsSectionRef.current;
+    const projectsShell = projectsShellRef.current;
 
     if (
       !(pageShell instanceof HTMLElement) ||
@@ -1022,7 +1028,10 @@ export default function App() {
       !(maskText instanceof SVGTextElement) ||
       !(wordOutline instanceof SVGTextElement) ||
       !(scene instanceof HTMLElement) ||
-      !(processProgressFill instanceof HTMLElement)
+      !(sceneMedia instanceof HTMLElement) ||
+      !(processProgressFill instanceof HTMLElement) ||
+      !(projectsSection instanceof HTMLElement) ||
+      !(projectsShell instanceof HTMLElement)
     ) {
       return undefined;
     }
@@ -1037,9 +1046,11 @@ export default function App() {
     ];
     const wordMeasure = aboutFrame.querySelector(".impact-word-measure");
     const processWords = [...section.querySelectorAll(".process-word")];
+    const processShell = section.querySelector(".process-shell");
 
     if (
       !(processOverlay instanceof HTMLElement) ||
+      !(processShell instanceof HTMLElement) ||
       !processWords.length ||
       !characterNodes.length ||
       !(wordMeasure instanceof HTMLElement)
@@ -1055,6 +1066,15 @@ export default function App() {
     const processIntroStart = 0.92;
     const processWordStart = 0.99;
     const processWordSpacing = 0.08;
+    const sceneRevealStartY = 0;
+    const sceneParallaxStartY = 0;
+    const sceneParallaxEndY = -3.25;
+    const sceneParallaxStartScale = 1.06;
+    const sceneParallaxEndScale = 1.03;
+    const processShellEntryY = 9;
+    const processShellParallaxEndY = -18;
+    const projectsSectionEntryY = 12;
+    const projectsShellEntryY = 84;
     const brainAfterglowFadeEnd = 0.12;
     const brainEntryRotationProgressMax = 0.32;
     let previousActiveCount = -1;
@@ -1253,10 +1273,15 @@ export default function App() {
         scale: 1,
         yPercent: 0,
       });
+      gsap.set(sceneMedia, {
+        yPercent: 0,
+        scale: 1,
+      });
       gsap.set(maskText, {
         scale: 1,
       });
       gsap.set(aboutFrame, {
+        yPercent: 0,
         "--about-surface-darkness": 1,
       });
       gsap.set(wordSlot, {
@@ -1268,6 +1293,9 @@ export default function App() {
       gsap.set(processOverlay, {
         autoAlpha: 0,
       });
+      gsap.set(processShell, {
+        yPercent: 0,
+      });
       gsap.set(processWords, {
         autoAlpha: 1,
         y: 0,
@@ -1275,8 +1303,15 @@ export default function App() {
         filter: "blur(0px)",
       });
       gsap.set(processProgressFill, {
-        scaleY: 1,
-        transformOrigin: "center top",
+        scaleX: 1,
+        transformOrigin: "left center",
+      });
+      gsap.set(projectsSection, {
+        yPercent: 0,
+      });
+      gsap.set(projectsShell, {
+        opacity: 1,
+        y: 0,
       });
       gsap.set(focusItems, {
         opacity: 1,
@@ -1296,7 +1331,13 @@ export default function App() {
       gsap.set(scene, {
         opacity: 0.72,
         scale: impactTransitionSettings.sceneStartScale,
-        yPercent: impactTransitionSettings.sceneStartY,
+        yPercent: sceneRevealStartY,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set(sceneMedia, {
+        yPercent: sceneParallaxStartY,
+        scale: sceneParallaxStartScale,
         transformOrigin: "center center",
         force3D: true,
       });
@@ -1311,6 +1352,7 @@ export default function App() {
       gsap.set(aboutFrame, {
         scale: 1,
         opacity: 1,
+        yPercent: 0,
         z: 0,
         rotationX: 0,
         "--about-surface-darkness": 0,
@@ -1323,15 +1365,28 @@ export default function App() {
       gsap.set(processOverlay, {
         autoAlpha: 0,
       });
+      gsap.set(processShell, {
+        yPercent: processShellEntryY,
+        force3D: true,
+      });
       gsap.set(processProgressFill, {
-        scaleY: 0,
-        transformOrigin: "center top",
+        scaleX: 0,
+        transformOrigin: "left center",
       });
       gsap.set(processWords, {
         autoAlpha: 0,
         y: 56,
         scale: 0.965,
         filter: "blur(18px)",
+        force3D: true,
+      });
+      gsap.set(projectsShell, {
+        opacity: 0.62,
+        y: projectsShellEntryY,
+        force3D: true,
+      });
+      gsap.set(projectsSection, {
+        yPercent: projectsSectionEntryY,
         force3D: true,
       });
 
@@ -1464,21 +1519,40 @@ export default function App() {
             ease: "power2.out",
           },
           processIntroStart,
+        )
+        .to(
+          processShell,
+          {
+            yPercent: 0,
+            duration: 0.08,
+            ease: "power2.out",
+          },
+          processIntroStart,
+        )
+        .to(
+          processShell,
+          {
+            yPercent: processShellParallaxEndY,
+            duration: 0.28,
+            ease: "none",
+          },
+          processIntroStart + 0.04,
+        )
+        .to(
+          sceneMedia,
+          {
+            yPercent: sceneParallaxEndY,
+            scale: sceneParallaxEndScale,
+            duration: 0.28,
+            ease: "none",
+          },
+          processIntroStart + 0.04,
         );
-
-      timeline.to(
-        processProgressFill,
-        {
-          scaleY: 1,
-          duration: 0.28,
-          ease: "none",
-        },
-        processIntroStart,
-      );
 
       processWords.forEach((word, index) => {
         const revealPosition = processWordStart + index * processWordSpacing;
         const previousWords = processWords.slice(0, index);
+        const progressScale = (index + 1) / processWords.length;
 
         timeline.to(
           word,
@@ -1488,6 +1562,16 @@ export default function App() {
             y: 0,
             scale: 1,
             filter: "blur(0px)",
+            duration: 0.08,
+            ease: "power2.out",
+          },
+          revealPosition,
+        );
+
+        timeline.to(
+          processProgressFill,
+          {
+            scaleX: progressScale,
             duration: 0.08,
             ease: "power2.out",
           },
@@ -1517,6 +1601,36 @@ export default function App() {
         },
         1.12,
       );
+
+      gsap.timeline({
+        defaults: {
+          ease: "none",
+        },
+        scrollTrigger: {
+          trigger: projectsSection,
+          start: "top bottom",
+          end: "top 52%",
+          scrub: 1.05,
+          invalidateOnRefresh: true,
+        },
+      })
+        .to(
+          projectsSection,
+          {
+            yPercent: 0,
+            duration: 1,
+          },
+          0,
+        )
+        .to(
+          projectsShell,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.92,
+          },
+          0.08,
+        );
     }, section);
 
     aboutFrameContent.addEventListener("scroll", requestMaskSync, {
@@ -1652,7 +1766,7 @@ export default function App() {
                 aria-hidden="true"
                 ref={impactSceneRef}
               >
-                <picture className="impact-scene-media">
+                <picture className="impact-scene-media" ref={impactSceneMediaRef}>
                   <source media="(max-width: 900px)" srcSet={impactPortraitImage} />
                   <img alt="" src={impactWideImage} />
                 </picture>
@@ -1669,12 +1783,6 @@ export default function App() {
                       The next scene slows down just long enough for each word to
                       land before the page continues.
                     </p>
-                    <div className="process-progress" aria-hidden="true">
-                      <span
-                        className="process-progress-fill"
-                        ref={processProgressRef}
-                      />
-                    </div>
                   </div>
 
                   <div className="process-stage">
@@ -1685,6 +1793,13 @@ export default function App() {
                         </span>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="process-progress" aria-hidden="true">
+                    <span
+                      className="process-progress-fill"
+                      ref={processProgressRef}
+                    />
                   </div>
                 </div>
               </div>
@@ -1879,8 +1994,9 @@ export default function App() {
             aria-labelledby="projects-title"
             className="projects-section"
             id="projects"
+            ref={projectsSectionRef}
           >
-            <div className="projects-shell">
+            <div className="projects-shell" ref={projectsShellRef}>
               <div className="projects-head intro-panel">
                 <p className="eyebrow">Section 04 / Projects</p>
                 <h2 id="projects-title">
