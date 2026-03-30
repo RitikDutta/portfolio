@@ -1505,11 +1505,17 @@ export default function App() {
             scale: impactTransitionSettings.exitScale,
             z: impactTransitionSettings.exitDepth,
             rotationX: impactTransitionSettings.exitTilt,
-            opacity: 0,
             duration: 0.28,
             ease: "power2.in",
           },
           zoomStart,
+        )
+        .set(
+          aboutFrame,
+          {
+            opacity: 0,
+          },
+          processIntroStart,
         )
         .to(
           processOverlay,
