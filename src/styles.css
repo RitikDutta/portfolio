@@ -811,9 +811,9 @@ a {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(16rem, 24rem) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: clamp(2rem, 7vw, 7rem);
+  justify-items: center;
   width: min(1200px, calc(100% - 2rem));
   min-height: 100vh;
   margin: 0 auto;
@@ -822,34 +822,6 @@ a {
     0
     clamp(5.5rem, 11vh, 7.5rem);
   will-change: transform;
-}
-
-.process-copy {
-  display: grid;
-  gap: 1.2rem;
-  max-width: 23rem;
-}
-
-.process-copy .eyebrow {
-  color: rgba(255, 214, 167, 0.92);
-}
-
-.process-copy h2 {
-  margin: 0;
-  color: #fff6ed;
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: clamp(2.8rem, 5vw, 4.8rem);
-  font-weight: 400;
-  line-height: 0.94;
-  letter-spacing: -0.05em;
-  text-wrap: balance;
-}
-
-.process-intro {
-  margin: 0;
-  color: rgba(248, 241, 230, 0.72);
-  font-size: 1rem;
-  line-height: 1.8;
 }
 
 .process-progress {
@@ -886,7 +858,8 @@ a {
 .process-stage {
   position: relative;
   display: grid;
-  align-items: center;
+  place-items: center;
+  width: 100%;
   min-height: clamp(26rem, 68vh, 44rem);
 }
 
@@ -906,7 +879,9 @@ a {
   position: relative;
   display: grid;
   gap: clamp(0.7rem, 1.8vh, 1.25rem);
-  justify-items: start;
+  justify-items: center;
+  width: min(100%, calc(100vw - 2rem));
+  text-align: center;
 }
 
 .process-word {
@@ -914,10 +889,12 @@ a {
   margin: 0;
   color: #fff7ef;
   font-family: "Instrument Serif", Georgia, serif;
-  font-size: clamp(4.4rem, 11vw, 9.4rem);
+  max-width: 100%;
+  font-size: clamp(1.3rem, 6vw, 6rem);
   font-weight: 400;
   line-height: 0.88;
   letter-spacing: -0.06em;
+  white-space: nowrap;
   text-shadow:
     0 0 24px rgba(255, 243, 228, 0.06),
     0 18px 48px rgba(0, 0, 0, 0.22);
@@ -1189,12 +1166,7 @@ a {
 
   .process-shell {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
     width: calc(100% - 2rem);
-  }
-
-  .process-copy {
-    max-width: 36rem;
   }
 
   .process-stage {
@@ -1316,10 +1288,6 @@ a {
     padding: 5rem 0 5.75rem;
   }
 
-  .process-copy h2 {
-    font-size: clamp(2.5rem, 11vw, 3.4rem);
-  }
-
   .process-progress {
     width: calc(100% - 1rem);
     bottom: 1.05rem;
@@ -1331,7 +1299,7 @@ a {
   }
 
   .process-word {
-    font-size: clamp(3.3rem, 15vw, 4.9rem);
+    font-size: clamp(1.15rem, 5.2vw, 2rem);
   }
 }
 

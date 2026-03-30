@@ -49,7 +49,7 @@ const projectItems = [
   },
 ];
 
-const processWordItems = ["Observe", "Distill", "Engineer", "Refine"];
+const processWordItems = ["love what you do", "never stop learning", "Create real impact", "work smarter not harder"];
 
 const aboutLineSpecs = [
   {
@@ -1778,19 +1778,8 @@ export default function App() {
                 </picture>
               </div>
 
-              <div className="process-overlay" aria-labelledby="process-title">
+              <div className="process-overlay" aria-label="Process words">
                 <div className="process-shell">
-                  <div className="process-copy">
-                    <p className="eyebrow">Section 03 / Process</p>
-                    <h2 id="process-title">
-                      Four deliberate steps, revealed only after the word opens.
-                    </h2>
-                    <p className="process-intro">
-                      The next scene slows down just long enough for each word to
-                      land before the page continues.
-                    </p>
-                  </div>
-
                   <div className="process-stage">
                     <div className="process-word-column" aria-label="Process words">
                       {processWordItems.map((word) => (
