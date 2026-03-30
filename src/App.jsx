@@ -49,6 +49,8 @@ const projectItems = [
   },
 ];
 
+const processWordItems = ["Observe", "Distill", "Engineer", "Refine"];
+
 const aboutLineSpecs = [
   {
     ariaLabel:
@@ -132,7 +134,7 @@ const neuralSparkItems = [
   { top: "82%", left: "22%", size: "9.5rem", delay: "-0.3s", duration: "1.8s", hue: "346deg" },
 ];
 
-// These values are the main tuning points for the Section 2 -> 3 handoff.
+// These values are the main tuning points for the About-section cinematic handoff.
 const impactTransitionSettings = {
   scrollDistanceViewportFactor: 1.45,
   maxExtraContentScrollFactor: 0.35,
@@ -158,6 +160,9 @@ export default function App() {
   const impactMaskTextRef = useRef(null);
   const impactWordOutlineRef = useRef(null);
   const impactSceneRef = useRef(null);
+  const processSectionRef = useRef(null);
+  const processPinRef = useRef(null);
+  const processProgressRef = useRef(null);
 
   useLayoutEffect(() => {
     const pageShell = pageShellRef.current;
@@ -1263,8 +1268,9 @@ export default function App() {
     }
 
     const ctx = gsap.context(() => {
-      // Section 3 is already mounted underneath; the timeline only opens the
-      // word-shaped window and then removes the Section 2 frame from that origin.
+      // The background scene is already mounted underneath; the timeline only
+      // opens the word-shaped window and then removes the Section 2 frame from
+      // that origin.
       gsap.set(scene, {
         opacity: 0.72,
         scale: impactTransitionSettings.sceneStartScale,
@@ -1461,6 +1467,144 @@ export default function App() {
     return () => {
       setBrainAfterglow(0, 0);
       teardown.forEach((dispose) => dispose());
+      ctx.revert();
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const section = processSectionRef.current;
+    const pin = processPinRef.current;
+    const progressFill = processProgressRef.current;
+
+    if (
+      !(section instanceof HTMLElement) ||
+      !(pin instanceof HTMLElement) ||
+      !(progressFill instanceof HTMLElement)
+    ) {
+      return undefined;
+    }
+
+    const words = [...pin.querySelectorAll(".process-word")];
+
+    if (!words.length) {
+      return undefined;
+    }
+
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    if (reducedMotionQuery.matches) {
+      gsap.set(words, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+      gsap.set(words.slice(0, -1), {
+        opacity: 0.42,
+      });
+      gsap.set(progressFill, {
+        scaleY: 1,
+        transformOrigin: "center top",
+      });
+      return undefined;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.set(progressFill, {
+        scaleY: 0,
+        transformOrigin: "center top",
+      });
+      gsap.set(words, {
+        autoAlpha: 0,
+        y: 56,
+        scale: 0.965,
+        filter: "blur(18px)",
+        force3D: true,
+      });
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${Math.round((window.innerHeight || 1) * 2.8)}`,
+          scrub: 0.95,
+          pin,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline.to(
+        progressFill,
+        {
+          scaleY: 1,
+          duration: 1,
+          ease: "none",
+        },
+        0,
+      );
+
+      const revealStart = 0.08;
+      const revealSpacing = 0.24;
+
+      words.forEach((word, index) => {
+        const previousWords = words.slice(0, index);
+        const revealPosition = revealStart + index * revealSpacing;
+
+        timeline.to(
+          word,
+          {
+            autoAlpha: 1,
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 0.2,
+            ease: "power2.out",
+          },
+          revealPosition,
+        );
+
+        if (previousWords.length) {
+          timeline.to(
+            previousWords,
+            {
+              opacity: 0.3,
+              y: -12,
+              scale: 0.95,
+              duration: 0.18,
+              ease: "power2.out",
+              stagger: 0.02,
+            },
+            revealPosition + 0.04,
+          );
+        }
+      });
+
+      timeline.to(
+        words[words.length - 1],
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.16,
+          ease: "power2.out",
+        },
+        0.92,
+      );
+
+      timeline.to(
+        {},
+        {
+          duration: 0.14,
+        },
+        1,
+      );
+    }, section);
+
+    return () => {
       ctx.revert();
     };
   }, []);
@@ -1744,6 +1888,44 @@ export default function App() {
                   </div>
                 </div>
               </section>
+            </div>
+          </section>
+
+          <section
+            aria-labelledby="process-title"
+            className="process-section"
+            id="process"
+            ref={processSectionRef}
+          >
+            <div className="process-pin" ref={processPinRef}>
+              <div className="process-shell">
+                <div className="process-copy">
+                  <p className="eyebrow">Section 03 / Process</p>
+                  <h2 id="process-title">
+                    Four deliberate steps, revealed only while the section is pinned.
+                  </h2>
+                  <p className="process-intro">
+                    Scroll continues to drive the sequence. Each word lands on its
+                    own, then holds its place while the next one takes focus.
+                  </p>
+                  <div className="process-progress" aria-hidden="true">
+                    <span
+                      className="process-progress-fill"
+                      ref={processProgressRef}
+                    />
+                  </div>
+                </div>
+
+                <div className="process-stage">
+                  <div className="process-word-column" aria-label="Process words">
+                    {processWordItems.map((word) => (
+                      <span className="process-word" key={word}>
+                        {word}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
