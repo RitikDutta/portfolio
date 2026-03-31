@@ -63,6 +63,49 @@ const projectSequencePanels = [
   },
 ];
 
+const mediaGalleryImages = Object.entries(
+  import.meta.glob("../media/*.{png,webp,jpg,jpeg,avif}", {
+    eager: true,
+    import: "default",
+  }),
+)
+  .sort(([leftPath], [rightPath]) =>
+    leftPath.localeCompare(rightPath, undefined, { numeric: true }),
+  )
+  .map(([, source]) => source);
+
+const projectNoticeBoardLayouts = {
+  "01": [
+    { top: "2%", left: "10%", width: "32%", aspectRatio: "0.86", rotation: "-8deg" },
+    { top: "4%", left: "50%", width: "31%", aspectRatio: "1.18", rotation: "7deg" },
+    { top: "32%", left: "0%", width: "36%", aspectRatio: "1.22", rotation: "-3deg" },
+    { top: "38%", left: "43%", width: "37%", aspectRatio: "0.94", rotation: "6deg" },
+    { top: "67%", left: "18%", width: "42%", aspectRatio: "1.04", rotation: "-5deg" },
+  ],
+  "03": [
+    { top: "4%", left: "14%", width: "30%", aspectRatio: "1.14", rotation: "7deg" },
+    { top: "8%", left: "48%", width: "34%", aspectRatio: "0.9", rotation: "-6deg" },
+    { top: "35%", left: "2%", width: "34%", aspectRatio: "0.82", rotation: "4deg" },
+    { top: "42%", left: "40%", width: "36%", aspectRatio: "1.2", rotation: "-4deg" },
+    { top: "68%", left: "22%", width: "38%", aspectRatio: "1.02", rotation: "5deg" },
+  ],
+};
+
+const projectNoticeBoards = {
+  "01": projectNoticeBoardLayouts["01"]
+    .map((layout, index) => ({
+      ...layout,
+      source: mediaGalleryImages[index],
+    }))
+    .filter((item) => item.source),
+  "03": projectNoticeBoardLayouts["03"]
+    .map((layout, index) => ({
+      ...layout,
+      source: mediaGalleryImages[index + 5],
+    }))
+    .filter((item) => item.source),
+};
+
 const processWordItems = [
   "love what you do",
   "create real impact",
@@ -2678,6 +2721,27 @@ export default function App() {
                   if (panel.type === "text") {
                     return (
                       <article className={panelClassName} key={panel.number}>
+                        <div
+                          className={`project-panel-board project-panel-board-${panel.number}`}
+                          aria-hidden="true"
+                        >
+                          {(projectNoticeBoards[panel.number] ?? []).map((image) => (
+                            <figure
+                              className="project-board-card"
+                              key={`${panel.number}-${image.source}`}
+                              style={{
+                                "--board-top": image.top,
+                                "--board-left": image.left,
+                                "--board-width": image.width,
+                                "--board-aspect-ratio": image.aspectRatio,
+                                "--board-rotation": image.rotation,
+                              }}
+                            >
+                              <img alt="" src={image.source} />
+                            </figure>
+                          ))}
+                        </div>
+
                         <div className="project-panel-copy">
                           <div className="project-panel-meta">
                             <p className="eyebrow">{panel.eyebrow}</p>
