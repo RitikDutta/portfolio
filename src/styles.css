@@ -829,7 +829,7 @@ a {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   align-items: center;
   justify-items: center;
   width: min(1240px, calc(100% - 2rem));
@@ -843,28 +843,12 @@ a {
   will-change: transform;
 }
 
-.process-sequence-head,
 .process-footer {
   width: min(72rem, 100%);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
-}
-
-.process-sequence-label,
-.process-sequence-count,
-.process-footer-note {
-  color: rgba(248, 241, 230, 0.68);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.process-sequence-count {
-  color: rgba(248, 241, 230, 0.52);
-  text-align: right;
 }
 
 .process-progress-fill {
@@ -983,23 +967,6 @@ a {
   text-align: center;
 }
 
-.process-word-number {
-  display: block;
-  color: rgba(255, 226, 193, 0.72);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.process-word-line-2 .process-word-number {
-  justify-self: end;
-}
-
-.process-word-line-4 .process-word-number {
-  justify-self: center;
-}
-
 .process-word-copy {
   position: relative;
   display: inline-block;
@@ -1080,12 +1047,7 @@ a {
 }
 
 .process-footer {
-  justify-content: center;
   gap: 1.25rem;
-}
-
-.process-footer-note {
-  white-space: nowrap;
 }
 
 .process-progress {
@@ -1380,7 +1342,6 @@ a {
     min-height: clamp(26rem, 64vh, 40rem);
   }
 
-  .process-sequence-head,
   .process-footer {
     width: 100%;
   }
@@ -1522,23 +1483,13 @@ a {
     gap: 0.9rem;
   }
 
-  .process-sequence-head,
   .process-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .process-sequence-count {
-    text-align: left;
+    width: 100%;
   }
 
   .process-stage {
     min-height: clamp(30rem, 70vh, 38rem);
     padding: 1.15rem;
-  }
-
-  .process-footer-note {
-    white-space: normal;
   }
 
   .process-progress {
