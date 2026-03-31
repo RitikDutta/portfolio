@@ -50,10 +50,10 @@ const projectItems = [
 ];
 
 const processWordItems = [
-  { number: "01", text: "love what you do" },
-  { number: "02", text: "create real impact" },
-  { number: "03", text: "never stop learning" },
-  { number: "04", text: "work smarter not harder" },
+  "love what you do",
+  "create real impact",
+  "never stop learning",
+  "work smarter not harder",
 ];
 
 const processWordMotionSpecs = [
@@ -1286,15 +1286,9 @@ export default function App() {
       ...aboutFrame.querySelectorAll("[data-about-char-index]"),
     ];
     const wordMeasure = aboutFrame.querySelector(".impact-word-measure");
-    const processSequenceChrome = [
-      ...section.querySelectorAll("[data-process-chrome]"),
-    ];
     const processWordLines = [...section.querySelectorAll(".process-word-line")];
     const processWordCopies = [...section.querySelectorAll(".process-word-copy")];
     const processWordTrails = [...section.querySelectorAll(".process-word-trail")];
-    const processWordNumbers = [
-      ...section.querySelectorAll(".process-word-number"),
-    ];
     const processWords = [...section.querySelectorAll(".process-word")];
 
     if (
@@ -1306,7 +1300,6 @@ export default function App() {
       processWords.length !== processWordLines.length ||
       processWords.length !== processWordCopies.length ||
       processWords.length !== processWordTrails.length ||
-      processWords.length !== processWordNumbers.length ||
       !characterNodes.length ||
       !(wordMeasure instanceof HTMLElement)
     ) {
@@ -1545,9 +1538,6 @@ export default function App() {
       trailOpacity: state.trailOpacity ?? 0,
       trailBlur: state.trailBlur ?? 0,
       trailRotation: state.trailRotation ?? 0,
-      numberOpacity:
-        state.numberOpacity ?? (typeof state.opacity === "number" && state.opacity <= 0 ? 0 : 0.72),
-      numberY: state.numberY ?? 0,
     });
 
     const createProcessRevealState = (spec, index) => ({
@@ -1567,8 +1557,6 @@ export default function App() {
       trailOpacity: index === finalProcessWordIndex ? 0.18 : 0.24,
       trailBlur: index === finalProcessWordIndex ? 18 : 10,
       trailRotation: (spec.enter.trailRotation ?? 0) * 0.15,
-      numberOpacity: index === finalProcessWordIndex ? 0.92 : 0.72,
-      numberY: 0,
     });
 
     const setOverlayState = (state) => {
@@ -1615,11 +1603,6 @@ export default function App() {
         opacity: state.trailOpacity,
         rotation: state.trailRotation,
         filter: `blur(${state.trailBlur}px)`,
-      });
-      gsap.set(processWordNumbers[index], {
-        autoAlpha: state.numberOpacity <= 0 ? 0 : 1,
-        opacity: state.numberOpacity,
-        y: state.numberY,
       });
     };
 
@@ -1676,18 +1659,6 @@ export default function App() {
           ease,
         },
         position + (options.trailDelay ?? 0.015),
-      );
-
-      timeline.to(
-        processWordNumbers[index],
-        {
-          autoAlpha: state.numberOpacity <= 0 ? 0 : 1,
-          opacity: state.numberOpacity,
-          y: state.numberY,
-          duration: options.numberDuration ?? Math.min(duration, 0.1),
-          ease: options.numberEase ?? ease,
-        },
-        position + (options.numberDelay ?? 0.01),
       );
     };
 
@@ -1818,11 +1789,6 @@ export default function App() {
         rotationX: 8,
         transformPerspective: 1800,
         transformOrigin: "center center",
-        force3D: true,
-      });
-      gsap.set(processSequenceChrome, {
-        autoAlpha: 0,
-        y: 18,
         force3D: true,
       });
       gsap.set(processProgressFill, {
@@ -1990,17 +1956,6 @@ export default function App() {
           processIntroStart,
         )
         .to(
-          processSequenceChrome,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.14,
-            stagger: 0.03,
-            ease: "power2.out",
-          },
-          processIntroStart + 0.02,
-        )
-        .to(
           processShell,
           {
             yPercent: 0,
@@ -2059,7 +2014,6 @@ export default function App() {
           duration: processWordRevealDurations[index] ?? 0.12,
           ease: index === finalProcessWordIndex ? "power4.out" : "power3.out",
           trailDelay: index === finalProcessWordIndex ? 0.02 : 0.012,
-          numberDelay: 0.015,
         });
 
         timeline.to(
@@ -2116,7 +2070,6 @@ export default function App() {
             duration: index === finalProcessWordIndex ? 0.16 : 0.14,
             ease: index === finalProcessWordIndex ? "power3.out" : "power2.out",
             trailDelay: 0.012,
-            numberDelay: 0.012,
           },
         );
       });
@@ -2324,30 +2277,18 @@ export default function App() {
 
               <div className="process-overlay" aria-label="Process words">
                 <div className="process-shell">
-                  <div className="process-sequence-head" aria-hidden="true">
-                    <span className="process-sequence-label" data-process-chrome>
-                      Section 03 / Controlled Tension
-                    </span>
-                    <span className="process-sequence-count" data-process-chrome>
-                      Four beats under pressure
-                    </span>
-                  </div>
-
                   <div className="process-stage">
                     <div className="process-word-column" aria-label="Process words">
-                      {processWordItems.map((item, index) => (
+                      {processWordItems.map((word, index) => (
                         <span
                           className={`process-word-line process-word-line-${index + 1}`}
-                          key={item.text}
+                          key={word}
                         >
-                          <span className="process-word-number" aria-hidden="true">
-                            {item.number}
-                          </span>
                           <span className="process-word-copy">
                             <span className="process-word-trail" aria-hidden="true">
-                              {item.text}
+                              {word}
                             </span>
-                            <span className="process-word">{item.text}</span>
+                            <span className="process-word">{word}</span>
                           </span>
                         </span>
                       ))}
@@ -2355,10 +2296,6 @@ export default function App() {
                   </div>
 
                   <div className="process-footer" aria-hidden="true">
-                    <span className="process-footer-note" data-process-chrome>
-                      Disorder sharpens into intent.
-                    </span>
-
                     <div className="process-progress">
                       <span
                         className="process-progress-fill"
