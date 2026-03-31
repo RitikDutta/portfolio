@@ -16,36 +16,50 @@ const spotlightItems = [
   "Scroll-controlled frames instead of autoplay",
 ];
 
-const projectItems = [
+const projectSequencePanels = [
   {
     number: "01",
-    category: "Immersive Frontend",
-    title: "Neural Handoff",
+    type: "text",
+    eyebrow: "Section 04 / Sequence One",
+    title: ["Quiet systems.", "Loud outcomes."],
     summary:
-      "A cinematic portfolio experiment where a scroll-driven hero transfers directly into editorial content through a typographic mask.",
-    stack: ["React", "GSAP", "Three.js"],
-    outcome:
-      "Built to prove that motion-heavy storytelling can still stay readable, responsive, and intentional.",
+      "The strongest portfolio moments start with restraint. Motion, layout, and copy should feel deliberate before they ever try to feel impressive.",
+    detail:
+      "React surfaces, cinematic framing, and interface pacing built to hold attention without shouting.",
   },
   {
     number: "02",
-    category: "Product Interface",
-    title: "Signal Room",
+    type: "image",
+    eyebrow: "Immersive Frontend",
+    title: "Neural Handoff",
     summary:
-      "A real-time monitoring surface for live operations, combining status streams, alerts, and decision history into one focused control view.",
-    stack: ["React", "Node", "WebSockets"],
-    outcome:
-      "Designed around fast triage, clearer escalation paths, and less context switching during high-pressure moments.",
+      "An edge-to-edge moment where scroll, framing, and atmosphere move as one continuous scene.",
+    detail:
+      "Three.js model handoff, image-led storytelling, and frictionless motion direction.",
+    image: impactWideImage,
+    mobileImage: impactPortraitImage,
   },
   {
     number: "03",
-    category: "AI Workflow",
-    title: "Prompt Router",
+    type: "text",
+    eyebrow: "Section 04 / Sequence Three",
+    ghost: "Precision",
+    title: ["Products earn trust", "through pacing."],
     summary:
-      "An internal tool that routes prompts, tracks experiments, and compares outputs so teams can ship LLM features with less guesswork.",
-    stack: ["TypeScript", "OpenAI", "Postgres"],
-    outcome:
-      "Turned scattered prompt testing into a single system with reusable patterns, audit trails, and faster iteration.",
+      "The interface should know when to stay quiet, when to surface pressure, and when to let the user decide without interruption.",
+    detail:
+      "Operational dashboards, AI workflows, and high-pressure tools shaped with editorial discipline.",
+  },
+  {
+    number: "04",
+    type: "image",
+    eyebrow: "Final Frame",
+    title: "Signal Room",
+    summary:
+      "The last panel slows the camera down and lets the atmosphere carry the exit into the next section.",
+    detail:
+      "High-contrast composition, immersive backdrop, and a cleaner handoff into the final vertical flow.",
+    image: heroPoster,
   },
 ];
 
@@ -403,7 +417,9 @@ export default function App() {
   const impactSceneMediaRef = useRef(null);
   const processProgressRef = useRef(null);
   const projectsSectionRef = useRef(null);
-  const projectsShellRef = useRef(null);
+  const projectsPinRef = useRef(null);
+  const projectsTrackRef = useRef(null);
+  const projectsProgressRef = useRef(null);
 
   useLayoutEffect(() => {
     const pageShell = pageShellRef.current;
@@ -1256,7 +1272,9 @@ export default function App() {
     const sceneMedia = impactSceneMediaRef.current;
     const processProgressFill = processProgressRef.current;
     const projectsSection = projectsSectionRef.current;
-    const projectsShell = projectsShellRef.current;
+    const projectsPin = projectsPinRef.current;
+    const projectsTrack = projectsTrackRef.current;
+    const projectsProgressFill = projectsProgressRef.current;
 
     if (
       !(pageShell instanceof HTMLElement) ||
@@ -1270,7 +1288,9 @@ export default function App() {
       !(sceneMedia instanceof HTMLElement) ||
       !(processProgressFill instanceof HTMLElement) ||
       !(projectsSection instanceof HTMLElement) ||
-      !(projectsShell instanceof HTMLElement)
+      !(projectsPin instanceof HTMLElement) ||
+      !(projectsTrack instanceof HTMLElement) ||
+      !(projectsProgressFill instanceof HTMLElement)
     ) {
       return undefined;
     }
@@ -1290,6 +1310,28 @@ export default function App() {
     const processWordCopies = [...section.querySelectorAll(".process-word-copy")];
     const processWordTrails = [...section.querySelectorAll(".process-word-trail")];
     const processWords = [...section.querySelectorAll(".process-word")];
+    const projectPanels = [...projectsTrack.querySelectorAll(".project-panel")];
+    const projectPanelOneCopy = projectsTrack.querySelector(
+      ".project-panel-1 .project-panel-copy",
+    );
+    const projectPanelThreeCopy = projectsTrack.querySelector(
+      ".project-panel-3 .project-panel-copy",
+    );
+    const projectPanelThreeGhost = projectsTrack.querySelector(
+      ".project-panel-3 .project-panel-ghost",
+    );
+    const projectPanelTwoMedia = projectsTrack.querySelector(
+      ".project-panel-2 .project-panel-media-inner",
+    );
+    const projectPanelFourMedia = projectsTrack.querySelector(
+      ".project-panel-4 .project-panel-media-inner",
+    );
+    const projectPanelTwoCaption = projectsTrack.querySelector(
+      ".project-panel-2 .project-panel-caption",
+    );
+    const projectPanelFourCaption = projectsTrack.querySelector(
+      ".project-panel-4 .project-panel-caption",
+    );
 
     if (
       !(processOverlay instanceof HTMLElement) ||
@@ -1301,7 +1343,15 @@ export default function App() {
       processWords.length !== processWordCopies.length ||
       processWords.length !== processWordTrails.length ||
       !characterNodes.length ||
-      !(wordMeasure instanceof HTMLElement)
+      !(wordMeasure instanceof HTMLElement) ||
+      projectPanels.length !== projectSequencePanels.length ||
+      !(projectPanelOneCopy instanceof HTMLElement) ||
+      !(projectPanelThreeCopy instanceof HTMLElement) ||
+      !(projectPanelThreeGhost instanceof HTMLElement) ||
+      !(projectPanelTwoMedia instanceof HTMLElement) ||
+      !(projectPanelFourMedia instanceof HTMLElement) ||
+      !(projectPanelTwoCaption instanceof HTMLElement) ||
+      !(projectPanelFourCaption instanceof HTMLElement)
     ) {
       return undefined;
     }
@@ -1330,8 +1380,7 @@ export default function App() {
     const processStageEntryScale = 0.94;
     const processStageParallaxEndY = -8;
     const processStageFinalScale = 1.025;
-    const projectsSectionEntryY = 10;
-    const projectsShellEntryY = 72;
+    const projectSequenceDuration = projectSequencePanels.length - 1;
     const brainAfterglowFadeEnd = 0.12;
     const brainEntryRotationProgressMax = 0.32;
     const finalProcessWordIndex = processWords.length - 1;
@@ -1440,6 +1489,16 @@ export default function App() {
         viewportHeight * impactTransitionSettings.scrollDistanceViewportFactor +
           viewportHeight * impactTransitionSettings.processSequenceViewportFactor +
           extraContentScroll,
+      );
+    };
+
+    const getProjectsHorizontalDistance = () => {
+      const viewportWidth = projectsPin.clientWidth || window.innerWidth || 1;
+      const travelDistance = projectsTrack.scrollWidth - viewportWidth;
+
+      return Math.max(
+        Math.round(travelDistance),
+        Math.round(viewportWidth * projectSequenceDuration),
       );
     };
 
@@ -1719,12 +1778,26 @@ export default function App() {
         scaleX: 1,
         transformOrigin: "left center",
       });
-      gsap.set(projectsSection, {
-        yPercent: 0,
+      gsap.set(projectsTrack, {
+        clearProps: "transform",
       });
-      gsap.set(projectsShell, {
-        opacity: 1,
-        y: 0,
+      gsap.set(
+        [
+          projectPanelOneCopy,
+          projectPanelThreeCopy,
+          projectPanelThreeGhost,
+          projectPanelTwoMedia,
+          projectPanelFourMedia,
+          projectPanelTwoCaption,
+          projectPanelFourCaption,
+        ],
+        {
+          clearProps: "transform,opacity",
+        },
+      );
+      gsap.set(projectsProgressFill, {
+        scaleX: 1,
+        transformOrigin: "left center",
       });
       gsap.set(focusItems, {
         opacity: 1,
@@ -1814,15 +1887,48 @@ export default function App() {
       processWordMotionSpecs.forEach((spec, index) => {
         setProcessLineState(index, spec.enter);
       });
-      gsap.set(projectsShell, {
+      gsap.set(projectsTrack, {
+        x: 0,
+        force3D: true,
+      });
+      gsap.set(projectPanelOneCopy, {
+        xPercent: 0,
+        yPercent: 0,
+        force3D: true,
+      });
+      gsap.set(projectPanelThreeCopy, {
+        xPercent: 14,
+        yPercent: 3,
+        force3D: true,
+      });
+      gsap.set(projectPanelThreeGhost, {
+        xPercent: 8,
+        yPercent: 2,
+        opacity: 0.18,
+        force3D: true,
+      });
+      gsap.set(projectPanelTwoMedia, {
+        xPercent: -8,
+        scale: 1.14,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set(projectPanelFourMedia, {
+        xPercent: -6,
+        scale: 1.16,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set([projectPanelTwoCaption, projectPanelFourCaption], {
+        y: 32,
         opacity: 0.62,
-        y: projectsShellEntryY,
         force3D: true,
       });
-      gsap.set(projectsSection, {
-        yPercent: projectsSectionEntryY,
-        force3D: true,
+      gsap.set(projectsProgressFill, {
+        scaleX: 0,
+        transformOrigin: "left center",
       });
+      projectsSection.style.setProperty("--projects-progress", "0");
 
       const timeline = gsap.timeline({
         defaults: {
@@ -2116,28 +2222,105 @@ export default function App() {
         },
         scrollTrigger: {
           trigger: projectsSection,
-          start: "top bottom",
-          end: "top 52%",
-          scrub: 1.05,
+          start: "top top",
+          end: () => `+=${getProjectsHorizontalDistance()}`,
+          scrub: 1.08,
+          pin: true,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
+          onRefresh: (self) => {
+            projectsSection.style.setProperty(
+              "--projects-progress",
+              self.progress.toFixed(4),
+            );
+          },
+          onUpdate: (self) => {
+            projectsSection.style.setProperty(
+              "--projects-progress",
+              self.progress.toFixed(4),
+            );
+          },
         },
       })
         .to(
-          projectsSection,
+          projectsTrack,
           {
-            yPercent: 0,
+            x: () => -getProjectsHorizontalDistance(),
+            duration: projectSequenceDuration,
+          },
+          0,
+        )
+        .to(
+          projectsProgressFill,
+          {
+            scaleX: 1,
+            duration: projectSequenceDuration,
+          },
+          0,
+        )
+        .to(
+          projectPanelOneCopy,
+          {
+            xPercent: -18,
+            yPercent: -4,
             duration: 1,
           },
           0,
         )
         .to(
-          projectsShell,
+          projectPanelTwoMedia,
           {
-            opacity: 1,
-            y: 0,
-            duration: 0.92,
+            xPercent: 8,
+            scale: 1.04,
+            duration: 1,
           },
-          0.08,
+          0,
+        )
+        .to(
+          projectPanelTwoCaption,
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+          },
+          0,
+        )
+        .to(
+          projectPanelThreeCopy,
+          {
+            xPercent: -12,
+            yPercent: -5,
+            duration: 1,
+          },
+          2,
+        )
+        .to(
+          projectPanelThreeGhost,
+          {
+            xPercent: -4,
+            yPercent: -2,
+            opacity: 0.34,
+            duration: 1,
+          },
+          2,
+        )
+        .to(
+          projectPanelFourMedia,
+          {
+            xPercent: 10,
+            scale: 1.03,
+            duration: 1,
+          },
+          2,
+        )
+        .to(
+          projectPanelFourCaption,
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+          },
+          2,
         );
     }, section);
 
@@ -2238,23 +2421,11 @@ export default function App() {
                   <br />
                   and sometimes they accidentally are.
                 </h1>
-                <p className="hero-text">
-                  The hero scene hands off into a masked typographic transition,
-                  where the next section already exists underneath the frame and
-                  takes over through a single word.
-                </p>
+                
 
-                <div className="hero-actions">
-                  <a className="button button-primary" href="#about">
-                    Read about me
-                  </a>
-                </div>
+                
 
-                <ul className="spotlight-list">
-                  {spotlightItems.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+                
 
                 <div className="scrub-status" aria-hidden="true">
                   <span>Scroll to move through the scene</span>
@@ -2486,11 +2657,7 @@ export default function App() {
                       ))}
                     </div>
 
-                    <div className="about-frame-bottom about-focus-fade">
-                      <span className="about-frame-note">
-                        Scroll to let the word open the next scene.
-                      </span>
-                    </div>
+                    
                   </div>
                 </div>
               </section>
@@ -2503,43 +2670,97 @@ export default function App() {
             id="projects"
             ref={projectsSectionRef}
           >
-            <div className="projects-shell" ref={projectsShellRef}>
-              <div className="projects-head intro-panel">
-                <p className="eyebrow">Section 04 / Projects</p>
-                <h2 id="projects-title">
-                  Projects that turn visual experiments into usable products.
-                </h2>
-                <p className="projects-intro">
-                  A focused set of builds across motion design, live product
-                  interfaces, and AI tooling. Each one starts with a strong
-                  interaction idea and ends as something practical enough to
-                  ship.
-                </p>
+            <div className="projects-pin" ref={projectsPinRef}>
+              <div className="projects-track" ref={projectsTrackRef}>
+                {projectSequencePanels.map((panel, index) => {
+                  const panelClassName = `project-panel project-panel-${index + 1} project-panel-${panel.type}`;
+
+                  if (panel.type === "text") {
+                    return (
+                      <article className={panelClassName} key={panel.number}>
+                        <div className="project-panel-copy">
+                          <div className="project-panel-meta">
+                            <p className="eyebrow">{panel.eyebrow}</p>
+                            <span className="project-panel-number">{panel.number}</span>
+                          </div>
+
+                          {panel.ghost ? (
+                            <span className="project-panel-ghost" aria-hidden="true">
+                              {panel.ghost}
+                            </span>
+                          ) : null}
+
+                          <div className="project-panel-copy-stack">
+                            <h2
+                              className="project-panel-title"
+                              id={index === 0 ? "projects-title" : undefined}
+                            >
+                              {panel.title.map((line) => (
+                                <span key={line}>{line}</span>
+                              ))}
+                            </h2>
+                            <p className="project-panel-summary">{panel.summary}</p>
+                            <p className="project-panel-detail">{panel.detail}</p>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  }
+
+                  return (
+                    <article className={panelClassName} key={panel.number}>
+                      <div className="project-panel-media-inner" aria-hidden="true">
+                        <picture>
+                          {panel.mobileImage ? (
+                            <source media="(max-width: 900px)" srcSet={panel.mobileImage} />
+                          ) : null}
+                          <img alt="" src={panel.image} />
+                        </picture>
+                      </div>
+                      <div className="project-panel-media-overlay" aria-hidden="true" />
+
+                      <div
+                        className={`project-panel-caption ${
+                          index === projectSequencePanels.length - 1
+                            ? "project-panel-caption-end"
+                            : ""
+                        }`}
+                      >
+                        <div className="project-panel-meta">
+                          <p className="eyebrow">{panel.eyebrow}</p>
+                          <span className="project-panel-number">{panel.number}</span>
+                        </div>
+                        <h3 className="project-panel-caption-title">{panel.title}</h3>
+                        <p className="project-panel-summary">{panel.summary}</p>
+                        <p className="project-panel-detail">{panel.detail}</p>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
 
-              <div className="projects-grid">
-                {projectItems.map((project) => (
-                  <article className="project-card feature-card" key={project.title}>
-                    <div className="project-card-top">
-                      <span className="project-number">{project.number}</span>
-                      <span className="project-category">{project.category}</span>
-                    </div>
-
-                    <div className="project-copy">
-                      <h3>{project.title}</h3>
-                      <p className="project-summary">{project.summary}</p>
-                    </div>
-
-                    <ul className="project-stack" aria-label={`${project.title} stack`}>
-                      {project.stack.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-
-                    <p className="project-outcome">{project.outcome}</p>
-                  </article>
-                ))}
+              <div className="projects-rail" aria-hidden="true">
+                <span className="projects-rail-fill" ref={projectsProgressRef} />
               </div>
+            </div>
+          </section>
+
+          <section
+            aria-labelledby="closing-title"
+            className="closing-section"
+            id="closing"
+          >
+            <div className="closing-panel contact-panel intro-panel">
+              <p className="eyebrow">Section 05 / Closing</p>
+              <h2 id="closing-title">The motion stops. The intent stays.</h2>
+              <p className="closing-copy">
+                The horizontal sequence ends here and the page returns to a calmer
+                rhythm. The same idea carries through: atmosphere matters most when
+                the product still feels precise.
+              </p>
+              <a className="button button-primary" href="#home">
+                Restart the sequence
+              </a>
             </div>
           </section>
         </main>

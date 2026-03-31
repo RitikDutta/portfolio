@@ -1067,254 +1067,396 @@ a {
 }
 
 .projects-section {
-  --projects-overlap: clamp(4.5rem, 12vh, 8rem);
+  --projects-progress: 0;
   position: relative;
   z-index: 5;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
   isolation: isolate;
-  min-height: calc(100vh + var(--projects-overlap));
-  min-height: calc(100svh + var(--projects-overlap));
-  height: calc(100vh + var(--projects-overlap));
-  height: calc(100svh + var(--projects-overlap));
-  margin-top: calc(var(--projects-overlap) * -1);
-  padding:
-    calc(clamp(2.1rem, 4.5vh, 3.6rem) + var(--projects-overlap))
-    0
-    clamp(1.6rem, 3.2vh, 2.6rem);
-  overflow: clip;
   background:
-    linear-gradient(
-      180deg,
-      rgba(6, 12, 20, 0) 0%,
-      rgba(6, 12, 20, 0.06) 14%,
-      rgba(6, 12, 20, 0.42) 30%,
-      rgba(6, 12, 20, 0.86) 48%,
-      #09121d 100%
-    ),
-    radial-gradient(circle at 50% 0%, rgba(255, 209, 156, 0.14), transparent 32%),
-    radial-gradient(circle at 15% 15%, rgba(211, 111, 62, 0.2), transparent 24%),
-    radial-gradient(circle at 85% 0%, rgba(255, 191, 131, 0.08), transparent 26%),
-    linear-gradient(180deg, #060c14 0%, #09121d 100%);
-  will-change: transform;
+    linear-gradient(180deg, #111317 0%, #0c1015 54%, #090c11 100%);
 }
 
-.projects-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(4, 8, 15, 0) 0%, rgba(4, 8, 15, 0.18) 18%, rgba(4, 8, 15, 0.74) 100%),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.018) 0 1px,
-      transparent 1px 26px
-    );
-  pointer-events: none;
-}
-
+.projects-section::before,
 .projects-section::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: clamp(7rem, 18vh, 12rem);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 232, 205, 0.15), transparent 62%),
-    linear-gradient(180deg, rgba(5, 10, 17, 0) 0%, rgba(5, 10, 17, 0.48) 100%);
+  inset: 0;
   pointer-events: none;
 }
 
-.projects-shell {
-  position: relative;
+.projects-section::before {
   z-index: 1;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  align-content: stretch;
-  gap: clamp(1.25rem, 2.4vh, 2rem);
-  width: min(1180px, calc(100% - 2rem));
-  height: 100%;
-  margin: 0 auto;
-  overflow: hidden;
-  will-change: transform, opacity;
-}
-
-.projects-head {
-  display: grid;
-  align-content: start;
-  gap: clamp(0.55rem, 1.2vh, 0.9rem);
-  max-width: 46rem;
-}
-
-.projects-head .eyebrow {
-  color: #ffd7a5;
-}
-
-.projects-head h2 {
-  margin: 0;
-  color: #f8f1e6;
-  font-family: "Instrument Serif", Georgia, serif;
-  font-size: clamp(2.45rem, 4.8vw, 4.4rem);
-  font-weight: 400;
-  line-height: 0.92;
-  letter-spacing: -0.045em;
-  text-wrap: balance;
-  max-width: 12ch;
-}
-
-.projects-intro {
-  margin: 0;
-  max-width: 44rem;
-  color: rgba(248, 241, 230, 0.76);
-  font-size: 0.96rem;
-  line-height: 1.55;
-}
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  min-height: 0;
-  align-items: stretch;
-  gap: clamp(0.75rem, 1vw, 1rem);
-}
-
-.project-card {
-  display: grid;
-  gap: clamp(0.9rem, 1.3vh, 1.15rem);
-  min-height: 100%;
-  padding: clamp(1rem, 1.35vw, 1.2rem);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1.35rem;
   background:
-    linear-gradient(180deg, rgba(255, 248, 239, 0.07) 0%, rgba(255, 248, 239, 0.03) 100%),
-    rgba(10, 18, 29, 0.82);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 24px 60px rgba(1, 4, 10, 0.36);
-  backdrop-filter: blur(14px);
+    radial-gradient(
+      circle at calc(16% + (var(--projects-progress) * 28%)) 24%,
+      rgba(215, 127, 84, 0.16),
+      transparent 24%
+    ),
+    radial-gradient(circle at 82% 78%, rgba(115, 60, 38, 0.18), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 22%, transparent 74%, rgba(0, 0, 0, 0.2) 100%);
 }
 
-.project-card-top {
+.projects-section::after {
+  z-index: 4;
+  background:
+    linear-gradient(90deg, rgba(6, 8, 11, 0.84) 0%, transparent 16%, transparent 84%, rgba(6, 8, 11, 0.84) 100%),
+    linear-gradient(180deg, rgba(6, 8, 11, 0.68) 0%, transparent 14%, transparent 86%, rgba(6, 8, 11, 0.8) 100%);
+}
+
+.projects-pin {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.projects-track {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: max-content;
+  height: 100%;
+  will-change: transform;
+}
+
+.project-panel {
+  position: relative;
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  isolation: isolate;
+}
+
+.project-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.project-panel-text {
+  align-items: end;
+}
+
+.project-panel-1 {
+  background: #191b1f;
+}
+
+.project-panel-1::before {
+  background:
+    radial-gradient(circle at 72% 24%, rgba(214, 127, 83, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 22%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0 1px,
+      transparent 1px 88px
+    );
+}
+
+.project-panel-3 {
+  background:
+    linear-gradient(135deg, #0d1117 0%, #111721 48%, #171a20 100%);
+}
+
+.project-panel-3::before {
+  background:
+    radial-gradient(circle at 24% 72%, rgba(214, 127, 83, 0.14), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 18%);
+}
+
+.project-panel-copy,
+.project-panel-caption {
+  position: relative;
+  z-index: 3;
+  display: grid;
+}
+
+.project-panel-copy {
+  gap: clamp(1.2rem, 2.1vh, 1.9rem);
+  width: min(42rem, calc(100% - 2 * clamp(1.4rem, 5vw, 5rem)));
+  margin: 0 clamp(1.4rem, 5vw, 5rem) clamp(2.4rem, 8vh, 6rem);
+}
+
+.project-panel-3 .project-panel-copy {
+  margin-left: auto;
+  text-align: right;
+}
+
+.project-panel-copy-stack {
+  position: relative;
+  display: grid;
+  gap: clamp(0.9rem, 1.8vh, 1.4rem);
+}
+
+.project-panel-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.project-number {
-  color: rgba(255, 215, 165, 0.92);
+.project-panel .eyebrow {
+  margin: 0;
+  color: rgba(255, 233, 211, 0.72);
+}
+
+.project-panel-number {
+  color: rgba(255, 255, 255, 0.42);
   font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
 }
 
-.project-category {
-  padding: 0.45rem 0.7rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
-  color: rgba(248, 241, 230, 0.72);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.project-copy {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.project-copy h3 {
+.project-panel-title,
+.project-panel-caption-title {
   margin: 0;
   color: #fff8ef;
-  font-size: clamp(1.3rem, 1.7vw, 1.7rem);
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.project-panel-title {
+  max-width: 8ch;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 0.88;
+}
+
+.project-panel-title span {
+  display: block;
+}
+
+.project-panel-ghost {
+  position: absolute;
+  top: clamp(4rem, 10vh, 8rem);
+  right: 0;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: clamp(4.5rem, 11vw, 10rem);
+  font-weight: 700;
+  line-height: 0.84;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.project-panel-summary {
+  margin: 0;
+  max-width: 32rem;
+  color: rgba(248, 241, 230, 0.82);
+  font-size: clamp(1rem, 1.3vw, 1.14rem);
+  line-height: 1.72;
+}
+
+.project-panel-detail {
+  margin: 0;
+  max-width: 30rem;
+  color: rgba(255, 216, 180, 0.64);
+  font-size: 0.82rem;
   font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  letter-spacing: 0.18em;
+  line-height: 1.55;
+  text-transform: uppercase;
 }
 
-.project-summary,
-.project-outcome {
-  margin: 0;
-  color: rgba(248, 241, 230, 0.76);
-  font-size: 0.93rem;
-  line-height: 1.48;
+.project-panel-image {
+  background: #05070b;
 }
 
-.project-stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
+.project-panel-image::before {
+  z-index: 2;
+  left: 0;
+  right: auto;
+  width: clamp(4rem, 10vw, 8rem);
+  background: linear-gradient(90deg, rgba(4, 6, 9, 0.82) 0%, transparent 100%);
 }
 
-.project-stack li {
-  padding: 0.45rem 0.68rem;
+.project-panel-media-inner {
+  position: absolute;
+  inset: -5%;
+  z-index: 0;
+  will-change: transform;
+}
+
+.project-panel-media-inner picture,
+.project-panel-media-inner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.project-panel-media-inner img {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.project-panel-4 .project-panel-media-inner img {
+  object-position: center 38%;
+}
+
+.project-panel-media-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(5, 7, 11, 0.14) 0%, rgba(5, 7, 11, 0.32) 48%, rgba(5, 7, 11, 0.86) 100%),
+    radial-gradient(circle at 68% 28%, rgba(255, 212, 173, 0.18), transparent 30%),
+    radial-gradient(circle at 14% 78%, rgba(211, 111, 62, 0.12), transparent 22%);
+}
+
+.project-panel-caption {
+  gap: 0.8rem;
+  align-self: end;
+  width: min(32rem, calc(100% - 2 * clamp(1.4rem, 5vw, 5rem)));
+  margin: 0 clamp(1.4rem, 5vw, 5rem) clamp(2.2rem, 7vh, 5rem);
+  padding: clamp(1.15rem, 2vw, 1.8rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(180deg, rgba(11, 16, 24, 0.54) 0%, rgba(7, 11, 17, 0.82) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 28px 70px rgba(1, 4, 10, 0.36);
+  backdrop-filter: blur(18px);
+}
+
+.project-panel-caption-end {
+  margin-left: auto;
+  text-align: right;
+}
+
+.project-panel-caption-title {
+  font-size: clamp(2.6rem, 4.2vw, 4.1rem);
+  line-height: 0.92;
+}
+
+.project-panel-caption .project-panel-summary,
+.project-panel-caption .project-panel-detail {
+  max-width: none;
+}
+
+.project-panel-caption-end .project-panel-meta {
+  margin-left: auto;
+}
+
+.projects-rail {
+  position: absolute;
+  z-index: 5;
+  left: clamp(1rem, 3vw, 2.5rem);
+  right: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vh, 2rem);
+  height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 248, 239, 0.88);
-  font-size: 0.78rem;
-  font-weight: 500;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.project-outcome {
-  margin-top: auto;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.projects-rail-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(255, 247, 235, 0.98) 0%, rgba(211, 111, 62, 0.96) 100%);
+  box-shadow:
+    0 0 18px rgba(255, 223, 190, 0.18),
+    0 0 34px rgba(211, 111, 62, 0.28);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.closing-section {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: clamp(2rem, 6vw, 5rem) 0;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 216, 178, 0.1), transparent 24%),
+    linear-gradient(180deg, #09111a 0%, #0b121b 100%);
+}
+
+.closing-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(5, 9, 14, 0.02) 0%, rgba(5, 9, 14, 0.22) 100%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.018) 0 1px,
+      transparent 1px 28px
+    );
+  pointer-events: none;
+}
+
+.closing-panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.1rem;
+  width: min(780px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.8rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 239, 0.06) 0%, rgba(255, 248, 239, 0.03) 100%),
+    rgba(8, 14, 22, 0.84);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 32px 72px rgba(1, 4, 10, 0.32);
+  backdrop-filter: blur(18px);
+}
+
+.closing-panel .eyebrow {
+  color: #ffd7a5;
+}
+
+.closing-panel h2 {
+  margin: 0;
+  max-width: 10ch;
+  color: #f8f1e6;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+}
+
+.closing-copy {
+  margin: 0;
+  max-width: 38rem;
+  color: rgba(248, 241, 230, 0.76);
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.closing-panel .button {
+  width: fit-content;
 }
 
 @media (max-height: 860px) and (min-width: 961px) {
-  .projects-section {
-    --projects-overlap: clamp(3.5rem, 9vh, 5.5rem);
-    padding:
-      calc(clamp(1.7rem, 3.6vh, 2.6rem) + var(--projects-overlap))
-      0
-      clamp(1.25rem, 2.3vh, 1.9rem);
+  .project-panel-copy {
+    margin-bottom: clamp(1.8rem, 5vh, 3.5rem);
   }
 
-  .projects-shell {
-    gap: 1rem;
+  .project-panel-title {
+    font-size: clamp(3.5rem, 7vw, 5.8rem);
   }
 
-  .projects-head {
-    gap: 0.45rem;
-    max-width: 42rem;
+  .project-panel-caption {
+    margin-bottom: clamp(1.8rem, 5vh, 3rem);
   }
 
-  .projects-head h2 {
-    font-size: clamp(2.2rem, 4vw, 3.6rem);
-    max-width: 13ch;
-  }
-
-  .projects-intro {
-    font-size: 0.9rem;
-    line-height: 1.45;
-  }
-
-  .project-card {
-    gap: 0.75rem;
-    padding: 0.9rem;
-  }
-
-  .project-copy h3 {
-    font-size: 1.18rem;
-  }
-
-  .project-summary,
-  .project-outcome {
-    font-size: 0.87rem;
-    line-height: 1.4;
-  }
-
-  .project-stack {
-    gap: 0.35rem;
-  }
-
-  .project-stack li {
-    padding: 0.38rem 0.56rem;
-    font-size: 0.74rem;
+  .project-panel-caption-title {
+    font-size: clamp(2.2rem, 3.8vw, 3.2rem);
   }
 }
 
@@ -1380,12 +1522,41 @@ a {
     max-width: 11ch;
   }
 
-  .projects-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .project-panel-copy {
+    width: min(34rem, calc(100% - 2 * 1.5rem));
+    margin: 0 1.5rem clamp(2rem, 6vh, 4rem);
   }
 
-  .projects-section {
-    --projects-overlap: clamp(4rem, 10vh, 6rem);
+  .project-panel-title {
+    font-size: clamp(3.4rem, 8.8vw, 5.6rem);
+  }
+
+  .project-panel-ghost {
+    top: clamp(3rem, 8vh, 5rem);
+    font-size: clamp(3.6rem, 12vw, 8rem);
+  }
+
+  .project-panel-caption {
+    width: min(28rem, calc(100% - 2 * 1.5rem));
+    margin: 0 1.5rem clamp(1.6rem, 5vh, 3rem);
+  }
+
+  .project-panel-caption-title {
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+  }
+
+  .project-panel-summary {
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
+
+  .project-panel-detail {
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+  }
+
+  .closing-panel {
+    width: min(720px, calc(100% - 2rem));
   }
 
   .about-foreground-frame {
@@ -1500,25 +1671,65 @@ a {
     margin-top: -3rem;
   }
 
-  .projects-shell {
+  .project-panel-copy,
+  .project-panel-caption {
     width: calc(100% - 1rem);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 
-  .projects-section {
-    --projects-overlap: clamp(3.5rem, 8vh, 4.5rem);
+  .project-panel-3 .project-panel-copy,
+  .project-panel-caption-end {
+    margin-left: 0.5rem;
+    text-align: left;
   }
 
-  .projects-grid {
-    grid-template-columns: 1fr;
+  .project-panel-3 .project-panel-copy {
+    justify-items: start;
   }
 
-  .project-card {
-    padding: 1.15rem;
+  .project-panel-caption-end .project-panel-meta {
+    margin-left: 0;
   }
 
-  .project-card-top {
-    align-items: flex-start;
-    flex-direction: column;
+  .project-panel-title {
+    font-size: clamp(2.7rem, 13vw, 4.3rem);
+    max-width: 9ch;
+  }
+
+  .project-panel-caption-title {
+    font-size: clamp(2rem, 9vw, 3rem);
+  }
+
+  .project-panel-ghost {
+    top: clamp(3.2rem, 8vh, 4.8rem);
+    right: auto;
+    left: 0;
+    font-size: clamp(3.2rem, 16vw, 6rem);
+  }
+
+  .project-panel-number {
+    font-size: 0.74rem;
+  }
+
+  .projects-rail {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.9rem;
+  }
+
+  .closing-panel {
+    width: calc(100% - 1rem);
+    padding: 1.25rem;
+  }
+
+  .closing-panel h2 {
+    font-size: clamp(2.6rem, 11vw, 4rem);
+  }
+
+  .closing-copy {
+    font-size: 0.96rem;
+    line-height: 1.65;
   }
 
   .about-foreground {
@@ -1608,6 +1819,32 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .projects-section {
+    height: auto;
+    min-height: auto;
+  }
+
+  .projects-pin {
+    height: auto;
+    overflow: visible;
+  }
+
+  .projects-track {
+    display: grid;
+    width: 100%;
+    transform: none !important;
+  }
+
+  .project-panel {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  .projects-rail {
+    display: none;
+  }
+
   *,
   *::before,
   *::after {
