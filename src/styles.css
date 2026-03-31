@@ -1071,11 +1071,15 @@ a {
   position: relative;
   z-index: 5;
   isolation: isolate;
+  min-height: calc(100vh + var(--projects-overlap));
+  min-height: calc(100svh + var(--projects-overlap));
+  height: calc(100vh + var(--projects-overlap));
+  height: calc(100svh + var(--projects-overlap));
   margin-top: calc(var(--projects-overlap) * -1);
   padding:
-    calc(clamp(5rem, 9vw, 8rem) + var(--projects-overlap))
+    calc(clamp(2.1rem, 4.5vh, 3.6rem) + var(--projects-overlap))
     0
-    clamp(5.5rem, 10vw, 8.5rem);
+    clamp(1.6rem, 3.2vh, 2.6rem);
   overflow: clip;
   background:
     linear-gradient(
@@ -1124,16 +1128,21 @@ a {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: clamp(2rem, 4vw, 3rem);
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: stretch;
+  gap: clamp(1.25rem, 2.4vh, 2rem);
   width: min(1180px, calc(100% - 2rem));
+  height: 100%;
   margin: 0 auto;
+  overflow: hidden;
   will-change: transform, opacity;
 }
 
 .projects-head {
   display: grid;
-  gap: 1rem;
-  max-width: 50rem;
+  align-content: start;
+  gap: clamp(0.55rem, 1.2vh, 0.9rem);
+  max-width: 46rem;
 }
 
 .projects-head .eyebrow {
@@ -1144,34 +1153,37 @@ a {
   margin: 0;
   color: #f8f1e6;
   font-family: "Instrument Serif", Georgia, serif;
-  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-size: clamp(2.45rem, 4.8vw, 4.4rem);
   font-weight: 400;
-  line-height: 0.95;
+  line-height: 0.92;
   letter-spacing: -0.045em;
   text-wrap: balance;
+  max-width: 12ch;
 }
 
 .projects-intro {
   margin: 0;
-  max-width: 40rem;
+  max-width: 44rem;
   color: rgba(248, 241, 230, 0.76);
-  font-size: 1.02rem;
-  line-height: 1.8;
+  font-size: 0.96rem;
+  line-height: 1.55;
 }
 
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  min-height: 0;
+  align-items: stretch;
+  gap: clamp(0.75rem, 1vw, 1rem);
 }
 
 .project-card {
   display: grid;
-  gap: 1.4rem;
+  gap: clamp(0.9rem, 1.3vh, 1.15rem);
   min-height: 100%;
-  padding: 1.4rem;
+  padding: clamp(1rem, 1.35vw, 1.2rem);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1.75rem;
+  border-radius: 1.35rem;
   background:
     linear-gradient(180deg, rgba(255, 248, 239, 0.07) 0%, rgba(255, 248, 239, 0.03) 100%),
     rgba(10, 18, 29, 0.82);
@@ -1209,46 +1221,101 @@ a {
 
 .project-copy {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.55rem;
 }
 
 .project-copy h3 {
   margin: 0;
   color: #fff8ef;
-  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-size: clamp(1.3rem, 1.7vw, 1.7rem);
   font-weight: 500;
   letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .project-summary,
 .project-outcome {
   margin: 0;
   color: rgba(248, 241, 230, 0.76);
-  line-height: 1.72;
+  font-size: 0.93rem;
+  line-height: 1.48;
 }
 
 .project-stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.45rem;
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
 .project-stack li {
-  padding: 0.55rem 0.8rem;
+  padding: 0.45rem 0.68rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 248, 239, 0.88);
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   font-weight: 500;
 }
 
 .project-outcome {
   margin-top: auto;
-  padding-top: 1rem;
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-height: 860px) and (min-width: 961px) {
+  .projects-section {
+    --projects-overlap: clamp(3.5rem, 9vh, 5.5rem);
+    padding:
+      calc(clamp(1.7rem, 3.6vh, 2.6rem) + var(--projects-overlap))
+      0
+      clamp(1.25rem, 2.3vh, 1.9rem);
+  }
+
+  .projects-shell {
+    gap: 1rem;
+  }
+
+  .projects-head {
+    gap: 0.45rem;
+    max-width: 42rem;
+  }
+
+  .projects-head h2 {
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    max-width: 13ch;
+  }
+
+  .projects-intro {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .project-card {
+    gap: 0.75rem;
+    padding: 0.9rem;
+  }
+
+  .project-copy h3 {
+    font-size: 1.18rem;
+  }
+
+  .project-summary,
+  .project-outcome {
+    font-size: 0.87rem;
+    line-height: 1.4;
+  }
+
+  .project-stack {
+    gap: 0.35rem;
+  }
+
+  .project-stack li {
+    padding: 0.38rem 0.56rem;
+    font-size: 0.74rem;
+  }
 }
 
 @keyframes spark-flash {
