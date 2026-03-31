@@ -960,7 +960,7 @@ a {
 }
 
 .process-word-line-4 {
-  top: 62%;
+  top: 98%;
   left: 56%;
   z-index: 1;
   width: min(54rem, 76vw);
@@ -1364,7 +1364,7 @@ a {
   }
 
   .process-word-line-4 {
-    top: 64%;
+    top: 94%;
     width: min(40rem, 74vw);
   }
 }
