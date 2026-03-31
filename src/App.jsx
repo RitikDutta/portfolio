@@ -1474,6 +1474,11 @@ export default function App() {
         ((visibleWordOffsetTop + wordHeightPx * 0.525 + verticalOffsetPx) /
           baseFrameHeight) *
         100;
+      const zoomOriginX = gsap.utils.clamp(
+        0,
+        100,
+        centerX - (wordWidthPx / baseFrameWidth) * 8,
+      );
       const fontSize = (fontSizePx / baseFrameHeight) * 100;
       const textLength = (wordWidthPx / baseFrameWidth) * 100;
       const outlineStrokeWidthPx =
@@ -1506,7 +1511,7 @@ export default function App() {
         svgOrigin: `${centerX} ${centerY}`,
       });
       gsap.set(aboutFrame, {
-        transformOrigin: `${centerX}% ${centerY}%`,
+        transformOrigin: `${zoomOriginX}% ${centerY}%`,
       });
     };
 
