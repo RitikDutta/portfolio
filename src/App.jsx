@@ -1576,6 +1576,224 @@ export default function App() {
       );
     };
 
+    const getProjectSequenceMotionSettings = () => {
+      const viewportWidth = window.innerWidth || projectsPin.clientWidth || 1;
+      const viewportHeight = window.innerHeight || 1;
+      const isPhone = viewportWidth <= 640;
+      const isTablet = viewportWidth <= 960;
+      const isCompactHeight = viewportHeight <= 760;
+
+      if (isPhone) {
+        return {
+          trackScrub: isCompactHeight ? 1 : 0.98,
+          mediaTransformOrigin: "center top",
+          panelOneDrift: {
+            xPercent: -8,
+            yPercent: isCompactHeight ? -1.5 : -2,
+          },
+          textEntry: {
+            xPercent: 6,
+            yPercent: isCompactHeight ? 0.8 : 1.2,
+          },
+          textDrift: {
+            xPercent: -5,
+            yPercent: isCompactHeight ? -1.3 : -1.8,
+          },
+          ghostEntry: {
+            xPercent: 3,
+            yPercent: 0.8,
+            opacity: 0.12,
+          },
+          ghostDrift: {
+            xPercent: -1.2,
+            yPercent: -0.55,
+            opacity: 0.22,
+          },
+          panelTwoMediaEntry: {
+            xPercent: -2,
+            scale: isCompactHeight ? 1.01 : 1.02,
+          },
+          panelTwoMediaDrift: {
+            xPercent: 2.2,
+            scale: 1,
+          },
+          panelFourMediaEntry: {
+            xPercent: -1.8,
+            scale: isCompactHeight ? 1.015 : 1.03,
+          },
+          panelFourMediaDrift: {
+            xPercent: 2.8,
+            scale: 1.005,
+          },
+          captionEntry: {
+            y: isCompactHeight ? 10 : 14,
+            opacity: 0.84,
+          },
+        };
+      }
+
+      if (isTablet) {
+        return {
+          trackScrub: isCompactHeight ? 1.04 : 1.02,
+          mediaTransformOrigin: "center top",
+          panelOneDrift: {
+            xPercent: -13,
+            yPercent: isCompactHeight ? -2.4 : -3,
+          },
+          textEntry: {
+            xPercent: 10,
+            yPercent: isCompactHeight ? 1.8 : 2.4,
+          },
+          textDrift: {
+            xPercent: -8,
+            yPercent: isCompactHeight ? -2.5 : -3.2,
+          },
+          ghostEntry: {
+            xPercent: 5,
+            yPercent: 1.4,
+            opacity: 0.15,
+          },
+          ghostDrift: {
+            xPercent: -2.4,
+            yPercent: -1.1,
+            opacity: 0.28,
+          },
+          panelTwoMediaEntry: {
+            xPercent: -4,
+            scale: isCompactHeight ? 1.05 : 1.07,
+          },
+          panelTwoMediaDrift: {
+            xPercent: 4.4,
+            scale: 1.015,
+          },
+          panelFourMediaEntry: {
+            xPercent: -3.4,
+            scale: isCompactHeight ? 1.06 : 1.09,
+          },
+          panelFourMediaDrift: {
+            xPercent: 5.4,
+            scale: 1.02,
+          },
+          captionEntry: {
+            y: isCompactHeight ? 16 : 22,
+            opacity: 0.76,
+          },
+        };
+      }
+
+      return {
+        trackScrub: 1.08,
+        mediaTransformOrigin: "center center",
+        panelOneDrift: {
+          xPercent: -18,
+          yPercent: -4,
+        },
+        textEntry: {
+          xPercent: 14,
+          yPercent: 3,
+        },
+        textDrift: {
+          xPercent: -12,
+          yPercent: -5,
+        },
+        ghostEntry: {
+          xPercent: 8,
+          yPercent: 2,
+          opacity: 0.18,
+        },
+        ghostDrift: {
+          xPercent: -4,
+          yPercent: -2,
+          opacity: 0.34,
+        },
+        panelTwoMediaEntry: {
+          xPercent: -8,
+          scale: 1.14,
+        },
+        panelTwoMediaDrift: {
+          xPercent: 8,
+          scale: 1.04,
+        },
+        panelFourMediaEntry: {
+          xPercent: -6,
+          scale: 1.16,
+        },
+        panelFourMediaDrift: {
+          xPercent: 10,
+          scale: 1.03,
+        },
+        captionEntry: {
+          y: 32,
+          opacity: 0.62,
+        },
+      };
+    };
+
+    let projectMotion = getProjectSequenceMotionSettings();
+
+    const refreshProjectMotionSettings = () => {
+      projectMotion = getProjectSequenceMotionSettings();
+      return projectMotion;
+    };
+
+    const applyProjectBaseState = () => {
+      const settings = refreshProjectMotionSettings();
+
+      gsap.set(projectsTrack, {
+        x: 0,
+        force3D: true,
+      });
+      gsap.set(projectPanelOneCopy, {
+        xPercent: 0,
+        yPercent: 0,
+        force3D: true,
+      });
+      gsap.set(projectPanelThreeCopy, {
+        xPercent: settings.textEntry.xPercent,
+        yPercent: settings.textEntry.yPercent,
+        force3D: true,
+      });
+      gsap.set(projectPanelThreeGhost, {
+        xPercent: settings.ghostEntry.xPercent,
+        yPercent: settings.ghostEntry.yPercent,
+        opacity: settings.ghostEntry.opacity,
+        force3D: true,
+      });
+      gsap.set(projectPanelFiveCopy, {
+        xPercent: settings.textEntry.xPercent,
+        yPercent: settings.textEntry.yPercent,
+        force3D: true,
+      });
+      gsap.set(projectPanelFiveGhost, {
+        xPercent: settings.ghostEntry.xPercent,
+        yPercent: settings.ghostEntry.yPercent,
+        opacity: settings.ghostEntry.opacity,
+        force3D: true,
+      });
+      gsap.set(projectPanelTwoMedia, {
+        xPercent: settings.panelTwoMediaEntry.xPercent,
+        scale: settings.panelTwoMediaEntry.scale,
+        transformOrigin: settings.mediaTransformOrigin,
+        force3D: true,
+      });
+      gsap.set(projectPanelFourMedia, {
+        xPercent: settings.panelFourMediaEntry.xPercent,
+        scale: settings.panelFourMediaEntry.scale,
+        transformOrigin: settings.mediaTransformOrigin,
+        force3D: true,
+      });
+      gsap.set([projectPanelTwoCaption, projectPanelFourCaption], {
+        y: settings.captionEntry.y,
+        opacity: settings.captionEntry.opacity,
+        force3D: true,
+      });
+      gsap.set(projectsProgressFill, {
+        scaleX: 0,
+        transformOrigin: "left center",
+      });
+      projectsSection.style.setProperty("--projects-progress", "0");
+    };
+
     const syncMaskLayout = () => {
       const baseFrameWidth = aboutFrame.clientWidth;
       const baseFrameHeight = aboutFrame.clientHeight;
@@ -1963,59 +2181,7 @@ export default function App() {
       processWordMotionSpecs.forEach((spec, index) => {
         setProcessLineState(index, spec.enter);
       });
-      gsap.set(projectsTrack, {
-        x: 0,
-        force3D: true,
-      });
-      gsap.set(projectPanelOneCopy, {
-        xPercent: 0,
-        yPercent: 0,
-        force3D: true,
-      });
-      gsap.set(projectPanelThreeCopy, {
-        xPercent: 14,
-        yPercent: 3,
-        force3D: true,
-      });
-      gsap.set(projectPanelThreeGhost, {
-        xPercent: 8,
-        yPercent: 2,
-        opacity: 0.18,
-        force3D: true,
-      });
-      gsap.set(projectPanelFiveCopy, {
-        xPercent: 14,
-        yPercent: 3,
-        force3D: true,
-      });
-      gsap.set(projectPanelFiveGhost, {
-        xPercent: 8,
-        yPercent: 2,
-        opacity: 0.18,
-        force3D: true,
-      });
-      gsap.set(projectPanelTwoMedia, {
-        xPercent: -8,
-        scale: 1.14,
-        transformOrigin: "center center",
-        force3D: true,
-      });
-      gsap.set(projectPanelFourMedia, {
-        xPercent: -6,
-        scale: 1.16,
-        transformOrigin: "center center",
-        force3D: true,
-      });
-      gsap.set([projectPanelTwoCaption, projectPanelFourCaption], {
-        y: 32,
-        opacity: 0.62,
-        force3D: true,
-      });
-      gsap.set(projectsProgressFill, {
-        scaleX: 0,
-        transformOrigin: "left center",
-      });
-      projectsSection.style.setProperty("--projects-progress", "0");
+      applyProjectBaseState();
 
       const timeline = gsap.timeline({
         defaults: {
@@ -2311,7 +2477,7 @@ export default function App() {
           trigger: projectsSection,
           start: "top top",
           end: () => `+=${getProjectsHorizontalDistance()}`,
-          scrub: 1.08,
+          scrub: projectMotion.trackScrub,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -2348,8 +2514,8 @@ export default function App() {
         .to(
           projectPanelOneCopy,
           {
-            xPercent: -18,
-            yPercent: -4,
+            xPercent: () => projectMotion.panelOneDrift.xPercent,
+            yPercent: () => projectMotion.panelOneDrift.yPercent,
             duration: 1,
           },
           0,
@@ -2357,8 +2523,8 @@ export default function App() {
         .to(
           projectPanelTwoMedia,
           {
-            xPercent: 8,
-            scale: 1.04,
+            xPercent: () => projectMotion.panelTwoMediaDrift.xPercent,
+            scale: () => projectMotion.panelTwoMediaDrift.scale,
             duration: 1,
           },
           0,
@@ -2375,8 +2541,8 @@ export default function App() {
         .to(
           projectPanelThreeCopy,
           {
-            xPercent: -12,
-            yPercent: -5,
+            xPercent: () => projectMotion.textDrift.xPercent,
+            yPercent: () => projectMotion.textDrift.yPercent,
             duration: 1,
           },
           2,
@@ -2384,9 +2550,9 @@ export default function App() {
         .to(
           projectPanelThreeGhost,
           {
-            xPercent: -4,
-            yPercent: -2,
-            opacity: 0.34,
+            xPercent: () => projectMotion.ghostDrift.xPercent,
+            yPercent: () => projectMotion.ghostDrift.yPercent,
+            opacity: () => projectMotion.ghostDrift.opacity,
             duration: 1,
           },
           2,
@@ -2394,8 +2560,8 @@ export default function App() {
         .to(
           projectPanelFourMedia,
           {
-            xPercent: 10,
-            scale: 1.03,
+            xPercent: () => projectMotion.panelFourMediaDrift.xPercent,
+            scale: () => projectMotion.panelFourMediaDrift.scale,
             duration: 1,
           },
           2,
@@ -2412,8 +2578,8 @@ export default function App() {
         .to(
           projectPanelFiveCopy,
           {
-            xPercent: -12,
-            yPercent: -5,
+            xPercent: () => projectMotion.textDrift.xPercent,
+            yPercent: () => projectMotion.textDrift.yPercent,
             duration: 1,
           },
           3,
@@ -2421,9 +2587,9 @@ export default function App() {
         .to(
           projectPanelFiveGhost,
           {
-            xPercent: -4,
-            yPercent: -2,
-            opacity: 0.34,
+            xPercent: () => projectMotion.ghostDrift.xPercent,
+            yPercent: () => projectMotion.ghostDrift.yPercent,
+            opacity: () => projectMotion.ghostDrift.opacity,
             duration: 1,
           },
           3,
@@ -2438,6 +2604,7 @@ export default function App() {
     );
 
     const handleResize = () => {
+      refreshProjectMotionSettings();
       syncMaskLayout();
       ScrollTrigger.refresh();
     };
@@ -2462,8 +2629,13 @@ export default function App() {
       document.fonts.ready.then(fontsReady).catch(() => {});
     }
 
-    ScrollTrigger.addEventListener("refreshInit", syncMaskLayout);
-    teardown.push(() => ScrollTrigger.removeEventListener("refreshInit", syncMaskLayout));
+    const handleRefreshInit = () => {
+      applyProjectBaseState();
+      syncMaskLayout();
+    };
+
+    ScrollTrigger.addEventListener("refreshInit", handleRefreshInit);
+    teardown.push(() => ScrollTrigger.removeEventListener("refreshInit", handleRefreshInit));
     teardown.push(() => window.cancelAnimationFrame(syncFrameId));
 
     return () => {
@@ -2836,7 +3008,10 @@ export default function App() {
 
                   return (
                     <article className={panelClassName} key={panel.number}>
-                      <div className="project-panel-media-inner" aria-hidden="true">
+                      <div
+                        className={`project-panel-media-inner${panel.video ? " project-panel-media-inner-video" : ""}`}
+                        aria-hidden="true"
+                      >
                         {panel.video ? (
                           <video
                             autoPlay
