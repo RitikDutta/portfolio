@@ -472,8 +472,8 @@ const defaultRuntimeProfile = {
   disableHeroDecoder: false,
   disableBrainScene: false,
   autoplayPanelVideos: true,
-  heroCanvasDpr: 1.5,
-  brainCanvasDpr: 1.5,
+  heroCanvasDpr: 1.25,
+  brainCanvasDpr: 1.1,
 };
 
 const getRuntimeProfile = () => {
@@ -487,7 +487,11 @@ const getRuntimeProfile = () => {
   const coarsePointer = window.matchMedia(
     "(hover: none) and (pointer: coarse)",
   ).matches;
-  const narrowViewport = window.innerWidth <= 960;
+  const touchDevice =
+    coarsePointer ||
+    (typeof navigator.maxTouchPoints === "number" &&
+      navigator.maxTouchPoints > 0);
+  const compactViewport = window.innerWidth <= 1200;
   const lowMemory =
     typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
   const lowConcurrency =
@@ -502,27 +506,37 @@ const getRuntimeProfile = () => {
     connection?.effectiveType ?? "",
   );
   const saveData = Boolean(connection?.saveData);
-  const preferLiteMode =
+  const disableHeavyRuntime =
     reducedMotion ||
     saveData ||
     slowConnection ||
     lowMemory ||
     lowConcurrency ||
-    (coarsePointer && narrowViewport);
+    touchDevice ||
+    compactViewport;
 
   return {
-    preferLiteMode,
-    disableSmoother: preferLiteMode,
-    disableHeroDecoder: preferLiteMode,
-    disableBrainScene: preferLiteMode,
-    autoplayPanelVideos: !preferLiteMode,
-    heroCanvasDpr: preferLiteMode ? 1 : 1.5,
-    brainCanvasDpr: preferLiteMode ? 1 : 1.5,
+    preferLiteMode: disableHeavyRuntime,
+    disableSmoother: disableHeavyRuntime,
+    disableHeroDecoder: disableHeavyRuntime,
+    disableBrainScene: disableHeavyRuntime,
+    autoplayPanelVideos: !disableHeavyRuntime,
+    heroCanvasDpr: disableHeavyRuntime ? 1 : 1.25,
+    brainCanvasDpr: disableHeavyRuntime ? 1 : 1.1,
   };
 };
 
 export default function App() {
   const runtimeProfileRef = useRef(null);
+  const brainMotionStateRef = useRef({
+    brainTravel: 0,
+    brainAfterglowProgress: 0,
+    brainFullscreen: 0,
+    brainSpin: 0,
+    brainImmersion: 0,
+    neuralBurst: 0,
+  });
+  const requestBrainSceneSyncRef = useRef(() => {});
   const pageShellRef = useRef(null);
   const smoothWrapperRef = useRef(null);
   const smoothContentRef = useRef(null);
@@ -851,92 +865,87 @@ export default function App() {
         "--scroll-progress",
         currentProgress.toFixed(4),
       );
-      pageShell.style.setProperty(
-        "--scroll-progress",
-        currentProgress.toFixed(4),
+      const heroZoom = clamp(
+        (currentProgress - zoomStartProgress) / 0.16,
+        0,
+        1,
       );
-      pageShell.style.setProperty(
-        "--hero-zoom",
-        clamp((currentProgress - zoomStartProgress) / 0.16, 0, 1).toFixed(4),
+      const brainRelease = clamp(
+        (currentProgress - brainReleaseStart) /
+          (brainReleaseEnd - brainReleaseStart),
+        0,
+        1,
       );
-      pageShell.style.setProperty(
-        "--brain-release",
-        clamp(
-          (currentProgress - brainReleaseStart) /
-            (brainReleaseEnd - brainReleaseStart),
-          0,
-          1,
-        ).toFixed(4),
+      const brainTravel = clamp(
+        (currentProgress - brainTravelStart) /
+          (brainTravelEnd - brainTravelStart),
+        0,
+        1,
       );
-      pageShell.style.setProperty(
-        "--brain-travel",
-        clamp(
-          (currentProgress - brainTravelStart) /
-            (brainTravelEnd - brainTravelStart),
-          0,
-          1,
-        ).toFixed(4),
+      const brainFade = clamp(
+        (currentProgress - brainFadeStart) / (brainFadeEnd - brainFadeStart),
+        0,
+        1,
       );
-      pageShell.style.setProperty(
-        "--brain-fade",
-        clamp(
-          (currentProgress - brainFadeStart) /
-            (brainFadeEnd - brainFadeStart),
-          0,
-          1,
-        ).toFixed(4),
+      const brainDock = clamp(
+        (currentProgress - brainDockStart) / (brainDockEnd - brainDockStart),
+        0,
+        1,
       );
-      pageShell.style.setProperty(
-        "--brain-dock",
-        clamp(
-          (currentProgress - brainDockStart) / (brainDockEnd - brainDockStart),
-          0,
-          1,
-        ).toFixed(4),
+      const screenDrop = clamp(
+        (currentProgress - screenDropStart) / (screenDropEnd - screenDropStart),
+        0,
+        1,
       );
-      pageShell.style.setProperty(
-        "--screen-drop",
-        clamp(
-          (currentProgress - screenDropStart) / (screenDropEnd - screenDropStart),
-          0,
-          1,
-        ).toFixed(4),
+      const brainFullscreen = clamp(
+        (currentProgress - brainFullscreenStart) /
+          (brainFullscreenEnd - brainFullscreenStart),
+        0,
+        1,
       );
+      const brainSpin = clamp(
+        (currentProgress - brainSpinStart) / (brainSpinEnd - brainSpinStart),
+        0,
+        1,
+      );
+      const brainImmersion = clamp(
+        (currentProgress - brainImmersionStart) /
+          (brainImmersionEnd - brainImmersionStart),
+        0,
+        1,
+      );
+      const neuralBurst = clamp(
+        (currentProgress - neuralBurstStart) /
+          (neuralBurstEnd - neuralBurstStart),
+        0,
+        1,
+      );
+
+      pageShell.style.setProperty("--scroll-progress", currentProgress.toFixed(4));
+      pageShell.style.setProperty("--hero-zoom", heroZoom.toFixed(4));
+      pageShell.style.setProperty("--brain-release", brainRelease.toFixed(4));
+      pageShell.style.setProperty("--brain-travel", brainTravel.toFixed(4));
+      pageShell.style.setProperty("--brain-fade", brainFade.toFixed(4));
+      pageShell.style.setProperty("--brain-dock", brainDock.toFixed(4));
+      pageShell.style.setProperty("--screen-drop", screenDrop.toFixed(4));
       pageShell.style.setProperty(
         "--brain-fullscreen",
-        clamp(
-          (currentProgress - brainFullscreenStart) /
-            (brainFullscreenEnd - brainFullscreenStart),
-          0,
-          1,
-        ).toFixed(4),
+        brainFullscreen.toFixed(4),
       );
-      pageShell.style.setProperty(
-        "--brain-spin",
-        clamp(
-          (currentProgress - brainSpinStart) / (brainSpinEnd - brainSpinStart),
-          0,
-          1,
-        ).toFixed(4),
-      );
+      pageShell.style.setProperty("--brain-spin", brainSpin.toFixed(4));
       pageShell.style.setProperty(
         "--brain-immersion",
-        clamp(
-          (currentProgress - brainImmersionStart) /
-            (brainImmersionEnd - brainImmersionStart),
-          0,
-          1,
-        ).toFixed(4),
+        brainImmersion.toFixed(4),
       );
-      pageShell.style.setProperty(
-        "--neural-burst",
-        clamp(
-          (currentProgress - neuralBurstStart) /
-            (neuralBurstEnd - neuralBurstStart),
-          0,
-          1,
-        ).toFixed(4),
-      );
+      pageShell.style.setProperty("--neural-burst", neuralBurst.toFixed(4));
+      Object.assign(brainMotionStateRef.current, {
+        brainTravel,
+        brainFullscreen,
+        brainSpin,
+        brainImmersion,
+        neuralBurst,
+      });
+      requestBrainSceneSyncRef.current();
 
       if (activeFrameIndex >= 0 && frameCache.has(activeFrameIndex)) {
         drawFrame(frameCache.get(activeFrameIndex));
@@ -1073,11 +1082,12 @@ export default function App() {
 
   useEffect(() => {
     const mountNode = brainMountRef.current;
-    const pageShell = pageShellRef.current;
 
-    if (!mountNode || !(pageShell instanceof HTMLElement)) {
+    if (!mountNode) {
       return undefined;
     }
+
+    requestBrainSceneSyncRef.current = () => {};
 
     if (runtimeProfile.disableBrainScene) {
       return undefined;
@@ -1086,7 +1096,6 @@ export default function App() {
     let disposeScene = () => {};
     let cancelled = false;
     let syncFrameId = 0;
-    let styleObserver = null;
 
     const initializeBrainScene = async () => {
       try {
@@ -1104,7 +1113,7 @@ export default function App() {
         const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
         const renderer = new THREE.WebGLRenderer({
           alpha: true,
-          antialias: true,
+          antialias: false,
           powerPreference: "high-performance",
         });
         const root = new THREE.Group();
@@ -1193,21 +1202,14 @@ export default function App() {
             return;
           }
 
-          const styles = window.getComputedStyle(pageShell);
-          const brainSpin =
-            Number.parseFloat(styles.getPropertyValue("--brain-spin")) || 0;
-          const brainTravel =
-            Number.parseFloat(styles.getPropertyValue("--brain-travel")) || 0;
-          const brainAfterglowProgress =
-            Number.parseFloat(
-              styles.getPropertyValue("--brain-afterglow-progress"),
-            ) || 0;
-          const brainFullscreen =
-            Number.parseFloat(styles.getPropertyValue("--brain-fullscreen")) || 0;
-          const brainImmersion =
-            Number.parseFloat(styles.getPropertyValue("--brain-immersion")) || 0;
-          const neuralBurst =
-            Number.parseFloat(styles.getPropertyValue("--neural-burst")) || 0;
+          const {
+            brainSpin,
+            brainTravel,
+            brainAfterglowProgress,
+            brainFullscreen,
+            brainImmersion,
+            neuralBurst,
+          } = brainMotionStateRef.current;
           const basePivotX = THREE.MathUtils.lerp(0.22, 0.03, brainFullscreen);
           const heroExitRotationX = THREE.MathUtils.lerp(
             basePivotX,
@@ -1259,6 +1261,8 @@ export default function App() {
             syncSceneToScroll();
           });
         };
+
+        requestBrainSceneSyncRef.current = requestScrollSync;
 
         loader.load(
           brainModelUrl,
@@ -1341,12 +1345,6 @@ export default function App() {
           window.addEventListener("resize", resizeScene);
         }
 
-        styleObserver = new MutationObserver(requestScrollSync);
-        styleObserver.observe(pageShell, {
-          attributes: true,
-          attributeFilter: ["style"],
-        });
-
         requestScrollSync();
 
         disposeScene = () => {
@@ -1361,8 +1359,6 @@ export default function App() {
           } else {
             window.removeEventListener("resize", resizeScene);
           }
-
-          styleObserver?.disconnect();
 
           if (brainModel) {
             brainModel.traverse((child) => {
@@ -1394,6 +1390,7 @@ export default function App() {
 
     return () => {
       cancelled = true;
+      requestBrainSceneSyncRef.current = () => {};
       disposeScene();
     };
   }, []);
@@ -1544,6 +1541,8 @@ export default function App() {
         "--brain-afterglow-progress",
         progress.toFixed(4),
       );
+      brainMotionStateRef.current.brainAfterglowProgress = progress;
+      requestBrainSceneSyncRef.current();
     };
 
     const syncBrainAfterglow = (trigger) => {
