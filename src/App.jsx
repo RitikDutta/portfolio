@@ -467,6 +467,7 @@ const impactTransitionSettings = {
 };
 
 const defaultRuntimeProfile = {
+  disableHeavyRuntime: false,
   preferLiteMode: false,
   disableSmoother: false,
   disableHeroDecoder: false,
@@ -481,6 +482,8 @@ const getRuntimeProfile = () => {
     return defaultRuntimeProfile;
   }
 
+  const params = new URLSearchParams(window.location.search);
+  const motionOverride = params.get("motion");
   const reducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
@@ -491,7 +494,7 @@ const getRuntimeProfile = () => {
     coarsePointer ||
     (typeof navigator.maxTouchPoints === "number" &&
       navigator.maxTouchPoints > 0);
-  const compactViewport = window.innerWidth <= 1200;
+  const narrowViewport = window.innerWidth <= 900;
   const lowMemory =
     typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
   const lowConcurrency =
@@ -506,18 +509,44 @@ const getRuntimeProfile = () => {
     connection?.effectiveType ?? "",
   );
   const saveData = Boolean(connection?.saveData);
+  const mobileConstrainedDevice =
+    narrowViewport &&
+    (saveData || slowConnection || lowMemory || lowConcurrency);
   const disableHeavyRuntime =
     reducedMotion ||
-    saveData ||
-    slowConnection ||
-    lowMemory ||
-    lowConcurrency ||
-    touchDevice ||
-    compactViewport;
+    (touchDevice && narrowViewport) ||
+    mobileConstrainedDevice;
+
+  if (motionOverride === "full") {
+    return {
+      disableHeavyRuntime: false,
+      preferLiteMode: false,
+      disableSmoother: false,
+      disableHeroDecoder: false,
+      disableBrainScene: false,
+      autoplayPanelVideos: true,
+      heroCanvasDpr: 1.25,
+      brainCanvasDpr: 1.1,
+    };
+  }
+
+  if (motionOverride === "lite") {
+    return {
+      disableHeavyRuntime: true,
+      preferLiteMode: true,
+      disableSmoother: true,
+      disableHeroDecoder: true,
+      disableBrainScene: true,
+      autoplayPanelVideos: false,
+      heroCanvasDpr: 1,
+      brainCanvasDpr: 1,
+    };
+  }
 
   return {
+    disableHeavyRuntime,
     preferLiteMode: disableHeavyRuntime,
-    disableSmoother: disableHeavyRuntime,
+    disableSmoother: reducedMotion || (touchDevice && narrowViewport),
     disableHeroDecoder: disableHeavyRuntime,
     disableBrainScene: disableHeavyRuntime,
     autoplayPanelVideos: !disableHeavyRuntime,
@@ -2095,7 +2124,7 @@ export default function App() {
     aboutFrameContent.scrollTop = 0;
     setBrainAfterglow(0, 0);
 
-    if (reducedMotionQuery.matches || runtimeProfile.preferLiteMode) {
+    if (reducedMotionQuery.matches) {
       gsap.set(scene, {
         opacity: 1,
         scale: 1,
@@ -2722,29 +2751,33 @@ export default function App() {
       data-motion-mode={runtimeProfile.preferLiteMode ? "lite" : "full"}
       ref={pageShellRef}
     >
-      <div className="brain-transfer" aria-hidden="true">
-        <div className="brain-stage" ref={brainMountRef} />
-      </div>
-      <div className="neural-burst" aria-hidden="true">
-        <span className="neural-burst-cloud neural-burst-cloud-a" />
-        <span className="neural-burst-cloud neural-burst-cloud-b" />
-        <span className="neural-burst-ring neural-burst-ring-a" />
-        <span className="neural-burst-ring neural-burst-ring-b" />
-        {neuralSparkItems.map((spark, index) => (
-          <span
-            className="neural-spark"
-            key={`${spark.left}-${spark.top}-${index}`}
-            style={{
-              "--spark-top": spark.top,
-              "--spark-left": spark.left,
-              "--spark-size": spark.size,
-              "--spark-delay": spark.delay,
-              "--spark-duration": spark.duration,
-              "--spark-hue": spark.hue,
-            }}
-          />
-        ))}
-      </div>
+      {!runtimeProfile.disableHeavyRuntime ? (
+        <>
+          <div className="brain-transfer" aria-hidden="true">
+            <div className="brain-stage" ref={brainMountRef} />
+          </div>
+          <div className="neural-burst" aria-hidden="true">
+            <span className="neural-burst-cloud neural-burst-cloud-a" />
+            <span className="neural-burst-cloud neural-burst-cloud-b" />
+            <span className="neural-burst-ring neural-burst-ring-a" />
+            <span className="neural-burst-ring neural-burst-ring-b" />
+            {neuralSparkItems.map((spark, index) => (
+              <span
+                className="neural-spark"
+                key={`${spark.left}-${spark.top}-${index}`}
+                style={{
+                  "--spark-top": spark.top,
+                  "--spark-left": spark.left,
+                  "--spark-size": spark.size,
+                  "--spark-delay": spark.delay,
+                  "--spark-duration": spark.duration,
+                  "--spark-hue": spark.hue,
+                }}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <div className="smooth-wrapper" ref={smoothWrapperRef}>
         <main className="smooth-content" id="home" ref={smoothContentRef}>
@@ -2754,11 +2787,13 @@ export default function App() {
             ref={heroSectionRef}
           >
             <div className="hero-pin">
-              <canvas
-                aria-hidden="true"
-                className="hero-media hero-canvas"
-                ref={canvasRef}
-              />
+              {!runtimeProfile.disableHeavyRuntime ? (
+                <canvas
+                  aria-hidden="true"
+                  className="hero-media hero-canvas"
+                  ref={canvasRef}
+                />
+              ) : null}
               <img
                 alt="Full-screen hero artwork"
                 className="hero-media hero-fallback"
@@ -2770,7 +2805,7 @@ export default function App() {
 
               <div className="hero-overlay">
                 <h1>
-                  I build things that pretend to be intelligent&hellip;
+                  I build things. that pretend to be intelligent&hellip;
                   <br />
                   and sometimes they accidentally are.
                 </h1>
@@ -2780,12 +2815,14 @@ export default function App() {
 
                 
 
-                <div className="scrub-status" aria-hidden="true">
-                  <span>Scroll to move through the scene</span>
-                  <div className="progress-track">
-                    <span className="progress-fill" />
+                {!runtimeProfile.disableHeavyRuntime ? (
+                  <div className="scrub-status" aria-hidden="true">
+                    <span>Scroll to move through the scene</span>
+                    <div className="progress-track">
+                      <span className="progress-fill" />
+                    </div>
                   </div>
-                </div>
+                ) : null}
               </div>
             </div>
           </section>

@@ -165,7 +165,8 @@ a {
 }
 
 .page-shell[data-motion-mode="lite"] .hero-scroll {
-  height: 180vh;
+  height: 100vh;
+  height: 100svh;
 }
 
 .page-shell[data-motion-mode="lite"] .hero-canvas,
@@ -174,9 +175,28 @@ a {
   display: none;
 }
 
+.page-shell[data-motion-mode="lite"] .hero-pin::after {
+  background: linear-gradient(180deg, rgba(3, 7, 13, 0.08) 0%, rgba(3, 7, 13, 0.42) 100%);
+}
+
 .page-shell[data-motion-mode="lite"] .hero-media {
+  transform: none;
   filter: none;
+  opacity: 1;
   will-change: auto;
+}
+
+.page-shell[data-motion-mode="lite"] .hero-fallback {
+  object-position: center center;
+}
+
+.page-shell[data-motion-mode="lite"] .hero-overlay {
+  opacity: 1;
+  transform: none;
+}
+
+.page-shell[data-motion-mode="lite"] .scrub-status {
+  display: none;
 }
 
 .page-shell[data-motion-mode="lite"] .impact-scene-media,
