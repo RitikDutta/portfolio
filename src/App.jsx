@@ -1928,11 +1928,15 @@ export default function App() {
     const finalProcessWordIndex = processWords.length - 1;
     const processParallaxDuration =
       processWordSpacing * processWords.length + processFinalHoldDuration + 0.26;
+    const characterRevealBatchSize = runtimeProfile.touchDevice ? 4 : 1;
+    const simplifyProcessLines = runtimeProfile.touchDevice;
     let previousActiveCount = -1;
     let syncFrameId = 0;
     let sectionEntryProgress = 0;
     let sectionEnteringViewport = false;
     let sectionTimelineTrigger = null;
+    let maskLayoutMetrics = null;
+    let lastMaskSignature = "";
 
     const setBrainAfterglow = (opacity, progress = 0) => {
       pageShell.style.setProperty("--brain-afterglow", opacity.toFixed(4));
@@ -1995,7 +1999,12 @@ export default function App() {
       const activeCount = gsap.utils.clamp(
         0,
         characterNodes.length,
-        Math.floor(revealProgress * characterNodes.length),
+        revealProgress >= 1
+          ? characterNodes.length
+          : Math.floor(
+              Math.floor(revealProgress * characterNodes.length) /
+                characterRevealBatchSize,
+            ) * characterRevealBatchSize,
       );
 
       if (activeCount === previousActiveCount) {
@@ -2272,17 +2281,11 @@ export default function App() {
       projectsSection.style.setProperty("--projects-progress", "0");
     };
 
-    const syncMaskLayout = () => {
+    const measureMaskLayout = () => {
       const baseFrameWidth = aboutFrame.clientWidth;
       const baseFrameHeight = aboutFrame.clientHeight;
       const wordWidthPx = wordMeasure.offsetWidth || wordSlot.offsetWidth;
       const wordHeightPx = wordSlot.offsetHeight || wordMeasure.offsetHeight;
-      const visibleWordOffsetTop =
-        aboutFrameContent.offsetTop +
-        wordSlot.offsetTop -
-        aboutFrameContent.scrollTop;
-      const visibleWordOffsetLeft =
-        aboutFrameContent.offsetLeft + wordSlot.offsetLeft;
 
       if (
         !baseFrameWidth ||
@@ -2290,34 +2293,88 @@ export default function App() {
         !wordWidthPx ||
         !wordHeightPx
       ) {
-        return;
+        return null;
       }
 
-      // Use layout-space measurements so the cutout stays locked while the frame scales.
       const wordStyles = window.getComputedStyle(wordMeasure);
       const fontSizePx = Number.parseFloat(wordStyles.fontSize || "0");
-      const verticalOffsetPx = fontSizePx * 0.1;
-      const centerX =
-        ((visibleWordOffsetLeft + wordWidthPx / 2) / baseFrameWidth) * 100;
-      const centerY =
-        ((visibleWordOffsetTop + wordHeightPx * 0.525 + verticalOffsetPx) /
-          baseFrameHeight) *
-        100;
-      const zoomOriginX = gsap.utils.clamp(
-        0,
-        100,
-        centerX - (wordWidthPx / baseFrameWidth) * 8,
-      );
-      const fontSize = (fontSizePx / baseFrameHeight) * 100;
-      const textLength = (wordWidthPx / baseFrameWidth) * 100;
       const outlineStrokeWidthPx =
         Number.parseFloat(wordStyles.webkitTextStrokeWidth || "0") ||
         Number.parseFloat(
           wordStyles.getPropertyValue("-webkit-text-stroke-width") || "0",
         ) ||
         1;
+
+      return {
+        aboutFrameContentOffsetLeft: aboutFrameContent.offsetLeft,
+        aboutFrameContentOffsetTop: aboutFrameContent.offsetTop,
+        baseFrameHeight,
+        baseFrameWidth,
+        fontFamily: wordStyles.fontFamily,
+        fontSizePx,
+        fontWeight: wordStyles.fontWeight,
+        letterSpacing: wordStyles.letterSpacing,
+        outlineStrokeWidthPx,
+        verticalOffsetPx: fontSizePx * 0.1,
+        wordHeightPx,
+        wordSlotOffsetLeft: wordSlot.offsetLeft,
+        wordSlotOffsetTop: wordSlot.offsetTop,
+        wordWidthPx,
+      };
+    };
+
+    const syncMaskLayout = (forceMeasure = false) => {
+      if (forceMeasure || !maskLayoutMetrics) {
+        maskLayoutMetrics = measureMaskLayout();
+        lastMaskSignature = "";
+      }
+
+      const metrics = maskLayoutMetrics;
+
+      if (!metrics) {
+        return;
+      }
+
+      const visibleWordOffsetTop =
+        metrics.aboutFrameContentOffsetTop +
+        metrics.wordSlotOffsetTop -
+        aboutFrameContent.scrollTop;
+      const visibleWordOffsetLeft =
+        metrics.aboutFrameContentOffsetLeft + metrics.wordSlotOffsetLeft;
+      const centerX =
+        ((visibleWordOffsetLeft + metrics.wordWidthPx / 2) /
+          metrics.baseFrameWidth) *
+        100;
+      const centerY =
+        ((visibleWordOffsetTop +
+          metrics.wordHeightPx * 0.525 +
+          metrics.verticalOffsetPx) /
+          metrics.baseFrameHeight) *
+        100;
+      const zoomOriginX = gsap.utils.clamp(
+        0,
+        100,
+        centerX - (metrics.wordWidthPx / metrics.baseFrameWidth) * 8,
+      );
+      const fontSize = (metrics.fontSizePx / metrics.baseFrameHeight) * 100;
+      const textLength = (metrics.wordWidthPx / metrics.baseFrameWidth) * 100;
       const outlineStrokeWidth =
-        (outlineStrokeWidthPx / baseFrameHeight) * 100;
+        (metrics.outlineStrokeWidthPx / metrics.baseFrameHeight) * 100;
+      const signature = [
+        centerX,
+        centerY,
+        fontSize,
+        textLength,
+        outlineStrokeWidth,
+      ]
+        .map((value) => value.toFixed(4))
+        .join("|");
+
+      if (signature === lastMaskSignature) {
+        return;
+      }
+
+      lastMaskSignature = signature;
 
       const syncWordGeometry = (textNode) => {
         textNode.setAttribute("x", centerX.toFixed(4));
@@ -2325,9 +2382,9 @@ export default function App() {
         textNode.setAttribute("font-size", fontSize.toFixed(4));
         textNode.setAttribute("textLength", textLength.toFixed(4));
         textNode.setAttribute("lengthAdjust", "spacingAndGlyphs");
-        textNode.setAttribute("font-family", wordStyles.fontFamily);
-        textNode.setAttribute("font-weight", wordStyles.fontWeight);
-        textNode.setAttribute("letter-spacing", wordStyles.letterSpacing);
+        textNode.setAttribute("font-family", metrics.fontFamily);
+        textNode.setAttribute("font-weight", metrics.fontWeight);
+        textNode.setAttribute("letter-spacing", metrics.letterSpacing);
         textNode.setAttribute("stroke-width", outlineStrokeWidth.toFixed(4));
         textNode.setAttribute("stroke-linejoin", "round");
       };
@@ -2426,6 +2483,19 @@ export default function App() {
         scale: state.scale,
         opacity: state.opacity,
       });
+
+      if (simplifyProcessLines) {
+        gsap.set(processWordCopies[index], {
+          clearProps: "filter",
+          letterSpacing: state.letterSpacing,
+        });
+        gsap.set(processWordTrails[index], {
+          autoAlpha: 0,
+          clearProps: "transform,filter",
+        });
+        return;
+      }
+
       gsap.set(processWordCopies[index], {
         filter: `blur(${state.blur}px)`,
         letterSpacing: state.letterSpacing,
@@ -2469,6 +2539,29 @@ export default function App() {
         position,
       );
 
+      if (simplifyProcessLines) {
+        timeline.to(
+          processWordCopies[index],
+          {
+            clearProps: "filter",
+            letterSpacing: state.letterSpacing,
+            duration,
+            ease,
+          },
+          position,
+        );
+
+        timeline.set(
+          processWordTrails[index],
+          {
+            autoAlpha: 0,
+            clearProps: "transform,filter",
+          },
+          position,
+        );
+        return;
+      }
+
       timeline.to(
         processWordCopies[index],
         {
@@ -2498,7 +2591,7 @@ export default function App() {
 
     const teardown = [];
 
-    syncMaskLayout();
+    syncMaskLayout(true);
     aboutFrameContent.scrollTop = 0;
     setBrainAfterglow(0, 0);
 
@@ -2576,7 +2669,7 @@ export default function App() {
       });
       aboutFrameContent.scrollTop = 0;
       paintCharacters(1);
-      syncMaskLayout();
+      syncMaskLayout(true);
       setBrainAfterglow(0, 0);
 
       return undefined;
@@ -2677,13 +2770,12 @@ export default function App() {
             sectionTimelineTrigger = self;
             paintCharacters(self.progress);
             syncAfterglowState();
-            requestMaskSync();
+            syncMaskLayout(true);
           },
           onUpdate: (self) => {
             sectionTimelineTrigger = self;
             paintCharacters(self.progress);
             syncAfterglowState();
-            requestMaskSync();
           },
         },
       });
@@ -3083,7 +3175,7 @@ export default function App() {
 
     const handleResize = () => {
       refreshProjectMotionSettings();
-      syncMaskLayout();
+      syncMaskLayout(true);
       ScrollTrigger.refresh();
     };
 
@@ -3091,16 +3183,16 @@ export default function App() {
     teardown.push(() => window.removeEventListener("resize", handleResize));
 
     if (typeof ResizeObserver === "function") {
-      const resizeObserver = new ResizeObserver(syncMaskLayout);
+      const resizeObserver = new ResizeObserver(() => syncMaskLayout(true));
       resizeObserver.observe(aboutFrame);
       resizeObserver.observe(aboutFrameContent);
       resizeObserver.observe(wordSlot);
       teardown.push(() => resizeObserver.disconnect());
     }
 
-    if (document.fonts?.ready) {
+      if (document.fonts?.ready) {
       const fontsReady = () => {
-        syncMaskLayout();
+        syncMaskLayout(true);
         ScrollTrigger.refresh();
       };
 
@@ -3109,7 +3201,7 @@ export default function App() {
 
     const handleRefreshInit = () => {
       applyProjectBaseState();
-      syncMaskLayout();
+      syncMaskLayout(true);
     };
 
     ScrollTrigger.addEventListener("refreshInit", handleRefreshInit);
@@ -3126,6 +3218,7 @@ export default function App() {
   return (
     <div
       className="page-shell"
+      data-runtime-device={runtimeProfile.touchDevice ? "touch" : "desktop"}
       data-motion-mode={runtimeProfile.preferLiteMode ? "lite" : "full"}
       ref={pageShellRef}
     >
@@ -3199,7 +3292,7 @@ export default function App() {
 
               <div className="hero-overlay">
                 <h1>
-                  I build things5 that pretend to be intelligent&hellip;
+                  I build things6 that pretend to be intelligent&hellip;
                   <br />
                   and sometimes they accidentally are.
                 </h1>
