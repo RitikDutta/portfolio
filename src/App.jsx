@@ -481,13 +481,17 @@ const impactTransitionSettings = {
 const defaultRuntimeProfile = {
   disableHeavyRuntime: false,
   preferLiteMode: false,
+  touchDevice: false,
   disableSmoother: false,
   disableHeroDecoder: false,
   disableBrainScene: false,
   preferImageSequenceHero: false,
+  renderNeuralBurst: true,
   autoplayPanelVideos: true,
   heroCanvasDpr: 1.25,
   brainCanvasDpr: 1.1,
+  brainPointSampleStep: 1,
+  brainProgressStep: 0,
 };
 
 const getRuntimeProfile = () => {
@@ -534,18 +538,30 @@ const getRuntimeProfile = () => {
     veryLowConcurrency ||
     (narrowViewport && lowMemory && lowConcurrency);
   const disableHeavyRuntime = reducedMotion || constrainedDevice;
+  const touchOptimizedProfile = {
+    touchDevice,
+    renderNeuralBurst: !touchDevice,
+    heroCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 1 : 1.25,
+    brainCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 0.45 : 1.1,
+    brainPointSampleStep: touchDevice ? 3 : 1,
+    brainProgressStep: touchDevice ? 0.035 : 0,
+  };
 
   if (motionOverride === "full") {
     return {
       disableHeavyRuntime: false,
       preferLiteMode: false,
+      touchDevice,
       disableSmoother: false,
       disableHeroDecoder: false,
       disableBrainScene: false,
       preferImageSequenceHero: false,
+      renderNeuralBurst: !touchDevice,
       autoplayPanelVideos: true,
-      heroCanvasDpr: 1.25,
-      brainCanvasDpr: 1.1,
+      heroCanvasDpr: touchDevice ? 1 : 1.25,
+      brainCanvasDpr: touchDevice ? 0.45 : 1.1,
+      brainPointSampleStep: touchDevice ? 3 : 1,
+      brainProgressStep: touchDevice ? 0.035 : 0,
     };
   }
 
@@ -553,26 +569,31 @@ const getRuntimeProfile = () => {
     return {
       disableHeavyRuntime: true,
       preferLiteMode: true,
+      touchDevice,
       disableSmoother: true,
       disableHeroDecoder: true,
       disableBrainScene: true,
       preferImageSequenceHero: false,
+      renderNeuralBurst: false,
       autoplayPanelVideos: false,
       heroCanvasDpr: 1,
       brainCanvasDpr: 1,
+      brainPointSampleStep: 4,
+      brainProgressStep: 0.05,
     };
   }
 
   return {
     disableHeavyRuntime,
     preferLiteMode: disableHeavyRuntime,
+    touchDevice,
     disableSmoother: reducedMotion || touchDevice,
     disableHeroDecoder: disableHeavyRuntime,
     disableBrainScene: disableHeavyRuntime,
     preferImageSequenceHero: touchDevice && !disableHeavyRuntime,
+    renderNeuralBurst: !touchDevice,
     autoplayPanelVideos: !disableHeavyRuntime,
-    heroCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 1 : 1.25,
-    brainCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 0.7 : 1.1,
+    ...touchOptimizedProfile,
   };
 };
 
@@ -1327,6 +1348,7 @@ export default function App() {
     let disposeScene = () => {};
     let cancelled = false;
     let syncFrameId = 0;
+    let lastRenderSignature = "";
 
     const initializeBrainScene = async () => {
       try {
@@ -1363,8 +1385,10 @@ export default function App() {
           Math.min(window.devicePixelRatio || 1, runtimeProfile.brainCanvasDpr),
         );
         renderer.outputColorSpace = THREE.SRGBColorSpace;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.08;
+        renderer.toneMapping = runtimeProfile.touchDevice
+          ? THREE.NoToneMapping
+          : THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = runtimeProfile.touchDevice ? 1 : 1.08;
         renderer.domElement.className = "brain-canvas";
         mountNode.appendChild(renderer.domElement);
         loader.setMeshoptDecoder(MeshoptDecoder);
@@ -1382,7 +1406,11 @@ export default function App() {
         fillLight.position.set(-2, -1.4, 3.2);
         rimLight.position.set(-4.2, 1.2, -3);
 
-        scene.add(ambientLight, keyLight, fillLight, rimLight);
+        scene.add(ambientLight, keyLight);
+
+        if (!runtimeProfile.touchDevice) {
+          scene.add(fillLight, rimLight);
+        }
 
         const renderScene = () => {
           camera.lookAt(0, 0, 0);
@@ -1428,6 +1456,65 @@ export default function App() {
           material.dispose();
         };
 
+        const decimatePointsGeometry = (geometry) => {
+          if (
+            !geometry?.isBufferGeometry ||
+            runtimeProfile.brainPointSampleStep <= 1
+          ) {
+            return geometry;
+          }
+
+          const positionAttribute = geometry.getAttribute("position");
+
+          if (!positionAttribute || positionAttribute.count < 3) {
+            return geometry;
+          }
+
+          const nextCount = Math.ceil(
+            positionAttribute.count / runtimeProfile.brainPointSampleStep,
+          );
+          const reducedGeometry = new THREE.BufferGeometry();
+
+          for (const [name, attribute] of Object.entries(geometry.attributes)) {
+            if (!attribute || attribute.isInterleavedBufferAttribute) {
+              return geometry;
+            }
+
+            const ArrayType = attribute.array.constructor;
+            const reducedArray = new ArrayType(nextCount * attribute.itemSize);
+
+            for (
+              let sourceIndex = 0, targetIndex = 0;
+              sourceIndex < attribute.count;
+              sourceIndex += runtimeProfile.brainPointSampleStep, targetIndex += 1
+            ) {
+              const sourceOffset = sourceIndex * attribute.itemSize;
+              const targetOffset = targetIndex * attribute.itemSize;
+
+              reducedArray.set(
+                attribute.array.subarray(
+                  sourceOffset,
+                  sourceOffset + attribute.itemSize,
+                ),
+                targetOffset,
+              );
+            }
+
+            reducedGeometry.setAttribute(
+              name,
+              new THREE.BufferAttribute(
+                reducedArray,
+                attribute.itemSize,
+                attribute.normalized,
+              ),
+            );
+          }
+
+          reducedGeometry.computeBoundingBox();
+          reducedGeometry.computeBoundingSphere();
+          return reducedGeometry;
+        };
+
         const syncSceneToScroll = () => {
           if (!brainModel) {
             return;
@@ -1441,42 +1528,82 @@ export default function App() {
             brainImmersion,
             neuralBurst,
           } = brainMotionStateRef.current;
-          const basePivotX = THREE.MathUtils.lerp(0.22, 0.03, brainFullscreen);
+          const quantize = (value) =>
+            runtimeProfile.brainProgressStep > 0
+              ? Math.round(value / runtimeProfile.brainProgressStep) *
+                runtimeProfile.brainProgressStep
+              : value;
+          const motion = {
+            brainSpin: quantize(brainSpin),
+            brainTravel: quantize(brainTravel),
+            brainAfterglowProgress: quantize(brainAfterglowProgress),
+            brainFullscreen: quantize(brainFullscreen),
+            brainImmersion: quantize(brainImmersion),
+            neuralBurst: quantize(neuralBurst),
+          };
+          const signature = Object.values(motion)
+            .map((value) => value.toFixed(3))
+            .join("|");
+
+          if (signature === lastRenderSignature) {
+            return;
+          }
+
+          lastRenderSignature = signature;
+          const basePivotX = THREE.MathUtils.lerp(
+            0.22,
+            0.03,
+            motion.brainFullscreen,
+          );
           const heroExitRotationX = THREE.MathUtils.lerp(
             basePivotX,
             -1.08,
-            brainTravel,
+            motion.brainTravel,
           );
 
           pivot.rotation.x = THREE.MathUtils.lerp(
             heroExitRotationX,
             -2.18,
-            brainAfterglowProgress,
+            motion.brainAfterglowProgress,
           );
-          pivot.rotation.y = brainSpin * Math.PI * 1.18;
-          pivot.rotation.z = THREE.MathUtils.lerp(-0.12, 0.06, neuralBurst);
-          root.rotation.z = neuralBurst * 0.05;
+          pivot.rotation.y = motion.brainSpin * Math.PI * 1.18;
+          pivot.rotation.z = THREE.MathUtils.lerp(
+            -0.12,
+            0.06,
+            motion.neuralBurst,
+          );
+          root.rotation.z = motion.neuralBurst * 0.05;
           camera.position.z = THREE.MathUtils.lerp(
             fittedCameraDistance,
             innerCameraDistance,
-            brainImmersion,
+            motion.brainImmersion,
           );
           camera.near = THREE.MathUtils.lerp(
             Math.max(fittedCameraDistance / 100, 0.01),
             Math.max(innerCameraDistance / 18, 0.005),
-            brainImmersion,
+            motion.brainImmersion,
           );
           camera.far = THREE.MathUtils.lerp(
             fittedCameraDistance * 10,
             fittedCameraDistance * 4,
-            brainImmersion,
+            motion.brainImmersion,
           );
           camera.updateProjectionMatrix();
-          renderer.toneMappingExposure = 1.08 + neuralBurst * 0.52;
+          renderer.toneMappingExposure = runtimeProfile.touchDevice
+            ? 1
+            : 1.08 + motion.neuralBurst * 0.52;
 
           pointMaterials.forEach((material) => {
-            material.size = THREE.MathUtils.lerp(0.018, 0.05, brainImmersion);
-            material.opacity = THREE.MathUtils.lerp(0.94, 1, neuralBurst);
+            material.size = THREE.MathUtils.lerp(
+              0.018,
+              0.05,
+              motion.brainImmersion,
+            );
+            material.opacity = THREE.MathUtils.lerp(
+              0.94,
+              1,
+              motion.neuralBurst,
+            );
           });
 
           renderScene();
@@ -1537,6 +1664,14 @@ export default function App() {
               child.receiveShadow = false;
 
               if (child.isPoints && child.material) {
+                const originalGeometry = child.geometry;
+                const reducedGeometry = decimatePointsGeometry(originalGeometry);
+
+                if (reducedGeometry !== originalGeometry) {
+                  child.geometry = reducedGeometry;
+                  originalGeometry.dispose();
+                }
+
                 child.material.transparent = true;
                 child.material.depthWrite = false;
                 child.material.opacity = 0.94;
@@ -2958,26 +3093,28 @@ export default function App() {
           <div className="brain-transfer" aria-hidden="true">
             <div className="brain-stage" ref={brainMountRef} />
           </div>
-          <div className="neural-burst" aria-hidden="true">
-            <span className="neural-burst-cloud neural-burst-cloud-a" />
-            <span className="neural-burst-cloud neural-burst-cloud-b" />
-            <span className="neural-burst-ring neural-burst-ring-a" />
-            <span className="neural-burst-ring neural-burst-ring-b" />
-            {neuralSparkItems.map((spark, index) => (
-              <span
-                className="neural-spark"
-                key={`${spark.left}-${spark.top}-${index}`}
-                style={{
-                  "--spark-top": spark.top,
-                  "--spark-left": spark.left,
-                  "--spark-size": spark.size,
-                  "--spark-delay": spark.delay,
-                  "--spark-duration": spark.duration,
-                  "--spark-hue": spark.hue,
-                }}
-              />
-            ))}
-          </div>
+          {runtimeProfile.renderNeuralBurst ? (
+            <div className="neural-burst" aria-hidden="true">
+              <span className="neural-burst-cloud neural-burst-cloud-a" />
+              <span className="neural-burst-cloud neural-burst-cloud-b" />
+              <span className="neural-burst-ring neural-burst-ring-a" />
+              <span className="neural-burst-ring neural-burst-ring-b" />
+              {neuralSparkItems.map((spark, index) => (
+                <span
+                  className="neural-spark"
+                  key={`${spark.left}-${spark.top}-${index}`}
+                  style={{
+                    "--spark-top": spark.top,
+                    "--spark-left": spark.left,
+                    "--spark-size": spark.size,
+                    "--spark-delay": spark.delay,
+                    "--spark-duration": spark.duration,
+                    "--spark-hue": spark.hue,
+                  }}
+                />
+              ))}
+            </div>
+          ) : null}
         </>
       ) : null}
 
@@ -3021,7 +3158,7 @@ export default function App() {
 
               <div className="hero-overlay">
                 <h1>
-                  I build things3 that pretend to be intelligent&hellip;
+                  I build things4 that pretend to be intelligent&hellip;
                   <br />
                   and sometimes they accidentally are.
                 </h1>
