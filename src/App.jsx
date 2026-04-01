@@ -1515,6 +1515,28 @@ export default function App() {
           return reducedGeometry;
         };
 
+        const applyMobileBrainMaterialOverrides = (material) => {
+          if (!runtimeProfile.touchDevice || !material) {
+            return;
+          }
+
+          if ("vertexColors" in material) {
+            material.vertexColors = false;
+          }
+
+          if ("color" in material && material.color?.set) {
+            material.color.set(0xffffff);
+          }
+
+          if ("emissive" in material && material.emissive?.set) {
+            material.emissive.set(0xffffff);
+          }
+
+          if ("emissiveIntensity" in material) {
+            material.emissiveIntensity = 4.2;
+          }
+        };
+
         const syncSceneToScroll = () => {
           if (!brainModel) {
             return;
@@ -1662,6 +1684,14 @@ export default function App() {
 
               child.castShadow = false;
               child.receiveShadow = false;
+
+              const childMaterials = Array.isArray(child.material)
+                ? child.material
+                : child.material
+                  ? [child.material]
+                  : [];
+
+              childMaterials.forEach(applyMobileBrainMaterialOverrides);
 
               if (child.isPoints && child.material) {
                 const originalGeometry = child.geometry;
