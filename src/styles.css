@@ -1154,7 +1154,8 @@ a {
   right: clamp(1.4rem, 5vw, 5rem);
 }
 
-.project-panel-board-03 {
+.project-panel-board-03,
+.project-panel-board-05 {
   left: clamp(1.4rem, 5vw, 5rem);
 }
 
@@ -1225,12 +1226,14 @@ a {
     );
 }
 
-.project-panel-3 {
+.project-panel-3,
+.project-panel-5 {
   background:
     linear-gradient(135deg, #0d1117 0%, #111721 48%, #171a20 100%);
 }
 
-.project-panel-3::before {
+.project-panel-3::before,
+.project-panel-5::before {
   background:
     radial-gradient(circle at 24% 72%, rgba(214, 127, 83, 0.14), transparent 22%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 18%);
@@ -1249,7 +1252,8 @@ a {
   margin: 0 clamp(1.4rem, 5vw, 5rem) clamp(2.4rem, 8vh, 6rem);
 }
 
-.project-panel-3 .project-panel-copy {
+.project-panel-3 .project-panel-copy,
+.project-panel-5 .project-panel-copy {
   margin-left: auto;
   text-align: right;
 }
@@ -1772,12 +1776,14 @@ a {
   }
 
   .project-panel-3 .project-panel-copy,
+  .project-panel-5 .project-panel-copy,
   .project-panel-caption-end {
     margin-left: 0.5rem;
     text-align: left;
   }
 
-  .project-panel-3 .project-panel-copy {
+  .project-panel-3 .project-panel-copy,
+  .project-panel-5 .project-panel-copy {
     justify-items: start;
   }
 
