@@ -13,6 +13,17 @@ import brainModelUrl from "../brain_hologram.glb?url";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
+const mobileHeroFrameUrls = Object.entries(
+  import.meta.glob("../media/hero-mobile/*.webp", {
+    eager: true,
+    import: "default",
+  }),
+)
+  .sort(([leftPath], [rightPath]) =>
+    leftPath.localeCompare(rightPath, undefined, { numeric: true }),
+  )
+  .map(([, source]) => source);
+
 const spotlightItems = [
   "Three.js brain handoff using a GLB asset",
   "Responsive layout for mobile and desktop",
@@ -473,7 +484,7 @@ const defaultRuntimeProfile = {
   disableSmoother: false,
   disableHeroDecoder: false,
   disableBrainScene: false,
-  preferVideoHeroSequence: false,
+  preferImageSequenceHero: false,
   autoplayPanelVideos: true,
   heroCanvasDpr: 1.25,
   brainCanvasDpr: 1.1,
@@ -531,7 +542,7 @@ const getRuntimeProfile = () => {
       disableSmoother: false,
       disableHeroDecoder: false,
       disableBrainScene: false,
-      preferVideoHeroSequence: false,
+      preferImageSequenceHero: false,
       autoplayPanelVideos: true,
       heroCanvasDpr: 1.25,
       brainCanvasDpr: 1.1,
@@ -545,7 +556,7 @@ const getRuntimeProfile = () => {
       disableSmoother: true,
       disableHeroDecoder: true,
       disableBrainScene: true,
-      preferVideoHeroSequence: true,
+      preferImageSequenceHero: false,
       autoplayPanelVideos: false,
       heroCanvasDpr: 1,
       brainCanvasDpr: 1,
@@ -558,7 +569,7 @@ const getRuntimeProfile = () => {
     disableSmoother: reducedMotion || touchDevice,
     disableHeroDecoder: disableHeavyRuntime,
     disableBrainScene: disableHeavyRuntime,
-    preferVideoHeroSequence: touchDevice,
+    preferImageSequenceHero: touchDevice && !disableHeavyRuntime,
     autoplayPanelVideos: !disableHeavyRuntime,
     heroCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 1 : 1.25,
     brainCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 0.7 : 1.1,
@@ -715,8 +726,9 @@ export default function App() {
     let activeFrameIndex = -1;
     let requestedFrameIndex = -1;
     let videoDuration = 0;
-    let activeSequenceMode = runtimeProfile.preferVideoHeroSequence
-      ? "video"
+    let imageSequenceFrames = [];
+    let activeSequenceMode = runtimeProfile.preferImageSequenceHero
+      ? "image-sequence"
       : "poster";
 
     const frameCache = new Map();
@@ -798,9 +810,19 @@ export default function App() {
       }
 
       const sourceWidth =
-        frame.displayWidth || frame.codedWidth || frame.width || 1;
+        frame.naturalWidth ||
+        frame.videoWidth ||
+        frame.displayWidth ||
+        frame.codedWidth ||
+        frame.width ||
+        1;
       const sourceHeight =
-        frame.displayHeight || frame.codedHeight || frame.height || 1;
+        frame.naturalHeight ||
+        frame.videoHeight ||
+        frame.displayHeight ||
+        frame.codedHeight ||
+        frame.height ||
+        1;
       const scale = Math.max(width / sourceWidth, height / sourceHeight);
       const drawWidth = sourceWidth * scale;
       const drawHeight = sourceHeight * scale;
@@ -898,6 +920,30 @@ export default function App() {
         drawFrame(frame);
         warmNearbyFrames(nextFrameIndex);
       });
+    };
+
+    const renderVisibleImageSequenceFrame = () => {
+      if (!imageSequenceFrames.length) {
+        return;
+      }
+
+      const playbackProgress = clamp(
+        currentProgress / playbackEndProgress,
+        0,
+        1,
+      );
+      const nextFrameIndex = clamp(
+        Math.round(playbackProgress * (imageSequenceFrames.length - 1)),
+        0,
+        imageSequenceFrames.length - 1,
+      );
+
+      if (nextFrameIndex === activeFrameIndex) {
+        return;
+      }
+
+      activeFrameIndex = nextFrameIndex;
+      drawFrame(imageSequenceFrames[nextFrameIndex]);
     };
 
     const renderFrame = () => {
@@ -1011,6 +1057,8 @@ export default function App() {
 
       if (activeSequenceMode === "canvas") {
         renderVisibleFrame();
+      } else if (activeSequenceMode === "image-sequence") {
+        renderVisibleImageSequenceFrame();
       } else if (
         activeSequenceMode === "video" &&
         heroVideo &&
@@ -1056,8 +1104,16 @@ export default function App() {
       sectionStart = sectionTop;
       scrollRange = Math.max(heroSection.offsetHeight - window.innerHeight, 1);
 
-      if (activeFrameIndex >= 0 && frameCache.has(activeFrameIndex)) {
+      if (activeSequenceMode === "canvas" &&
+          activeFrameIndex >= 0 &&
+          frameCache.has(activeFrameIndex)) {
         drawFrame(frameCache.get(activeFrameIndex));
+      } else if (
+        activeSequenceMode === "image-sequence" &&
+        activeFrameIndex >= 0 &&
+        imageSequenceFrames[activeFrameIndex]
+      ) {
+        drawFrame(imageSequenceFrames[activeFrameIndex]);
       }
 
       syncToScroll();
@@ -1079,7 +1135,7 @@ export default function App() {
       setSequenceMode("poster");
 
       if (runtimeProfile.disableHeroDecoder || !ImageDecoderClass) {
-        return;
+        return false;
       }
 
       try {
@@ -1089,7 +1145,7 @@ export default function App() {
             : true;
 
         if (!supportsWebP || !mounted) {
-          return;
+          return false;
         }
 
         const response = await fetch(heroImage);
@@ -1117,7 +1173,7 @@ export default function App() {
         const firstFrame = await decodeFrame(0);
 
         if (!mounted || !firstFrame) {
-          return;
+          return false;
         }
 
         activeFrameIndex = 0;
@@ -1126,8 +1182,59 @@ export default function App() {
         drawFrame(firstFrame);
         warmNearbyFrames(0);
         syncToScroll();
+        return true;
       } catch (error) {
         console.error("Failed to decode animated WebP frames.", error);
+        return false;
+      }
+    };
+
+    const initializeImageSequence = async () => {
+      if (!context || !canvas || !mobileHeroFrameUrls.length) {
+        return false;
+      }
+
+      setSequenceMode("poster");
+
+      const loadFrame = (source) =>
+        new Promise((resolve) => {
+          const image = new Image();
+
+          image.decoding = "async";
+          image.src = source;
+
+          if (image.complete) {
+            resolve(image);
+            return;
+          }
+
+          image.addEventListener("load", () => resolve(image), { once: true });
+          image.addEventListener("error", () => resolve(null), { once: true });
+        });
+
+      try {
+        const loadedFrames = await Promise.all(
+          mobileHeroFrameUrls.map((source) => loadFrame(source)),
+        );
+
+        if (!mounted) {
+          return false;
+        }
+
+        imageSequenceFrames = loadedFrames.filter(Boolean);
+
+        if (!imageSequenceFrames.length) {
+          return false;
+        }
+
+        activeFrameIndex = 0;
+        setSequenceMode("image-sequence");
+        drawFrame(imageSequenceFrames[0]);
+        syncToScroll();
+        return true;
+      } catch (error) {
+        console.error("Failed to initialize mobile hero image sequence.", error);
+        return false;
       }
     };
 
@@ -1168,19 +1275,19 @@ export default function App() {
     targetProgress = 0;
     heroSection.dataset.sequenceMode = "poster";
     updateBounds();
-    const disposeVideoFallback =
-      runtimeProfile.preferVideoHeroSequence || !window.ImageDecoder
-        ? initializeVideoFallback()
-        : undefined;
+    let disposeVideoFallback;
 
-    if (!runtimeProfile.preferVideoHeroSequence) {
-      void initializeDecoder().then(() => {
-        if (heroSection.dataset.sequenceMode !== "canvas") {
-          disposeVideoFallback?.();
-          initializeVideoFallback();
-        }
-      });
-    }
+    const initializeHeroSequence = async () => {
+      const sequenceReady = runtimeProfile.preferImageSequenceHero
+        ? await initializeImageSequence()
+        : await initializeDecoder();
+
+      if (!sequenceReady) {
+        disposeVideoFallback = initializeVideoFallback();
+      }
+    };
+
+    void initializeHeroSequence();
 
     return () => {
       mounted = false;
@@ -2914,7 +3021,7 @@ export default function App() {
 
               <div className="hero-overlay">
                 <h1>
-                  I build things.. that pretend to be intelligent&hellip;
+                  I build things3 that pretend to be intelligent&hellip;
                   <br />
                   and sometimes they accidentally are.
                 </h1>
