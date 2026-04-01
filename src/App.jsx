@@ -512,6 +512,7 @@ const getRuntimeProfile = () => {
     (typeof navigator.maxTouchPoints === "number" &&
       navigator.maxTouchPoints > 0);
   const narrowViewport = window.innerWidth <= 900;
+  const mobileSmootherViewport = touchDevice && window.innerWidth <= 1024;
   const lowMemory =
     typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
   const lowConcurrency =
@@ -552,7 +553,7 @@ const getRuntimeProfile = () => {
       disableHeavyRuntime: false,
       preferLiteMode: false,
       touchDevice,
-      disableSmoother: false,
+      disableSmoother: mobileSmootherViewport,
       disableHeroDecoder: false,
       disableBrainScene: false,
       preferImageSequenceHero: false,
@@ -587,7 +588,7 @@ const getRuntimeProfile = () => {
     disableHeavyRuntime,
     preferLiteMode: disableHeavyRuntime,
     touchDevice,
-    disableSmoother: reducedMotion || touchDevice,
+    disableSmoother: reducedMotion || mobileSmootherViewport,
     disableHeroDecoder: disableHeavyRuntime,
     disableBrainScene: disableHeavyRuntime,
     preferImageSequenceHero: touchDevice && !disableHeavyRuntime,
@@ -649,11 +650,11 @@ export default function App() {
       "(prefers-reduced-motion: reduce)",
     );
 
+    ScrollSmoother.get()?.kill();
+
     if (reducedMotionQuery.matches || runtimeProfile.disableSmoother) {
       return undefined;
     }
-
-    ScrollSmoother.get()?.kill();
 
     const smoother = ScrollSmoother.create({
       wrapper,
@@ -3188,7 +3189,7 @@ export default function App() {
 
               <div className="hero-overlay">
                 <h1>
-                  I build things4 that pretend to be intelligent&hellip;
+                  I build things5 that pretend to be intelligent&hellip;
                   <br />
                   and sometimes they accidentally are.
                 </h1>
