@@ -164,6 +164,26 @@ a {
   opacity: 0;
 }
 
+.page-shell[data-motion-mode="lite"] .hero-scroll {
+  height: 180vh;
+}
+
+.page-shell[data-motion-mode="lite"] .hero-canvas,
+.page-shell[data-motion-mode="lite"] .brain-transfer,
+.page-shell[data-motion-mode="lite"] .neural-burst {
+  display: none;
+}
+
+.page-shell[data-motion-mode="lite"] .hero-media {
+  filter: none;
+  will-change: auto;
+}
+
+.page-shell[data-motion-mode="lite"] .impact-scene-media,
+.page-shell[data-motion-mode="lite"] .project-panel-media-inner {
+  will-change: auto;
+}
+
 .brain-transfer {
   position: fixed;
   top: 50%;

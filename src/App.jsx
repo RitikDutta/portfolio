@@ -4,8 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
-import impactPortraitImage from "../portrait.png";
-import impactWideImage from "../wide.png";
+import impactPortraitImage from "../portrait.webp";
+import impactWideImage from "../wide.webp";
 import interviewVideo from "../media/interview.mp4";
 import cwemVideo from "../media/cwem.mp4";
 import brainModelUrl from "../brain_hologram.glb?url";
@@ -466,7 +466,63 @@ const impactTransitionSettings = {
   exitTilt: 4,
 };
 
+const defaultRuntimeProfile = {
+  preferLiteMode: false,
+  disableSmoother: false,
+  disableHeroDecoder: false,
+  disableBrainScene: false,
+  autoplayPanelVideos: true,
+  heroCanvasDpr: 1.5,
+  brainCanvasDpr: 1.5,
+};
+
+const getRuntimeProfile = () => {
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
+    return defaultRuntimeProfile;
+  }
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  const coarsePointer = window.matchMedia(
+    "(hover: none) and (pointer: coarse)",
+  ).matches;
+  const narrowViewport = window.innerWidth <= 960;
+  const lowMemory =
+    typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
+  const lowConcurrency =
+    typeof navigator.hardwareConcurrency === "number" &&
+    navigator.hardwareConcurrency <= 4;
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection ||
+    null;
+  const slowConnection = ["slow-2g", "2g", "3g"].includes(
+    connection?.effectiveType ?? "",
+  );
+  const saveData = Boolean(connection?.saveData);
+  const preferLiteMode =
+    reducedMotion ||
+    saveData ||
+    slowConnection ||
+    lowMemory ||
+    lowConcurrency ||
+    (coarsePointer && narrowViewport);
+
+  return {
+    preferLiteMode,
+    disableSmoother: preferLiteMode,
+    disableHeroDecoder: preferLiteMode,
+    disableBrainScene: preferLiteMode,
+    autoplayPanelVideos: !preferLiteMode,
+    heroCanvasDpr: preferLiteMode ? 1 : 1.5,
+    brainCanvasDpr: preferLiteMode ? 1 : 1.5,
+  };
+};
+
 export default function App() {
+  const runtimeProfileRef = useRef(null);
   const pageShellRef = useRef(null);
   const smoothWrapperRef = useRef(null);
   const smoothContentRef = useRef(null);
@@ -486,6 +542,9 @@ export default function App() {
   const projectsPinRef = useRef(null);
   const projectsTrackRef = useRef(null);
   const projectsProgressRef = useRef(null);
+  const runtimeProfile = runtimeProfileRef.current ?? getRuntimeProfile();
+
+  runtimeProfileRef.current = runtimeProfile;
 
   useLayoutEffect(() => {
     const pageShell = pageShellRef.current;
@@ -504,7 +563,7 @@ export default function App() {
       "(prefers-reduced-motion: reduce)",
     );
 
-    if (reducedMotionQuery.matches) {
+    if (reducedMotionQuery.matches || runtimeProfile.disableSmoother) {
       return undefined;
     }
 
@@ -658,7 +717,10 @@ export default function App() {
 
     const drawFrame = (frame) => {
       const bounds = canvas.getBoundingClientRect();
-      const devicePixelRatio = window.devicePixelRatio || 1;
+      const devicePixelRatio = Math.min(
+        window.devicePixelRatio || 1,
+        runtimeProfile.heroCanvasDpr,
+      );
       const width = Math.max(1, Math.round(bounds.width * devicePixelRatio));
       const height = Math.max(1, Math.round(bounds.height * devicePixelRatio));
 
@@ -774,7 +836,11 @@ export default function App() {
       frameId = 0;
 
       const easing =
-        reducedMotionQuery.matches || ScrollSmoother.get() ? 1 : 0.12;
+        reducedMotionQuery.matches ||
+        runtimeProfile.disableHeroDecoder ||
+        ScrollSmoother.get()
+          ? 1
+          : 0.12;
       currentProgress += (targetProgress - currentProgress) * easing;
 
       if (Math.abs(targetProgress - currentProgress) <= 0.0004) {
@@ -924,7 +990,7 @@ export default function App() {
 
       heroSection.dataset.decoderReady = "false";
 
-      if (!ImageDecoderClass) {
+      if (runtimeProfile.disableHeroDecoder || !ImageDecoderClass) {
         return;
       }
 
@@ -1013,6 +1079,10 @@ export default function App() {
       return undefined;
     }
 
+    if (runtimeProfile.disableBrainScene) {
+      return undefined;
+    }
+
     let disposeScene = () => {};
     let cancelled = false;
     let syncFrameId = 0;
@@ -1049,7 +1119,9 @@ export default function App() {
 
         const pointMaterials = [];
 
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setPixelRatio(
+          Math.min(window.devicePixelRatio || 1, runtimeProfile.brainCanvasDpr),
+        );
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.08;
@@ -2024,7 +2096,7 @@ export default function App() {
     aboutFrameContent.scrollTop = 0;
     setBrainAfterglow(0, 0);
 
-    if (reducedMotionQuery.matches) {
+    if (reducedMotionQuery.matches || runtimeProfile.preferLiteMode) {
       gsap.set(scene, {
         opacity: 1,
         scale: 1,
@@ -2646,7 +2718,11 @@ export default function App() {
   }, []);
 
   return (
-    <div className="page-shell" ref={pageShellRef}>
+    <div
+      className="page-shell"
+      data-motion-mode={runtimeProfile.preferLiteMode ? "lite" : "full"}
+      ref={pageShellRef}
+    >
       <div className="brain-transfer" aria-hidden="true">
         <div className="brain-stage" ref={brainMountRef} />
       </div>
@@ -2725,7 +2801,13 @@ export default function App() {
               >
                 <picture className="impact-scene-media" ref={impactSceneMediaRef}>
                   <source media="(max-width: 900px)" srcSet={impactPortraitImage} />
-                  <img alt="" src={impactWideImage} />
+                  <img
+                    alt=""
+                    decoding="async"
+                    fetchPriority="low"
+                    loading="lazy"
+                    src={impactWideImage}
+                  />
                 </picture>
               </div>
 
@@ -2972,7 +3054,12 @@ export default function App() {
                                 "--board-rotation": image.rotation,
                               }}
                             >
-                              <img alt="" src={image.source} />
+                              <img
+                                alt=""
+                                decoding="async"
+                                loading="lazy"
+                                src={image.source}
+                              />
                             </figure>
                           ))}
                         </div>
@@ -3014,12 +3101,16 @@ export default function App() {
                       >
                         {panel.video ? (
                           <video
-                            autoPlay
-                            loop
+                            autoPlay={runtimeProfile.autoplayPanelVideos}
+                            loop={runtimeProfile.autoplayPanelVideos}
                             muted
                             playsInline
                             poster={panel.poster ?? panel.image}
-                            preload="metadata"
+                            preload={
+                              runtimeProfile.autoplayPanelVideos
+                                ? "metadata"
+                                : "none"
+                            }
                           >
                             <source src={panel.video} type="video/mp4" />
                           </video>
@@ -3028,7 +3119,13 @@ export default function App() {
                             {panel.mobileImage ? (
                               <source media="(max-width: 900px)" srcSet={panel.mobileImage} />
                             ) : null}
-                            <img alt="" src={panel.image} />
+                            <img
+                              alt=""
+                              decoding="async"
+                              fetchPriority="low"
+                              loading="lazy"
+                              src={panel.image}
+                            />
                           </picture>
                         )}
                       </div>
