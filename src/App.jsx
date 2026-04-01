@@ -67,6 +67,17 @@ const projectSequencePanels = [
     poster: heroPoster,
     image: heroPoster,
   },
+  {
+    number: "05",
+    type: "text",
+    eyebrow: "Section 04 / Sequence Five",
+    ghost: "Clarity",
+    title: ["Work flows better", "when systems stay clear."],
+    summary:
+      "The strongest internal tools reduce friction across people, spaces, and routines. Good environment management should feel organized, visible, and easy to trust.",
+    detail:
+      "Workspace operations, team coordination, and structure designed to stay calm under daily pressure.",
+  },
 ];
 
 const mediaGalleryImages = Object.entries(
@@ -95,21 +106,27 @@ const projectNoticeBoardLayouts = {
     { top: "42%", left: "40%", width: "36%", aspectRatio: "1.2", rotation: "-4deg" },
     { top: "68%", left: "22%", width: "38%", aspectRatio: "1.02", rotation: "5deg" },
   ],
+  "05": [
+    { top: "3%", left: "8%", width: "31%", aspectRatio: "1.08", rotation: "-7deg" },
+    { top: "9%", left: "50%", width: "33%", aspectRatio: "0.88", rotation: "6deg" },
+    { top: "35%", left: "4%", width: "35%", aspectRatio: "1.18", rotation: "3deg" },
+    { top: "43%", left: "44%", width: "34%", aspectRatio: "0.94", rotation: "-5deg" },
+    { top: "70%", left: "18%", width: "40%", aspectRatio: "1.02", rotation: "4deg" },
+  ],
 };
 
+const createNoticeBoard = (layoutKey, imageIndexes) =>
+  projectNoticeBoardLayouts[layoutKey]
+    .map((layout, index) => ({
+      ...layout,
+      source: mediaGalleryImages[imageIndexes[index]],
+    }))
+    .filter((item) => item.source);
+
 const projectNoticeBoards = {
-  "01": projectNoticeBoardLayouts["01"]
-    .map((layout, index) => ({
-      ...layout,
-      source: mediaGalleryImages[index],
-    }))
-    .filter((item) => item.source),
-  "03": projectNoticeBoardLayouts["03"]
-    .map((layout, index) => ({
-      ...layout,
-      source: mediaGalleryImages[index + 5],
-    }))
-    .filter((item) => item.source),
+  "01": createNoticeBoard("01", [0, 1, 2, 3, 4]),
+  "03": createNoticeBoard("03", [5, 6, 7, 8, 9]),
+  "05": createNoticeBoard("05", [10, 1, 11, 6, 3]),
 };
 
 const processWordItems = [
@@ -1369,6 +1386,12 @@ export default function App() {
     const projectPanelThreeGhost = projectsTrack.querySelector(
       ".project-panel-3 .project-panel-ghost",
     );
+    const projectPanelFiveCopy = projectsTrack.querySelector(
+      ".project-panel-5 .project-panel-copy",
+    );
+    const projectPanelFiveGhost = projectsTrack.querySelector(
+      ".project-panel-5 .project-panel-ghost",
+    );
     const projectPanelTwoMedia = projectsTrack.querySelector(
       ".project-panel-2 .project-panel-media-inner",
     );
@@ -1397,6 +1420,8 @@ export default function App() {
       !(projectPanelOneCopy instanceof HTMLElement) ||
       !(projectPanelThreeCopy instanceof HTMLElement) ||
       !(projectPanelThreeGhost instanceof HTMLElement) ||
+      !(projectPanelFiveCopy instanceof HTMLElement) ||
+      !(projectPanelFiveGhost instanceof HTMLElement) ||
       !(projectPanelTwoMedia instanceof HTMLElement) ||
       !(projectPanelFourMedia instanceof HTMLElement) ||
       !(projectPanelTwoCaption instanceof HTMLElement) ||
@@ -1835,6 +1860,8 @@ export default function App() {
           projectPanelOneCopy,
           projectPanelThreeCopy,
           projectPanelThreeGhost,
+          projectPanelFiveCopy,
+          projectPanelFiveGhost,
           projectPanelTwoMedia,
           projectPanelFourMedia,
           projectPanelTwoCaption,
@@ -1951,6 +1978,17 @@ export default function App() {
         force3D: true,
       });
       gsap.set(projectPanelThreeGhost, {
+        xPercent: 8,
+        yPercent: 2,
+        opacity: 0.18,
+        force3D: true,
+      });
+      gsap.set(projectPanelFiveCopy, {
+        xPercent: 14,
+        yPercent: 3,
+        force3D: true,
+      });
+      gsap.set(projectPanelFiveGhost, {
         xPercent: 8,
         yPercent: 2,
         opacity: 0.18,
@@ -2370,6 +2408,25 @@ export default function App() {
             duration: 1,
           },
           2,
+        )
+        .to(
+          projectPanelFiveCopy,
+          {
+            xPercent: -12,
+            yPercent: -5,
+            duration: 1,
+          },
+          3,
+        )
+        .to(
+          projectPanelFiveGhost,
+          {
+            xPercent: -4,
+            yPercent: -2,
+            opacity: 0.34,
+            duration: 1,
+          },
+          3,
         );
     }, section);
 
@@ -2834,7 +2891,7 @@ export default function App() {
             id="closing"
           >
             <div className="closing-panel contact-panel intro-panel">
-              <p className="eyebrow">Section 05 / Closing</p>
+              <p className="eyebrow">Section 06 / Closing</p>
               <h2 id="closing-title">The motion stops. The intent stays.</h2>
               <p className="closing-copy">
                 The horizontal sequence ends here and the page returns to a calmer
