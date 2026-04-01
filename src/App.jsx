@@ -762,7 +762,7 @@ export default function App() {
     );
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-    const playbackEndProgress = 0.68;
+    const playbackEndProgress = runtimeProfile.touchDevice ? 0.5 : 0.68;
     const zoomStartProgress = playbackEndProgress;
     const brainMotionStart = zoomStartProgress;
     const brainReleaseStart = brainMotionStart;
@@ -976,7 +976,9 @@ export default function App() {
         runtimeProfile.disableHeroDecoder ||
         ScrollSmoother.get()
           ? 1
-          : 0.12;
+          : runtimeProfile.touchDevice
+            ? 0.24
+            : 0.12;
       currentProgress += (targetProgress - currentProgress) * easing;
 
       if (Math.abs(targetProgress - currentProgress) <= 0.0004) {
@@ -2027,21 +2029,29 @@ export default function App() {
         viewportHeight * impactTransitionSettings.maxExtraContentScrollFactor,
       );
 
-      return Math.round(
+      const distance = Math.round(
         viewportHeight * impactTransitionSettings.scrollDistanceViewportFactor +
           viewportHeight * impactTransitionSettings.processSequenceViewportFactor +
           extraContentScroll,
       );
+
+      return runtimeProfile.touchDevice
+        ? Math.round(distance * 0.78)
+        : distance;
     };
 
     const getProjectsHorizontalDistance = () => {
       const viewportWidth = projectsPin.clientWidth || window.innerWidth || 1;
       const travelDistance = projectsTrack.scrollWidth - viewportWidth;
 
-      return Math.max(
+      const distance = Math.max(
         Math.round(travelDistance),
         Math.round(viewportWidth * projectSequenceDuration),
       );
+
+      return runtimeProfile.touchDevice
+        ? Math.round(distance * 0.84)
+        : distance;
     };
 
     const getProjectSequenceMotionSettings = () => {
@@ -2053,7 +2063,7 @@ export default function App() {
 
       if (isPhone) {
         return {
-          trackScrub: isCompactHeight ? 1 : 0.98,
+          trackScrub: isCompactHeight ? 0.76 : 0.72,
           mediaTransformOrigin: "center top",
           panelOneDrift: {
             xPercent: -8,
@@ -2102,7 +2112,7 @@ export default function App() {
 
       if (isTablet) {
         return {
-          trackScrub: isCompactHeight ? 1.04 : 1.02,
+          trackScrub: isCompactHeight ? 0.88 : 0.84,
           mediaTransformOrigin: "center top",
           panelOneDrift: {
             xPercent: -13,
@@ -2659,7 +2669,7 @@ export default function App() {
           trigger: section,
           start: "top top",
           end: () => `+=${getPinnedScrollDistance()}`,
-          scrub: 1.1,
+          scrub: runtimeProfile.touchDevice ? 0.72 : 1.1,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,

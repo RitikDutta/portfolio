@@ -1670,7 +1670,7 @@ a {
 
 @media (max-width: 960px) {
   .hero-scroll {
-    height: 430vh;
+    height: 340vh;
   }
 
   .hero-overlay {
@@ -1945,7 +1945,7 @@ a {
   }
 
   .hero-scroll {
-    height: 360vh;
+    height: 285vh;
   }
 
   .hero-overlay {
