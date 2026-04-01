@@ -143,11 +143,13 @@ a {
 }
 
 .hero-canvas,
+.hero-sequence-video,
 .hero-fallback {
   transition: opacity 220ms ease;
 }
 
-.hero-canvas {
+.hero-canvas,
+.hero-sequence-video {
   opacity: 0;
 }
 
@@ -156,11 +158,16 @@ a {
   object-position: center calc(50% + (var(--scroll-progress) * 11%));
 }
 
-.hero-scroll[data-decoder-ready="true"] .hero-canvas {
+.hero-scroll[data-sequence-mode="canvas"] .hero-canvas {
   opacity: 1;
 }
 
-.hero-scroll[data-decoder-ready="true"] .hero-fallback {
+.hero-scroll[data-sequence-mode="video"] .hero-sequence-video {
+  opacity: 1;
+}
+
+.hero-scroll[data-sequence-mode="canvas"] .hero-fallback,
+.hero-scroll[data-sequence-mode="video"] .hero-fallback {
   opacity: 0;
 }
 

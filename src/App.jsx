@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import heroImage from "../hero.webp";
+import heroVideo from "../hero.mp4";
 import heroPoster from "../hero-poster.webp";
 import impactPortraitImage from "../portrait.webp";
 import impactWideImage from "../wide.webp";
@@ -472,6 +473,7 @@ const defaultRuntimeProfile = {
   disableSmoother: false,
   disableHeroDecoder: false,
   disableBrainScene: false,
+  preferVideoHeroSequence: false,
   autoplayPanelVideos: true,
   heroCanvasDpr: 1.25,
   brainCanvasDpr: 1.1,
@@ -509,13 +511,18 @@ const getRuntimeProfile = () => {
     connection?.effectiveType ?? "",
   );
   const saveData = Boolean(connection?.saveData);
-  const mobileConstrainedDevice =
-    narrowViewport &&
-    (saveData || slowConnection || lowMemory || lowConcurrency);
-  const disableHeavyRuntime =
-    reducedMotion ||
-    (touchDevice && narrowViewport) ||
-    mobileConstrainedDevice;
+  const veryLowMemory =
+    typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 2;
+  const veryLowConcurrency =
+    typeof navigator.hardwareConcurrency === "number" &&
+    navigator.hardwareConcurrency <= 2;
+  const constrainedDevice =
+    saveData ||
+    slowConnection ||
+    veryLowMemory ||
+    veryLowConcurrency ||
+    (narrowViewport && lowMemory && lowConcurrency);
+  const disableHeavyRuntime = reducedMotion || constrainedDevice;
 
   if (motionOverride === "full") {
     return {
@@ -524,6 +531,7 @@ const getRuntimeProfile = () => {
       disableSmoother: false,
       disableHeroDecoder: false,
       disableBrainScene: false,
+      preferVideoHeroSequence: false,
       autoplayPanelVideos: true,
       heroCanvasDpr: 1.25,
       brainCanvasDpr: 1.1,
@@ -537,6 +545,7 @@ const getRuntimeProfile = () => {
       disableSmoother: true,
       disableHeroDecoder: true,
       disableBrainScene: true,
+      preferVideoHeroSequence: true,
       autoplayPanelVideos: false,
       heroCanvasDpr: 1,
       brainCanvasDpr: 1,
@@ -546,12 +555,13 @@ const getRuntimeProfile = () => {
   return {
     disableHeavyRuntime,
     preferLiteMode: disableHeavyRuntime,
-    disableSmoother: reducedMotion || (touchDevice && narrowViewport),
+    disableSmoother: reducedMotion || touchDevice,
     disableHeroDecoder: disableHeavyRuntime,
     disableBrainScene: disableHeavyRuntime,
+    preferVideoHeroSequence: touchDevice,
     autoplayPanelVideos: !disableHeavyRuntime,
-    heroCanvasDpr: disableHeavyRuntime ? 1 : 1.25,
-    brainCanvasDpr: disableHeavyRuntime ? 1 : 1.1,
+    heroCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 1 : 1.25,
+    brainCanvasDpr: disableHeavyRuntime ? 1 : touchDevice ? 0.7 : 1.1,
   };
 };
 
@@ -571,6 +581,7 @@ export default function App() {
   const smoothContentRef = useRef(null);
   const heroSectionRef = useRef(null);
   const canvasRef = useRef(null);
+  const heroVideoRef = useRef(null);
   const brainMountRef = useRef(null);
   const impactSectionRef = useRef(null);
   const aboutFrameRef = useRef(null);
@@ -675,21 +686,21 @@ export default function App() {
   useEffect(() => {
     const heroSection = heroSectionRef.current;
     const canvas = canvasRef.current;
+    const heroVideo = heroVideoRef.current;
     const pageShell = pageShellRef.current;
     const heroPin = heroSection?.querySelector(".hero-pin");
 
     if (
       !heroSection ||
-      !canvas ||
       !(pageShell instanceof HTMLElement) ||
       !(heroPin instanceof HTMLElement)
     ) {
       return undefined;
     }
 
-    const context = canvas.getContext("2d");
+    const context = canvas?.getContext("2d") ?? null;
 
-    if (!context) {
+    if (!context && !heroVideo) {
       return undefined;
     }
 
@@ -703,6 +714,10 @@ export default function App() {
     let mounted = true;
     let activeFrameIndex = -1;
     let requestedFrameIndex = -1;
+    let videoDuration = 0;
+    let activeSequenceMode = runtimeProfile.preferVideoHeroSequence
+      ? "video"
+      : "poster";
 
     const frameCache = new Map();
     const pendingFrames = new Map();
@@ -758,7 +773,17 @@ export default function App() {
       }
     };
 
+    const setSequenceMode = (mode) => {
+      activeSequenceMode = mode;
+      heroSection.dataset.sequenceMode = mode;
+      heroSection.dataset.decoderReady = mode === "canvas" ? "true" : "false";
+    };
+
     const drawFrame = (frame) => {
+      if (!context || !canvas) {
+        return;
+      }
+
       const bounds = canvas.getBoundingClientRect();
       const devicePixelRatio = Math.min(
         window.devicePixelRatio || 1,
@@ -976,11 +1001,36 @@ export default function App() {
       });
       requestBrainSceneSyncRef.current();
 
-      if (activeFrameIndex >= 0 && frameCache.has(activeFrameIndex)) {
+      if (
+        activeSequenceMode === "canvas" &&
+        activeFrameIndex >= 0 &&
+        frameCache.has(activeFrameIndex)
+      ) {
         drawFrame(frameCache.get(activeFrameIndex));
       }
 
-      renderVisibleFrame();
+      if (activeSequenceMode === "canvas") {
+        renderVisibleFrame();
+      } else if (
+        activeSequenceMode === "video" &&
+        heroVideo &&
+        videoDuration > 0
+      ) {
+        const playbackProgress = clamp(
+          currentProgress / playbackEndProgress,
+          0,
+          1,
+        );
+        const nextTime = playbackProgress * videoDuration;
+
+        if (Math.abs(heroVideo.currentTime - nextTime) > 0.033) {
+          try {
+            heroVideo.currentTime = nextTime;
+          } catch {
+            // Ignore transient seek errors while the browser buffers.
+          }
+        }
+      }
 
       const shouldContinue = Math.abs(targetProgress - currentProgress) > 0.0004;
 
@@ -1026,7 +1076,7 @@ export default function App() {
     const initializeDecoder = async () => {
       const ImageDecoderClass = window.ImageDecoder;
 
-      heroSection.dataset.decoderReady = "false";
+      setSequenceMode("poster");
 
       if (runtimeProfile.disableHeroDecoder || !ImageDecoderClass) {
         return;
@@ -1072,7 +1122,7 @@ export default function App() {
 
         activeFrameIndex = 0;
         requestedFrameIndex = 0;
-        heroSection.dataset.decoderReady = "true";
+        setSequenceMode("canvas");
         drawFrame(firstFrame);
         warmNearbyFrames(0);
         syncToScroll();
@@ -1081,17 +1131,62 @@ export default function App() {
       }
     };
 
+    const initializeVideoFallback = () => {
+      if (!heroVideo) {
+        return;
+      }
+
+      const syncVideoMetadata = () => {
+        if (!mounted) {
+          return;
+        }
+
+        videoDuration = heroVideo.duration || 0;
+        setSequenceMode(videoDuration > 0 ? "video" : "poster");
+        syncToScroll();
+      };
+
+      heroVideo.preload = "auto";
+      heroVideo.pause();
+
+      if (heroVideo.readyState >= 1 && heroVideo.duration > 0) {
+        syncVideoMetadata();
+        return undefined;
+      }
+
+      heroVideo.addEventListener("loadedmetadata", syncVideoMetadata);
+      heroVideo.load();
+
+      return () => {
+        heroVideo.removeEventListener("loadedmetadata", syncVideoMetadata);
+      };
+    };
+
     window.addEventListener("resize", updateBounds);
     window.addEventListener("scroll", syncToScroll, { passive: true });
     currentProgress = 0;
     targetProgress = 0;
+    heroSection.dataset.sequenceMode = "poster";
     updateBounds();
-    void initializeDecoder();
+    const disposeVideoFallback =
+      runtimeProfile.preferVideoHeroSequence || !window.ImageDecoder
+        ? initializeVideoFallback()
+        : undefined;
+
+    if (!runtimeProfile.preferVideoHeroSequence) {
+      void initializeDecoder().then(() => {
+        if (heroSection.dataset.sequenceMode !== "canvas") {
+          disposeVideoFallback?.();
+          initializeVideoFallback();
+        }
+      });
+    }
 
     return () => {
       mounted = false;
       window.removeEventListener("resize", updateBounds);
       window.removeEventListener("scroll", syncToScroll);
+      disposeVideoFallback?.();
 
       if (frameId) {
         window.cancelAnimationFrame(frameId);
@@ -2784,15 +2879,29 @@ export default function App() {
           <section
             className="hero-scroll"
             data-decoder-ready="false"
+            data-sequence-mode="poster"
             ref={heroSectionRef}
           >
             <div className="hero-pin">
               {!runtimeProfile.disableHeavyRuntime ? (
-                <canvas
-                  aria-hidden="true"
-                  className="hero-media hero-canvas"
-                  ref={canvasRef}
-                />
+                <>
+                  <canvas
+                    aria-hidden="true"
+                    className="hero-media hero-canvas"
+                    ref={canvasRef}
+                  />
+                  <video
+                    aria-hidden="true"
+                    className="hero-media hero-sequence-video"
+                    muted
+                    playsInline
+                    poster={heroPoster}
+                    preload="auto"
+                    ref={heroVideoRef}
+                  >
+                    <source src={heroVideo} type="video/mp4" />
+                  </video>
+                </>
               ) : null}
               <img
                 alt="Full-screen hero artwork"
@@ -2805,7 +2914,7 @@ export default function App() {
 
               <div className="hero-overlay">
                 <h1>
-                  I build things. that pretend to be intelligent&hellip;
+                  I build things.. that pretend to be intelligent&hellip;
                   <br />
                   and sometimes they accidentally are.
                 </h1>
