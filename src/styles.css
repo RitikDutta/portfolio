@@ -1353,12 +1353,14 @@ a {
 }
 
 .project-panel-media-inner picture,
+.project-panel-media-inner video,
 .project-panel-media-inner img {
   display: block;
   width: 100%;
   height: 100%;
 }
 
+.project-panel-media-inner video,
 .project-panel-media-inner img {
   object-fit: cover;
   object-position: center center;

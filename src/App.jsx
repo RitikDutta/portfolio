@@ -6,6 +6,8 @@ import heroImage from "../hero.webp";
 import heroPoster from "../hero-poster.webp";
 import impactPortraitImage from "../portrait.png";
 import impactWideImage from "../wide.png";
+import interviewVideo from "../media/interview.mp4";
+import cwemVideo from "../media/cwem.mp4";
 import brainModelUrl from "../brain_hologram.glb?url";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
@@ -20,22 +22,24 @@ const projectSequencePanels = [
   {
     number: "01",
     type: "text",
-    eyebrow: "Section 04 / Sequence One",
-    title: ["Quiet systems.", "Loud outcomes."],
+    eyebrow: "Section 04 / Selected Projects",
+    title: ["Selected work.", "Built with intent."],
     summary:
-      "The strongest portfolio moments start with restraint. Motion, layout, and copy should feel deliberate before they ever try to feel impressive.",
+      "A focused set of projects across immersive frontend, product interfaces, and AI workflows. Each one begins with a strong interaction idea and ends as something usable, precise, and ready to ship.",
     detail:
-      "React surfaces, cinematic framing, and interface pacing built to hold attention without shouting.",
+      "Motion systems, live surfaces, and product experiments shaped to feel cinematic in presentation and practical in use.",
   },
   {
     number: "02",
     type: "image",
     eyebrow: "Immersive Frontend",
-    title: "Neural Handoff",
+    title: "Interview Ready",
     summary:
       "An edge-to-edge moment where scroll, framing, and atmosphere move as one continuous scene.",
     detail:
       "Three.js model handoff, image-led storytelling, and frictionless motion direction.",
+    video: interviewVideo,
+    poster: impactWideImage,
     image: impactWideImage,
     mobileImage: impactPortraitImage,
   },
@@ -54,11 +58,13 @@ const projectSequencePanels = [
     number: "04",
     type: "image",
     eyebrow: "Final Frame",
-    title: "Signal Room",
+    title: "Company work environment management",
     summary:
-      "The last panel slows the camera down and lets the atmosphere carry the exit into the next section.",
+      "A company-facing system designed to organize workspace operations, keep teams aligned, and make everyday coordination easier to manage.",
     detail:
-      "High-contrast composition, immersive backdrop, and a cleaner handoff into the final vertical flow.",
+      "Operational visibility, workplace structure, and internal workflows presented through a calmer, more immersive final frame.",
+    video: cwemVideo,
+    poster: heroPoster,
     image: heroPoster,
   },
 ];
@@ -2774,12 +2780,25 @@ export default function App() {
                   return (
                     <article className={panelClassName} key={panel.number}>
                       <div className="project-panel-media-inner" aria-hidden="true">
-                        <picture>
-                          {panel.mobileImage ? (
-                            <source media="(max-width: 900px)" srcSet={panel.mobileImage} />
-                          ) : null}
-                          <img alt="" src={panel.image} />
-                        </picture>
+                        {panel.video ? (
+                          <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            poster={panel.poster ?? panel.image}
+                            preload="metadata"
+                          >
+                            <source src={panel.video} type="video/mp4" />
+                          </video>
+                        ) : (
+                          <picture>
+                            {panel.mobileImage ? (
+                              <source media="(max-width: 900px)" srcSet={panel.mobileImage} />
+                            ) : null}
+                            <img alt="" src={panel.image} />
+                          </picture>
+                        )}
                       </div>
                       <div className="project-panel-media-overlay" aria-hidden="true" />
 
