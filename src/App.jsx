@@ -141,246 +141,136 @@ const projectNoticeBoards = {
   "05": createNoticeBoard("05", [10, 1, 11, 6, 3]),
 };
 
-const processWordItems = [
-  "love what you do",
-  "create real impact",
-  "never stop learning",
-  "work smarter not harder",
+const patternTraceItems = [
+  { top: "22%", left: "12%", width: "24%", rotation: "14deg" },
+  { top: "31%", left: "58%", width: "18%", rotation: "-11deg" },
+  { top: "45%", left: "18%", width: "34%", rotation: "6deg" },
+  { top: "52%", left: "54%", width: "28%", rotation: "-16deg" },
+  { top: "66%", left: "14%", width: "22%", rotation: "11deg" },
+  { top: "72%", left: "50%", width: "24%", rotation: "-7deg" },
 ];
 
-const processWordMotionSpecs = [
-  {
-    enter: {
-      x: -168,
-      y: -96,
-      rotation: -12,
-      rotationX: 10,
-      skewX: 18,
-      scale: 0.72,
-      opacity: 0,
-      blur: 26,
-      letterSpacing: "0.18em",
-      trailX: -92,
-      trailY: 18,
-      trailScale: 1.1,
-      trailOpacity: 0.3,
-      trailBlur: 20,
-      trailRotation: -8,
-      numberY: -16,
-    },
-    settle: {
-      x: -34,
-      y: -30,
-      rotation: -7,
-      scale: 0.74,
-      opacity: 0.18,
-      blur: 4.8,
-      letterSpacing: "0.04em",
-      trailX: -20,
-      trailY: 6,
-      trailScale: 1.04,
-      trailOpacity: 0.08,
-      trailBlur: 12,
-      trailRotation: -4,
-      numberOpacity: 0.18,
-    },
-    compose: {
-      x: -26,
-      y: -24,
-      rotation: -4,
-      scale: 0.8,
-      opacity: 0.32,
-      blur: 1.6,
-      letterSpacing: "0.015em",
-      trailX: -8,
-      trailY: 2,
-      trailScale: 1,
-      trailOpacity: 0.04,
-      trailBlur: 8,
-      trailRotation: -2,
-      numberOpacity: 0.24,
-    },
-    overlay: {
-      glow: 0.42,
-      grid: 0.16,
-      chaos: 0.22,
-      resolve: 0.08,
-    },
-  },
-  {
-    enter: {
-      x: 210,
-      y: -54,
-      rotation: 10,
-      rotationY: -10,
-      skewX: -14,
-      scale: 0.78,
-      opacity: 0,
-      blur: 28,
-      letterSpacing: "0.12em",
-      trailX: 110,
-      trailY: -14,
-      trailScale: 0.96,
-      trailOpacity: 0.34,
-      trailBlur: 18,
-      trailRotation: 8,
-      numberY: -10,
-    },
-    settle: {
-      x: 42,
-      y: -18,
-      rotation: 6,
-      scale: 0.78,
-      opacity: 0.22,
-      blur: 4,
-      letterSpacing: "0.02em",
-      trailX: 18,
-      trailY: -6,
-      trailScale: 0.98,
-      trailOpacity: 0.1,
-      trailBlur: 10,
-      trailRotation: 4,
-      numberOpacity: 0.22,
-    },
-    compose: {
-      x: 34,
-      y: -18,
-      rotation: 3,
-      scale: 0.82,
-      opacity: 0.38,
-      blur: 1.2,
-      letterSpacing: "0.005em",
-      trailX: 10,
-      trailY: -2,
-      trailScale: 0.98,
-      trailOpacity: 0.05,
-      trailBlur: 7,
-      trailRotation: 2,
-      numberOpacity: 0.3,
-    },
-    overlay: {
-      glow: 0.56,
-      grid: 0.24,
-      chaos: 0.34,
-      resolve: 0.14,
-    },
-  },
-  {
-    enter: {
-      x: -58,
-      y: 146,
-      rotation: -4,
-      rotationX: 20,
-      skewX: 8,
-      scale: 0.66,
-      opacity: 0,
-      blur: 30,
-      letterSpacing: "0.16em",
-      trailX: -30,
-      trailY: 58,
-      trailScale: 1.18,
-      trailOpacity: 0.36,
-      trailBlur: 22,
-      trailRotation: -2,
-      numberY: 12,
-    },
-    settle: {
-      x: -12,
-      y: 34,
-      rotation: -2,
-      scale: 0.84,
-      opacity: 0.28,
-      blur: 3,
-      letterSpacing: "0.03em",
-      trailX: -8,
-      trailY: 16,
-      trailScale: 1.06,
-      trailOpacity: 0.12,
-      trailBlur: 12,
-      trailRotation: -1,
-      numberOpacity: 0.28,
-    },
-    compose: {
-      x: -2,
-      y: 18,
-      rotation: -1,
-      scale: 0.9,
-      opacity: 0.46,
-      blur: 0.8,
-      letterSpacing: "0.01em",
-      trailX: 0,
-      trailY: 8,
-      trailScale: 1.02,
-      trailOpacity: 0.06,
-      trailBlur: 8,
-      trailRotation: 0,
-      numberOpacity: 0.34,
-    },
-    overlay: {
-      glow: 0.72,
-      grid: 0.34,
-      chaos: 0.48,
-      resolve: 0.22,
-    },
-  },
-  {
-    enter: {
-      x: 0,
-      y: 170,
-      rotation: 2,
-      rotationX: 24,
-      scale: 0.58,
-      opacity: 0,
-      blur: 34,
-      letterSpacing: "0.22em",
-      trailX: 0,
-      trailY: 72,
-      trailScale: 1.22,
-      trailOpacity: 0.42,
-      trailBlur: 28,
-      trailRotation: 0,
-      numberY: 16,
-    },
-    settle: {
-      x: 0,
-      y: 0,
-      rotation: 0,
-      scale: 1.08,
-      opacity: 1,
-      blur: 0,
-      letterSpacing: "0em",
-      trailX: 0,
-      trailY: 12,
-      trailScale: 1.06,
-      trailOpacity: 0.16,
-      trailBlur: 16,
-      trailRotation: 0,
-      numberOpacity: 0.92,
-    },
-    compose: {
-      x: 0,
-      y: 0,
-      rotation: 0,
-      scale: 1.04,
-      opacity: 1,
-      blur: 0,
-      letterSpacing: "0em",
-      trailX: 0,
-      trailY: 8,
-      trailScale: 1.02,
-      trailOpacity: 0.12,
-      trailBlur: 12,
-      trailRotation: 0,
-      numberOpacity: 0.92,
-    },
-    overlay: {
-      glow: 1,
-      grid: 0.5,
-      chaos: 0.68,
-      resolve: 0.52,
-    },
-  },
+const patternNodeItems = [
+  { top: "24%", left: "24%", size: "0.7rem" },
+  { top: "33%", left: "72%", size: "0.56rem" },
+  { top: "47%", left: "42%", size: "0.82rem" },
+  { top: "63%", left: "66%", size: "0.62rem" },
+  { top: "74%", left: "26%", size: "0.5rem" },
 ];
+
+const clamp01 = (value) => Math.min(1, Math.max(0, value));
+const smoothStep = (value) => {
+  const clamped = clamp01(value);
+  return clamped * clamped * (3 - 2 * clamped);
+};
+
+const findTextAnchor = (text, phrase) => {
+  const position = text.toLowerCase().indexOf(phrase.toLowerCase());
+
+  if (position === -1) {
+    return Math.floor(text.length / 2);
+  }
+
+  return position + Math.floor(phrase.length / 2);
+};
+
+const buildWaveOrder = (length, anchors, diagonalStep = 7) => {
+  const order = [];
+  const seen = new Set();
+  const normalizedAnchors = [...new Set(anchors.filter((anchor) => anchor >= 0))];
+  const addIndex = (index) => {
+    if (index < 0 || index >= length || seen.has(index)) {
+      return;
+    }
+
+    seen.add(index);
+    order.push(index);
+  };
+
+  for (let radius = 0; order.length < length; radius += 1) {
+    normalizedAnchors.forEach((anchor, anchorIndex) => {
+      const offsets =
+        radius === 0
+          ? [0]
+          : anchorIndex % 2 === 0
+            ? [radius, -radius]
+            : [-radius, radius];
+
+      offsets.forEach((offset) => addIndex(anchor + offset));
+    });
+
+    addIndex((radius * diagonalStep + 3) % length);
+  }
+
+  return order;
+};
+
+const buildConvergingOrder = (length, gapIndex) => {
+  const order = [];
+  const seen = new Set();
+  const addIndex = (index) => {
+    if (index < 0 || index >= length || seen.has(index)) {
+      return;
+    }
+
+    seen.add(index);
+    order.push(index);
+  };
+
+  for (let radius = 0; order.length < length; radius += 1) {
+    addIndex(gapIndex - 1 - radius);
+    addIndex(gapIndex + radius);
+
+    if (radius % 2 === 0) {
+      addIndex(gapIndex - 6 - radius);
+    }
+
+    if (radius % 3 === 0) {
+      addIndex(gapIndex - 14 - radius);
+    }
+  }
+
+  for (let index = length - 1; index >= 0; index -= 1) {
+    addIndex(index);
+  }
+
+  return order;
+};
+
+const buildWordCenteredOrder = (text) => {
+  const order = [];
+  const seen = new Set();
+  const addIndex = (index) => {
+    if (index < 0 || index >= text.length || seen.has(index)) {
+      return;
+    }
+
+    seen.add(index);
+    order.push(index);
+  };
+  const words = [...text.matchAll(/\S+/g)];
+
+  words.forEach((match) => {
+    const start = match.index ?? 0;
+    const end = start + match[0].length - 1;
+    const center = Math.floor((start + end) / 2);
+
+    for (let radius = 0; radius <= match[0].length; radius += 1) {
+      addIndex(center - radius);
+      addIndex(center + radius);
+    }
+
+    if (text[end + 1] === " ") {
+      addIndex(end + 1);
+    }
+  });
+
+  for (let index = 0; index < text.length; index += 1) {
+    addIndex(index);
+  }
+
+  return order;
+};
 
 const aboutLineSpecs = [
   {
@@ -396,7 +286,7 @@ const aboutLineSpecs = [
   },
   {
     ariaLabel:
-      "And somewhere along the way, those patterns turned into something real... something with IMPACT.",
+      "And somewhere along the way, those patterns turned into something real... something with Impact.",
     segments: [
       {
         type: "text",
@@ -424,33 +314,95 @@ const aboutLineSpecs = [
   },
 ];
 
-const aboutParagraphLines = [];
-let aboutCharacterCount = 0;
+const buildAboutParagraphData = () => {
+  const lines = [];
+  const characters = [];
+  let globalCharacterIndex = 0;
 
-for (const [lineIndex, line] of aboutLineSpecs.entries()) {
-  const renderedSegments = line.segments.map((segment, segmentIndex) => {
-    if (segment.type === "impact") {
+  for (const [lineIndex, line] of aboutLineSpecs.entries()) {
+    const lineCharacters = [];
+    let impactInsertIndex = null;
+    const renderedSegments = line.segments.map((segment, segmentIndex) => {
+      if (segment.type === "impact") {
+        impactInsertIndex = lineCharacters.length;
+
+        return {
+          type: "impact",
+          key: `impact-${lineIndex}-${segmentIndex}`,
+        };
+      }
+
       return {
-        type: "impact",
-        key: `impact-${lineIndex}-${segmentIndex}`,
+        type: "text",
+        key: `text-${lineIndex}-${segmentIndex}`,
+        characters: [...segment.content].map((character) => {
+          const metadata = {
+            character,
+            index: globalCharacterIndex++,
+            isPunctuation: /[.,'’]/.test(character),
+            isWhitespace: character === " ",
+            lineIndex,
+            lineLocalIndex: lineCharacters.length,
+          };
+
+          lineCharacters.push(metadata);
+          characters.push(metadata);
+
+          return metadata;
+        }),
       };
-    }
+    });
 
-    return {
-      type: "text",
-      key: `text-${lineIndex}-${segmentIndex}`,
-      characters: [...segment.content].map((character) => ({
-        character,
-        index: aboutCharacterCount++,
-      })),
-    };
+    const lineText = lineCharacters.map(({ character }) => character).join("");
+    const revealOrder =
+      lineIndex === 0
+        ? buildWaveOrder(lineText.length, [
+            findTextAnchor(lineText, "patterns"),
+            findTextAnchor(lineText, "noticing"),
+            findTextAnchor(lineText, "others"),
+            findTextAnchor(lineText, "miss"),
+          ])
+        : lineIndex === 1
+          ? buildConvergingOrder(
+              lineText.length,
+              impactInsertIndex ?? Math.floor(lineText.length * 0.86),
+            )
+          : buildWordCenteredOrder(lineText);
+    const lineRevealBase = lineIndex * 1000;
+
+    revealOrder.forEach((localIndex, orderIndex) => {
+      const metadata = lineCharacters[localIndex];
+
+      if (!metadata) {
+        return;
+      }
+
+      metadata.lineLength = lineCharacters.length;
+      metadata.revealOrder = lineRevealBase + orderIndex;
+    });
+
+    lines.push({
+      ariaLabel: line.ariaLabel,
+      lineIndex,
+      segments: renderedSegments,
+    });
+  }
+
+  const sortedCharacters = [...characters].sort(
+    (left, right) => left.revealOrder - right.revealOrder,
+  );
+
+  sortedCharacters.forEach((character, orderIndex) => {
+    character.revealOrder = orderIndex;
   });
 
-  aboutParagraphLines.push({
-    ariaLabel: line.ariaLabel,
-    segments: renderedSegments,
-  });
-}
+  return {
+    aboutCharacterMeta: characters,
+    aboutParagraphLines: lines,
+  };
+};
+
+const { aboutCharacterMeta, aboutParagraphLines } = buildAboutParagraphData();
 
 const neuralSparkItems = [
   { top: "18%", left: "18%", size: "10rem", delay: "-0.4s", duration: "1.9s", hue: "24deg" },
@@ -467,15 +419,13 @@ const neuralSparkItems = [
 
 // These values are the main tuning points for the About-section cinematic handoff.
 const impactTransitionSettings = {
-  scrollDistanceViewportFactor: 1.45,
-  processSequenceViewportFactor: 2.05,
+  scrollDistanceViewportFactor: 1.32,
+  patternSequenceViewportFactor: 1.72,
   maxExtraContentScrollFactor: 0.35,
-  sceneStartScale: 1.14,
-  sceneStartY: 10,
-  revealScale: 1.18,
-  exitScale: 3.6,
-  exitDepth: 2000,
-  exitTilt: 4,
+  sceneStartScale: 1.18,
+  exitScale: 4.8,
+  exitDepth: 2450,
+  exitTilt: 8,
 };
 
 const defaultRuntimeProfile = {
@@ -624,7 +574,7 @@ export default function App() {
   const impactWordOutlineRef = useRef(null);
   const impactSceneRef = useRef(null);
   const impactSceneMediaRef = useRef(null);
-  const processProgressRef = useRef(null);
+  const patternProgressRef = useRef(null);
   const projectsSectionRef = useRef(null);
   const projectsPinRef = useRef(null);
   const projectsTrackRef = useRef(null);
@@ -1804,7 +1754,7 @@ export default function App() {
     const wordOutline = impactWordOutlineRef.current;
     const scene = impactSceneRef.current;
     const sceneMedia = impactSceneMediaRef.current;
-    const processProgressFill = processProgressRef.current;
+    const patternProgressFill = patternProgressRef.current;
     const projectsSection = projectsSectionRef.current;
     const projectsPin = projectsPinRef.current;
     const projectsTrack = projectsTrackRef.current;
@@ -1820,7 +1770,7 @@ export default function App() {
       !(wordOutline instanceof SVGTextElement) ||
       !(scene instanceof HTMLElement) ||
       !(sceneMedia instanceof HTMLElement) ||
-      !(processProgressFill instanceof HTMLElement) ||
+      !(patternProgressFill instanceof HTMLElement) ||
       !(projectsSection instanceof HTMLElement) ||
       !(projectsPin instanceof HTMLElement) ||
       !(projectsTrack instanceof HTMLElement) ||
@@ -1828,10 +1778,6 @@ export default function App() {
     ) {
       return undefined;
     }
-
-    const processOverlay = section.querySelector(".process-overlay");
-    const processStage = section.querySelector(".process-stage");
-    const processShell = section.querySelector(".process-shell");
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
@@ -1839,11 +1785,12 @@ export default function App() {
     const characterNodes = [
       ...aboutFrame.querySelectorAll("[data-about-char-index]"),
     ];
+    const aboutLines = [...aboutFrame.querySelectorAll(".about-line")];
     const wordMeasure = aboutFrame.querySelector(".impact-word-measure");
-    const processWordLines = [...section.querySelectorAll(".process-word-line")];
-    const processWordCopies = [...section.querySelectorAll(".process-word-copy")];
-    const processWordTrails = [...section.querySelectorAll(".process-word-trail")];
-    const processWords = [...section.querySelectorAll(".process-word")];
+    const patternOverlay = section.querySelector(".pattern-overlay");
+    const patternField = section.querySelector(".pattern-field");
+    const patternTraces = [...section.querySelectorAll(".pattern-trace")];
+    const patternNodes = [...section.querySelectorAll(".pattern-node")];
     const projectPanels = [...projectsTrack.querySelectorAll(".project-panel")];
     const projectPanelOneCopy = projectsTrack.querySelector(
       ".project-panel-1 .project-panel-copy",
@@ -1874,16 +1821,14 @@ export default function App() {
     );
 
     if (
-      !(processOverlay instanceof HTMLElement) ||
-      !(processStage instanceof HTMLElement) ||
-      !(processShell instanceof HTMLElement) ||
-      !processWords.length ||
-      processWords.length !== processWordMotionSpecs.length ||
-      processWords.length !== processWordLines.length ||
-      processWords.length !== processWordCopies.length ||
-      processWords.length !== processWordTrails.length ||
+      aboutLines.length !== aboutParagraphLines.length ||
       !characterNodes.length ||
       !(wordMeasure instanceof HTMLElement) ||
+      !(patternOverlay instanceof HTMLElement) ||
+      !(patternField instanceof HTMLElement) ||
+      !(patternProgressFill instanceof HTMLElement) ||
+      patternTraces.length !== patternTraceItems.length ||
+      patternNodes.length !== patternNodeItems.length ||
       projectPanels.length !== projectSequencePanels.length ||
       !(projectPanelOneCopy instanceof HTMLElement) ||
       !(projectPanelThreeCopy instanceof HTMLElement) ||
@@ -1899,38 +1844,41 @@ export default function App() {
     }
 
     const characterRevealStart = 0.04;
-    const characterRevealEnd = 0.48;
+    const characterRevealEnd = 0.56;
     const sectionScrollStart = 0.46;
-    const sectionScrollDuration = 0.1;
-    const zoomStart = 0.6;
-    const processIntroStart = 0.87;
-    const processWordStart = 1;
-    const processWordSpacing = 0.155;
-    const processWordRevealDurations = [0.11, 0.125, 0.145, 0.18];
-    const processWordSettleDelay = 0.04;
-    const processWordSettleDuration = 0.14;
-    const processFinalComposeOffset = 0.05;
-    const processFinalHoldDuration = 0.18;
-    const sceneRevealStartY = 0;
-    const sceneParallaxStartY = 0;
-    const sceneParallaxEndY = -5.2;
-    const sceneParallaxStartScale = 1.06;
-    const sceneParallaxEndScale = 1.01;
-    const processShellEntryY = 12;
-    const processShellParallaxEndY = -14;
-    const processStageEntryY = 10;
-    const processStageEntryScale = 0.94;
-    const processStageParallaxEndY = -8;
-    const processStageFinalScale = 1.025;
+    const sectionScrollDuration = 0.12;
+    const gravityStart = 0.38;
+    const peakChaosStart = 0.56;
+    const zoomStart = 0.68;
+    const frameExitStart = 0.84;
+    const sceneRevealStartY = 4;
+    const sceneParallaxStartY = 6;
+    const sceneParallaxEndY = -12;
+    const sceneParallaxStartScale = 1.14;
+    const sceneParallaxEndScale = 1.02;
+    const sceneFinalScale = 1;
     const projectSequenceDuration = projectSequencePanels.length - 1;
     const brainAfterglowFadeEnd = 0.12;
     const brainEntryRotationProgressMax = 0.32;
-    const finalProcessWordIndex = processWords.length - 1;
-    const processParallaxDuration =
-      processWordSpacing * processWords.length + processFinalHoldDuration + 0.26;
-    const characterRevealBatchSize = runtimeProfile.touchDevice ? 4 : 1;
-    const simplifyProcessLines = runtimeProfile.touchDevice;
     const useStickyProjectsScroll = runtimeProfile.touchDevice;
+    const simplifyCharacterMotion =
+      runtimeProfile.touchDevice || characterNodes.length > 96;
+    const visualSampleCount = simplifyCharacterMotion ? 72 : 120;
+    const lineProfiles = [
+      { authority: 0.18, magnet: 0.34, twitch: 1.08 },
+      { authority: 0.34, magnet: 1.12, twitch: 0.88 },
+      { authority: 0.84, magnet: 0.52, twitch: 0.32 },
+    ];
+    const characterNodeByIndex = new Map(
+      characterNodes.map((node) => [
+        Number.parseInt(node.dataset.aboutCharIndex ?? "-1", 10),
+        node,
+      ]),
+    );
+    const orderedCharacterNodes = [...aboutCharacterMeta]
+      .sort((left, right) => left.revealOrder - right.revealOrder)
+      .map((meta) => characterNodeByIndex.get(meta.index))
+      .filter(Boolean);
     let previousActiveCount = -1;
     let syncFrameId = 0;
     let sectionEntryProgress = 0;
@@ -1938,6 +1886,64 @@ export default function App() {
     let sectionTimelineTrigger = null;
     let maskLayoutMetrics = null;
     let lastMaskSignature = "";
+    let lastVisualSignature = "";
+    let characterField = [];
+
+    const setPatternState = ({
+      awaken = 0,
+      chaos = 0,
+      gravity = 0,
+      collapse = 0,
+      vignette = 0,
+      charge = 0,
+    } = {}) => {
+      section.style.setProperty("--pattern-awaken", awaken.toFixed(4));
+      section.style.setProperty("--pattern-chaos", chaos.toFixed(4));
+      section.style.setProperty("--pattern-gravity", gravity.toFixed(4));
+      section.style.setProperty("--pattern-collapse", collapse.toFixed(4));
+      section.style.setProperty("--pattern-vignette", vignette.toFixed(4));
+      section.style.setProperty("--impact-charge", charge.toFixed(4));
+    };
+
+    const setLineState = (lineIndex, state = {}) => {
+      const line = aboutLines[lineIndex];
+
+      if (!(line instanceof HTMLElement)) {
+        return;
+      }
+
+      line.style.setProperty(
+        "--line-echo-opacity",
+        `${(state.echoOpacity ?? 0).toFixed(4)}`,
+      );
+      line.style.setProperty("--line-echo-x", state.echoX ?? "0px");
+      line.style.setProperty("--line-echo-y", state.echoY ?? "0px");
+      line.style.setProperty("--line-trace-opacity", `${(state.traceOpacity ?? 0).toFixed(4)}`);
+      line.style.setProperty("--line-skew", state.skew ?? "0deg");
+      line.style.setProperty("--line-tension", `${(state.tension ?? 0).toFixed(4)}`);
+      line.style.setProperty("--line-scan-shift", state.scanShift ?? "0px");
+    };
+
+    const resetCharacterNode = (node) => {
+      node.classList.remove("about-char-active");
+      node.style.removeProperty("color");
+      node.style.removeProperty("filter");
+      node.style.removeProperty("opacity");
+      node.style.removeProperty("text-shadow");
+      node.style.removeProperty("transform");
+    };
+
+    const getFrameScrollMax = () =>
+      Math.max(aboutFrameContent.scrollHeight - aboutFrameContent.clientHeight, 0);
+
+    const getImpactScrollTarget = () => {
+      const scrollTarget =
+        wordSlot.offsetTop +
+        wordSlot.offsetHeight / 2 -
+        aboutFrameContent.clientHeight / 2;
+
+      return gsap.utils.clamp(0, getFrameScrollMax(), scrollTarget);
+    };
 
     const setBrainAfterglow = (opacity, progress = 0) => {
       pageShell.style.setProperty("--brain-afterglow", opacity.toFixed(4));
@@ -1990,47 +1996,361 @@ export default function App() {
       );
     };
 
-    const paintCharacters = (timelineProgress) => {
+    const measureCharacterField = () => {
+      lastVisualSignature = "";
+      const frameRect = aboutFrame.getBoundingClientRect();
+      const slotRect = wordSlot.getBoundingClientRect();
+      const portalCenterX = slotRect.left + slotRect.width / 2 - frameRect.left;
+      const portalCenterY = slotRect.top + slotRect.height / 2 - frameRect.top;
+
+      const field = aboutCharacterMeta
+        .map((meta) => {
+          if (meta.isWhitespace) {
+            return null;
+          }
+
+          const node = characterNodeByIndex.get(meta.index);
+
+          if (!(node instanceof HTMLElement)) {
+            return null;
+          }
+
+          const rect = node.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2 - frameRect.left;
+          const centerY = rect.top + rect.height / 2 - frameRect.top;
+          const dx = portalCenterX - centerX;
+          const dy = portalCenterY - centerY;
+          const distance = Math.hypot(dx, dy) || 1;
+
+          return {
+            ...meta,
+            distance,
+            dx,
+            dy,
+            node,
+            lineLocalRatio:
+              meta.lineLength && meta.lineLength > 1
+                ? meta.lineLocalIndex / (meta.lineLength - 1)
+                : 0,
+            orbitDirection: meta.index % 2 === 0 ? 1 : -1,
+            phase: meta.lineIndex * 1.13 + meta.lineLocalIndex * 0.41,
+            seedX: ((meta.index % 5) - 2) * 1.5,
+            seedY: ((meta.index % 7) - 3) * 1.18,
+          };
+        })
+        .filter(Boolean);
+
+      const maxDistance = Math.max(
+        ...field.map((item) => item.distance),
+        1,
+      );
+
+      characterField = field.map((item) => ({
+        ...item,
+        distanceNorm: item.distance / maxDistance,
+      }));
+    };
+
+    const updateCharacterSystem = (timelineProgress) => {
       const revealProgress = gsap.utils.clamp(
         0,
         1,
         (timelineProgress - characterRevealStart) /
           (characterRevealEnd - characterRevealStart),
       );
+      const instabilityProgress = smoothStep(
+        gsap.utils.clamp(0, 1, (timelineProgress - 0.14) / 0.46),
+      );
+      const gravityProgress = smoothStep(
+        gsap.utils.clamp(0, 1, (timelineProgress - gravityStart) / 0.28),
+      );
+      const peakChaosProgress = smoothStep(
+        gsap.utils.clamp(0, 1, (timelineProgress - peakChaosStart) / 0.14),
+      );
+      const portalProgress = smoothStep(
+        gsap.utils.clamp(0, 1, (timelineProgress - zoomStart) / 0.22),
+      );
+      const depthProgress = smoothStep(
+        gsap.utils.clamp(0, 1, (timelineProgress - 0.78) / 0.22),
+      );
+      const cursor = revealProgress * (orderedCharacterNodes.length + 1);
       const activeCount = gsap.utils.clamp(
         0,
-        characterNodes.length,
+        orderedCharacterNodes.length,
         revealProgress >= 1
-          ? characterNodes.length
-          : Math.floor(
-              Math.floor(revealProgress * characterNodes.length) /
-                characterRevealBatchSize,
-            ) * characterRevealBatchSize,
+          ? orderedCharacterNodes.length
+          : Math.floor(cursor),
       );
-
-      if (activeCount === previousActiveCount) {
-        return;
-      }
+      const sectionCharge = Math.max(
+        gravityProgress,
+        peakChaosProgress * 0.72 + portalProgress * 0.38,
+      );
+      const visualSignature = [
+        activeCount,
+        Math.round(revealProgress * visualSampleCount),
+        Math.round(instabilityProgress * visualSampleCount),
+        Math.round(gravityProgress * visualSampleCount),
+        Math.round(peakChaosProgress * visualSampleCount),
+        Math.round(portalProgress * visualSampleCount),
+        Math.round(depthProgress * visualSampleCount),
+      ].join("|");
+      const activeCountChanged = activeCount !== previousActiveCount;
 
       if (previousActiveCount === -1) {
-        characterNodes.forEach((node, index) => {
+        orderedCharacterNodes.forEach((node, index) => {
           node.classList.toggle("about-char-active", index < activeCount);
         });
-      } else if (activeCount > previousActiveCount) {
-        characterNodes
+      } else if (activeCountChanged && activeCount > previousActiveCount) {
+        orderedCharacterNodes
           .slice(previousActiveCount, activeCount)
           .forEach((node) => node.classList.add("about-char-active"));
-      } else {
-        characterNodes
+      } else if (activeCountChanged) {
+        orderedCharacterNodes
           .slice(activeCount, previousActiveCount)
           .forEach((node) => node.classList.remove("about-char-active"));
       }
 
       previousActiveCount = activeCount;
+
+      if (!activeCountChanged && visualSignature === lastVisualSignature) {
+        return;
+      }
+
+      lastVisualSignature = visualSignature;
+
+      setPatternState({
+        awaken: revealProgress,
+        chaos: instabilityProgress * (1 - portalProgress * 0.18),
+        gravity: gravityProgress,
+        collapse: portalProgress,
+        vignette: Math.min(1, instabilityProgress * 0.52 + portalProgress * 0.58),
+        charge: sectionCharge,
+      });
+      setLineState(0, {
+        echoOpacity: 0.06 + instabilityProgress * 0.2,
+        echoX: `${(Math.sin(timelineProgress * 20) * instabilityProgress * 6).toFixed(2)}px`,
+        echoY: `${(-2 - instabilityProgress * 4.5).toFixed(2)}px`,
+        traceOpacity: 0.08 + instabilityProgress * 0.26,
+        skew: `${(Math.cos(timelineProgress * 16) * instabilityProgress * 1.3).toFixed(2)}deg`,
+        tension: 0.14 + instabilityProgress * 0.34,
+        scanShift: `${(Math.sin(timelineProgress * 12) * 24 * instabilityProgress).toFixed(2)}px`,
+      });
+      setLineState(1, {
+        echoOpacity: 0.08 + gravityProgress * 0.28,
+        echoX: `${(Math.cos(timelineProgress * 17) * instabilityProgress * 4.2).toFixed(2)}px`,
+        echoY: `${(-2 - gravityProgress * 6.2).toFixed(2)}px`,
+        traceOpacity: 0.12 + gravityProgress * 0.34,
+        skew: `${(gravityProgress * 1.7 - portalProgress * 1.1).toFixed(2)}deg`,
+        tension: 0.18 + gravityProgress * 0.5,
+        scanShift: `${(Math.cos(timelineProgress * 9) * 18 + gravityProgress * 16).toFixed(2)}px`,
+      });
+      setLineState(2, {
+        echoOpacity: 0.04 + revealProgress * 0.1 + depthProgress * 0.08,
+        echoX: `${(Math.sin(timelineProgress * 10 + 1.3) * instabilityProgress * 2.2).toFixed(2)}px`,
+        echoY: `${(-1 - depthProgress * 2.2).toFixed(2)}px`,
+        traceOpacity: 0.06 + depthProgress * 0.16,
+        skew: `${(Math.sin(timelineProgress * 7 + 2.2) * instabilityProgress * 0.34).toFixed(2)}deg`,
+        tension: 0.08 + depthProgress * 0.18,
+        scanShift: `${(Math.sin(timelineProgress * 6) * 10).toFixed(2)}px`,
+      });
+      patternProgressFill.style.transform = `scaleX(${(0.1 + revealProgress * 0.9).toFixed(4)})`;
+      patternProgressFill.style.opacity = `${(0.24 + revealProgress * 0.6 + portalProgress * 0.12).toFixed(3)}`;
+
+      patternTraces.forEach((trace, index) => {
+        const wake = clamp01(instabilityProgress * 1.18 - index * 0.07);
+        const floatX =
+          Math.sin(timelineProgress * 13 + index * 1.27) * 14 * wake +
+          gravityProgress * (index % 2 === 0 ? 10 : -10);
+        const floatY =
+          Math.cos(timelineProgress * 11 + index * 0.92) * 7 * wake -
+          portalProgress * 12;
+
+        trace.style.opacity = `${(0.03 + wake * 0.22 + peakChaosProgress * 0.22 - portalProgress * 0.12).toFixed(3)}`;
+        trace.style.setProperty("--trace-shift-x", `${floatX.toFixed(2)}px`);
+        trace.style.setProperty("--trace-shift-y", `${floatY.toFixed(2)}px`);
+        trace.style.setProperty(
+          "--trace-scale",
+          `${(0.82 + wake * 0.26 + peakChaosProgress * 0.18).toFixed(3)}`,
+        );
+      });
+
+      patternNodes.forEach((node, index) => {
+        const wake = clamp01(revealProgress * 1.1 - index * 0.08);
+        const scale =
+          0.82 +
+          wake * 0.36 +
+          peakChaosProgress * 0.18 +
+          portalProgress * 0.12;
+
+        node.style.opacity = `${(0.05 + wake * 0.3 + gravityProgress * 0.14 - portalProgress * 0.08).toFixed(3)}`;
+        node.style.setProperty("--node-scale", `${scale.toFixed(3)}`);
+        node.style.setProperty(
+          "--node-shift-x",
+          `${(Math.sin(timelineProgress * 12 + index * 0.8) * 8 * wake).toFixed(2)}px`,
+        );
+        node.style.setProperty(
+          "--node-shift-y",
+          `${(Math.cos(timelineProgress * 9 + index * 1.1) * 6 * wake - portalProgress * 8).toFixed(2)}px`,
+        );
+      });
+
+      characterField.forEach((character) => {
+        const {
+          distanceNorm,
+          dx,
+          dy,
+          isPunctuation,
+          lineIndex,
+          lineLocalRatio,
+          node,
+          orbitDirection,
+          phase,
+          revealOrder,
+          seedX,
+          seedY,
+        } = character;
+
+        const profile = lineProfiles[lineIndex] ?? lineProfiles[0];
+        const revealDelta = cursor - revealOrder;
+        const activation = clamp01(revealDelta);
+        const spread = clamp01(1 - Math.abs(revealDelta - 0.22) / 2.45);
+        const wake = Math.max(activation, spread * 0.72);
+        const wakeEase = smoothStep(wake);
+        const punctuationFactor = isPunctuation ? 0.58 : 1;
+        const analyticalWave = Math.sin(
+          phase +
+            timelineProgress * (lineIndex === 0 ? 18 : lineIndex === 1 ? 14 : 9),
+        );
+        const patternWave = Math.cos(
+          lineLocalRatio * Math.PI * (lineIndex === 0 ? 5.2 : lineIndex === 1 ? 2.8 : 1.6) +
+            timelineProgress * 15 +
+            phase,
+        );
+        const instability = instabilityProgress * (runtimeProfile.touchDevice ? 0.62 : 1);
+        const authorityDamp =
+          1 - profile.authority * smoothStep(gsap.utils.clamp(0, 1, (revealProgress - 0.62) / 0.28));
+        const twitchX =
+          analyticalWave *
+          (simplifyCharacterMotion ? 2.2 : 3.4) *
+          profile.twitch *
+          wakeEase *
+          punctuationFactor;
+        const twitchY =
+          (-(simplifyCharacterMotion ? 4.8 : 6.8) * profile.twitch * wakeEase +
+            patternWave * instability * (simplifyCharacterMotion ? 1 : 1.6)) *
+          punctuationFactor;
+        const driftX =
+          Math.sin(phase * 1.38 + timelineProgress * 24) *
+          instability *
+          seedX *
+          profile.twitch *
+          punctuationFactor;
+        const driftY =
+          Math.cos(phase * 1.15 + timelineProgress * 19) *
+          instability *
+          seedY *
+          profile.twitch *
+          punctuationFactor;
+        const magnetStrength =
+          gravityProgress * profile.magnet * (0.22 + (1 - distanceNorm) * 0.7);
+        const magnetX = dx * magnetStrength * 0.11 * punctuationFactor;
+        const magnetY = dy * magnetStrength * 0.11 * punctuationFactor;
+        const orbitStrength =
+          peakChaosProgress *
+          (0.046 + (1 - distanceNorm) * 0.085) *
+          punctuationFactor;
+        const orbitX = -dy * orbitStrength * orbitDirection;
+        const orbitY = dx * orbitStrength * orbitDirection;
+        const collapseStrength =
+          portalProgress * (0.18 + (1 - distanceNorm) * 0.22) * punctuationFactor;
+        const collapseX = dx * collapseStrength;
+        const collapseY = dy * collapseStrength;
+        const x = twitchX + driftX * authorityDamp + magnetX + orbitX + collapseX;
+        const y =
+          twitchY + driftY * authorityDamp + magnetY * 0.94 + orbitY + collapseY;
+        const scale =
+          1 +
+          wakeEase * (lineIndex === 1 ? 0.042 : 0.026) +
+          portalProgress * (0.016 + (1 - distanceNorm) * 0.028);
+        const skew = simplifyCharacterMotion
+          ? 0
+          : (patternWave *
+              instability *
+              (lineIndex === 0 ? 1.2 : 0.64) *
+              punctuationFactor +
+              gravityProgress *
+                (lineIndex === 1 ? orbitDirection * 0.8 * (1 - distanceNorm) : 0)) *
+            authorityDamp;
+        const opacity = clamp01(
+          0.34 + wakeEase * 0.66 - portalProgress * (0.08 + distanceNorm * 0.34),
+        );
+
+        node.style.opacity = opacity.toFixed(3);
+        node.style.transform = simplifyCharacterMotion
+          ? `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(3)})`
+          : `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) skewX(${skew.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      });
     };
 
-    const getFrameScrollMax = () =>
-      Math.max(aboutFrameContent.scrollHeight - aboutFrameContent.clientHeight, 0);
+    const applySettledCharacterState = () => {
+      setPatternState({
+        awaken: 1,
+        chaos: 0.12,
+        gravity: 0.18,
+        collapse: 0,
+        vignette: 0.24,
+        charge: 0.24,
+      });
+      setLineState(0, {
+        echoOpacity: 0.08,
+        echoX: "0px",
+        echoY: "-2px",
+        traceOpacity: 0.1,
+        skew: "0deg",
+        tension: 0.12,
+        scanShift: "0px",
+      });
+      setLineState(1, {
+        echoOpacity: 0.1,
+        echoX: "0px",
+        echoY: "-3px",
+        traceOpacity: 0.12,
+        skew: "0deg",
+        tension: 0.16,
+        scanShift: "0px",
+      });
+      setLineState(2, {
+        echoOpacity: 0.05,
+        echoX: "0px",
+        echoY: "-1px",
+        traceOpacity: 0.08,
+        skew: "0deg",
+        tension: 0.1,
+        scanShift: "0px",
+      });
+      patternProgressFill.style.transform = "scaleX(1)";
+      patternProgressFill.style.opacity = "0.86";
+
+      patternTraces.forEach((trace) => {
+        trace.style.opacity = "0.08";
+        trace.style.setProperty("--trace-scale", "1");
+        trace.style.setProperty("--trace-shift-x", "0px");
+        trace.style.setProperty("--trace-shift-y", "0px");
+      });
+
+      patternNodes.forEach((node) => {
+        node.style.opacity = "0.12";
+        node.style.setProperty("--node-scale", "1");
+        node.style.setProperty("--node-shift-x", "0px");
+        node.style.setProperty("--node-shift-y", "0px");
+      });
+
+      orderedCharacterNodes.forEach((node) => node.classList.add("about-char-active"));
+      characterField.forEach(({ node }) => {
+        node.style.opacity = "1";
+        node.style.transform = "translate3d(0px, 0px, 0) skewX(0deg) scale(1)";
+      });
+    };
 
     const getPinnedScrollDistance = () => {
       const viewportHeight = window.innerHeight || 1;
@@ -2041,7 +2361,7 @@ export default function App() {
 
       const distance = Math.round(
         viewportHeight * impactTransitionSettings.scrollDistanceViewportFactor +
-          viewportHeight * impactTransitionSettings.processSequenceViewportFactor +
+          viewportHeight * impactTransitionSettings.patternSequenceViewportFactor +
           extraContentScroll,
       );
 
@@ -2298,8 +2618,9 @@ export default function App() {
     const measureMaskLayout = () => {
       const baseFrameWidth = aboutFrame.clientWidth;
       const baseFrameHeight = aboutFrame.clientHeight;
-      const wordWidthPx = wordMeasure.offsetWidth || wordSlot.offsetWidth;
-      const wordHeightPx = wordSlot.offsetHeight || wordMeasure.offsetHeight;
+      const wordRect = wordSlot.getBoundingClientRect();
+      const wordWidthPx = wordRect.width || wordMeasure.offsetWidth || wordSlot.offsetWidth;
+      const wordHeightPx = wordRect.height || wordSlot.offsetHeight || wordMeasure.offsetHeight;
 
       if (
         !baseFrameWidth ||
@@ -2320,8 +2641,6 @@ export default function App() {
         1;
 
       return {
-        aboutFrameContentOffsetLeft: aboutFrameContent.offsetLeft,
-        aboutFrameContentOffsetTop: aboutFrameContent.offsetTop,
         baseFrameHeight,
         baseFrameWidth,
         fontFamily: wordStyles.fontFamily,
@@ -2330,10 +2649,6 @@ export default function App() {
         letterSpacing: wordStyles.letterSpacing,
         outlineStrokeWidthPx,
         verticalOffsetPx: fontSizePx * 0.1,
-        wordHeightPx,
-        wordSlotOffsetLeft: wordSlot.offsetLeft,
-        wordSlotOffsetTop: wordSlot.offsetTop,
-        wordWidthPx,
       };
     };
 
@@ -2349,31 +2664,29 @@ export default function App() {
         return;
       }
 
-      const visibleWordOffsetTop =
-        metrics.aboutFrameContentOffsetTop +
-        metrics.wordSlotOffsetTop -
-        aboutFrameContent.scrollTop;
-      const visibleWordOffsetLeft =
-        metrics.aboutFrameContentOffsetLeft + metrics.wordSlotOffsetLeft;
+      const frameRect = aboutFrame.getBoundingClientRect();
+      const wordRect = wordSlot.getBoundingClientRect();
+
+      if (!frameRect.width || !frameRect.height || !wordRect.width || !wordRect.height) {
+        return;
+      }
+
+      const visibleWordOffsetTop = wordRect.top - frameRect.top;
+      const visibleWordOffsetLeft = wordRect.left - frameRect.left;
       const centerX =
-        ((visibleWordOffsetLeft + metrics.wordWidthPx / 2) /
-          metrics.baseFrameWidth) *
+        ((visibleWordOffsetLeft + wordRect.width / 2) / frameRect.width) *
         100;
       const centerY =
         ((visibleWordOffsetTop +
-          metrics.wordHeightPx * 0.525 +
+          wordRect.height * 0.525 +
           metrics.verticalOffsetPx) /
-          metrics.baseFrameHeight) *
+          frameRect.height) *
         100;
-      const zoomOriginX = gsap.utils.clamp(
-        0,
-        100,
-        centerX - (metrics.wordWidthPx / metrics.baseFrameWidth) * 8,
-      );
-      const fontSize = (metrics.fontSizePx / metrics.baseFrameHeight) * 100;
-      const textLength = (metrics.wordWidthPx / metrics.baseFrameWidth) * 100;
+      const zoomOriginX = gsap.utils.clamp(0, 100, centerX);
+      const fontSize = (metrics.fontSizePx / frameRect.height) * 100;
+      const textLength = (wordRect.width / frameRect.width) * 100;
       const outlineStrokeWidth =
-        (metrics.outlineStrokeWidthPx / metrics.baseFrameHeight) * 100;
+        (metrics.outlineStrokeWidthPx / frameRect.height) * 100;
       const signature = [
         centerX,
         centerY,
@@ -2423,190 +2736,15 @@ export default function App() {
       syncFrameId = window.requestAnimationFrame(() => {
         syncFrameId = 0;
         syncMaskLayout();
+        measureCharacterField();
       });
-    };
-
-    const normalizeProcessState = (state = {}) => ({
-      x: state.x ?? 0,
-      y: state.y ?? 0,
-      rotation: state.rotation ?? 0,
-      rotationX: state.rotationX ?? 0,
-      rotationY: state.rotationY ?? 0,
-      skewX: state.skewX ?? 0,
-      scale: state.scale ?? 1,
-      opacity: state.opacity ?? 1,
-      blur: state.blur ?? 0,
-      letterSpacing: state.letterSpacing ?? "0em",
-      trailX: state.trailX ?? 0,
-      trailY: state.trailY ?? 0,
-      trailScale: state.trailScale ?? 1,
-      trailOpacity: state.trailOpacity ?? 0,
-      trailBlur: state.trailBlur ?? 0,
-      trailRotation: state.trailRotation ?? 0,
-    });
-
-    const createProcessRevealState = (spec, index) => ({
-      x: 0,
-      y: 0,
-      rotation: 0,
-      rotationX: 0,
-      rotationY: 0,
-      skewX: 0,
-      scale: index === finalProcessWordIndex ? 1.08 : 1,
-      opacity: 1,
-      blur: 0,
-      letterSpacing: index === finalProcessWordIndex ? "-0.01em" : "0em",
-      trailX: (spec.enter.trailX ?? 0) * 0.14,
-      trailY: (spec.enter.trailY ?? 0) * 0.14,
-      trailScale: index === finalProcessWordIndex ? 1.08 : 1.02,
-      trailOpacity: index === finalProcessWordIndex ? 0.18 : 0.24,
-      trailBlur: index === finalProcessWordIndex ? 18 : 10,
-      trailRotation: (spec.enter.trailRotation ?? 0) * 0.15,
-    });
-
-    const setOverlayState = (state) => {
-      processOverlay.style.setProperty(
-        "--process-glow-strength",
-        `${state.glow ?? 0}`,
-      );
-      processOverlay.style.setProperty(
-        "--process-grid-strength",
-        `${state.grid ?? 0}`,
-      );
-      processOverlay.style.setProperty(
-        "--process-chaos-strength",
-        `${state.chaos ?? 0}`,
-      );
-      processOverlay.style.setProperty(
-        "--process-resolve-strength",
-        `${state.resolve ?? 0}`,
-      );
-    };
-
-    const setProcessLineState = (index, rawState) => {
-      const state = normalizeProcessState(rawState);
-
-      gsap.set(processWordLines[index], {
-        autoAlpha: state.opacity <= 0 ? 0 : 1,
-        x: state.x,
-        y: state.y,
-        rotation: state.rotation,
-        rotationX: state.rotationX,
-        rotationY: state.rotationY,
-        skewX: state.skewX,
-        scale: state.scale,
-        opacity: state.opacity,
-      });
-
-      if (simplifyProcessLines) {
-        gsap.set(processWordCopies[index], {
-          clearProps: "filter",
-          letterSpacing: state.letterSpacing,
-        });
-        gsap.set(processWordTrails[index], {
-          autoAlpha: 0,
-          clearProps: "transform,filter",
-        });
-        return;
-      }
-
-      gsap.set(processWordCopies[index], {
-        filter: `blur(${state.blur}px)`,
-        letterSpacing: state.letterSpacing,
-      });
-      gsap.set(processWordTrails[index], {
-        x: state.trailX,
-        y: state.trailY,
-        scale: state.trailScale,
-        opacity: state.trailOpacity,
-        rotation: state.trailRotation,
-        filter: `blur(${state.trailBlur}px)`,
-      });
-    };
-
-    const tweenProcessLineState = (
-      timeline,
-      index,
-      rawState,
-      position,
-      options = {},
-    ) => {
-      const state = normalizeProcessState(rawState);
-      const duration = options.duration ?? 0.12;
-      const ease = options.ease ?? "power3.out";
-
-      timeline.to(
-        processWordLines[index],
-        {
-          autoAlpha: state.opacity <= 0 ? 0 : 1,
-          x: state.x,
-          y: state.y,
-          rotation: state.rotation,
-          rotationX: state.rotationX,
-          rotationY: state.rotationY,
-          skewX: state.skewX,
-          scale: state.scale,
-          opacity: state.opacity,
-          duration,
-          ease,
-        },
-        position,
-      );
-
-      if (simplifyProcessLines) {
-        timeline.to(
-          processWordCopies[index],
-          {
-            clearProps: "filter",
-            letterSpacing: state.letterSpacing,
-            duration,
-            ease,
-          },
-          position,
-        );
-
-        timeline.set(
-          processWordTrails[index],
-          {
-            autoAlpha: 0,
-            clearProps: "transform,filter",
-          },
-          position,
-        );
-        return;
-      }
-
-      timeline.to(
-        processWordCopies[index],
-        {
-          filter: `blur(${state.blur}px)`,
-          letterSpacing: state.letterSpacing,
-          duration,
-          ease,
-        },
-        position,
-      );
-
-      timeline.to(
-        processWordTrails[index],
-        {
-          x: state.trailX,
-          y: state.trailY,
-          scale: state.trailScale,
-          opacity: state.trailOpacity,
-          rotation: state.trailRotation,
-          filter: `blur(${state.trailBlur}px)`,
-          duration,
-          ease,
-        },
-        position + (options.trailDelay ?? 0.015),
-      );
     };
 
     const teardown = [];
 
-    syncMaskLayout(true);
     aboutFrameContent.scrollTop = 0;
+    syncMaskLayout(true);
+    measureCharacterField();
     setBrainAfterglow(0, 0);
 
     if (reducedMotionQuery.matches) {
@@ -2632,28 +2770,8 @@ export default function App() {
       gsap.set(wordOutline, {
         opacity: 1,
       });
-      gsap.set(processOverlay, {
-        autoAlpha: 0,
-      });
-      setOverlayState({
-        glow: 0.12,
-        grid: 0.08,
-        chaos: 0.12,
-        resolve: 0.24,
-      });
-      gsap.set(processShell, {
-        yPercent: 0,
-      });
-      gsap.set(processStage, {
-        yPercent: 0,
-        scale: 1,
-      });
-      processWordMotionSpecs.forEach((spec, index) => {
-        setProcessLineState(index, spec.compose);
-      });
-      gsap.set(processProgressFill, {
-        scaleX: 1,
-        transformOrigin: "left center",
+      gsap.set(patternOverlay, {
+        autoAlpha: 1,
       });
       gsap.set(projectsTrack, {
         clearProps: "transform",
@@ -2682,8 +2800,9 @@ export default function App() {
         opacity: 1,
       });
       aboutFrameContent.scrollTop = 0;
-      paintCharacters(1);
       syncMaskLayout(true);
+      measureCharacterField();
+      applySettledCharacterState();
       setBrainAfterglow(0, 0);
 
       return undefined;
@@ -2725,47 +2844,16 @@ export default function App() {
         transformPerspective: 1600,
       });
       gsap.set(wordOutline, {
-        opacity: 0.36,
+        opacity: 0.52,
       });
-      gsap.set(processOverlay, {
-        autoAlpha: 0,
+      gsap.set(patternOverlay, {
+        autoAlpha: 1,
       });
-      setOverlayState({
-        glow: 0.14,
-        grid: 0.08,
-        chaos: 0.12,
-        resolve: 0,
-      });
-      gsap.set(processShell, {
-        yPercent: processShellEntryY,
-        force3D: true,
-      });
-      gsap.set(processStage, {
-        yPercent: processStageEntryY,
-        scale: processStageEntryScale,
-        rotationX: 8,
-        transformPerspective: 1800,
-        transformOrigin: "center center",
-        force3D: true,
-      });
-      gsap.set(processProgressFill, {
-        scaleX: 0,
+      gsap.set(patternProgressFill, {
         transformOrigin: "left center",
       });
-      gsap.set(processWordLines, {
-        transformPerspective: 1400,
-        transformOrigin: "center center",
-        force3D: true,
-      });
-      gsap.set(processWordCopies, {
-        force3D: true,
-      });
-      gsap.set(processWordTrails, {
-        force3D: true,
-      });
-      processWordMotionSpecs.forEach((spec, index) => {
-        setProcessLineState(index, spec.enter);
-      });
+      setPatternState();
+      orderedCharacterNodes.forEach((node) => resetCharacterNode(node));
       syncProjectsScrollDistance();
       applyProjectBaseState();
 
@@ -2783,13 +2871,14 @@ export default function App() {
           invalidateOnRefresh: true,
           onRefresh: (self) => {
             sectionTimelineTrigger = self;
-            paintCharacters(self.progress);
-            syncAfterglowState();
             syncMaskLayout(true);
+            measureCharacterField();
+            updateCharacterSystem(self.progress);
+            syncAfterglowState();
           },
           onUpdate: (self) => {
             sectionTimelineTrigger = self;
-            paintCharacters(self.progress);
+            updateCharacterSystem(self.progress);
             syncAfterglowState();
           },
         },
@@ -2828,7 +2917,7 @@ export default function App() {
 
       teardown.push(() => entryTrigger.kill());
 
-      paintCharacters(0);
+      updateCharacterSystem(0);
       syncAfterglowState();
 
       timeline
@@ -2846,11 +2935,20 @@ export default function App() {
           scene,
           {
             opacity: 1,
-            scale: 1,
-            yPercent: 0,
-            duration: 0.48,
+            scale: 1.02,
+            yPercent: -1,
+            duration: 0.56,
           },
           0.12,
+        )
+        .to(
+          sceneMedia,
+          {
+            yPercent: sceneParallaxEndY,
+            scale: sceneParallaxEndScale,
+            duration: 0.72,
+          },
+          0.16,
         )
         .to(
           aboutFrame,
@@ -2864,14 +2962,15 @@ export default function App() {
           wordOutline,
           {
             opacity: 1,
-            duration: 0.18,
+            scale: 1.03,
+            duration: 0.22,
           },
-          characterRevealEnd,
+          characterRevealEnd - 0.05,
         )
         .to(
           aboutFrameContent,
           {
-            scrollTop: () => getFrameScrollMax(),
+            scrollTop: () => getImpactScrollTarget(),
             duration: sectionScrollDuration,
             onUpdate: requestMaskSync,
           },
@@ -2883,176 +2982,47 @@ export default function App() {
             scale: impactTransitionSettings.exitScale,
             z: impactTransitionSettings.exitDepth,
             rotationX: impactTransitionSettings.exitTilt,
-            duration: 0.28,
-            ease: "power2.in",
+            duration: 0.34,
+            ease: "power2.inOut",
           },
           zoomStart,
+        )
+        .to(
+          scene,
+          {
+            scale: sceneFinalScale,
+            yPercent: 0,
+            duration: 0.3,
+            ease: "power2.out",
+          },
+          zoomStart + 0.02,
+        )
+        .to(
+          sceneMedia,
+          {
+            scale: sceneFinalScale,
+            yPercent: 0,
+            duration: 0.36,
+            ease: "power2.out",
+          },
+          zoomStart + 0.02,
+        )
+        .to(
+          patternOverlay,
+          {
+            autoAlpha: 0,
+            duration: 0.12,
+            ease: "power2.out",
+          },
+          frameExitStart,
         )
         .set(
           aboutFrame,
           {
             opacity: 0,
           },
-          processIntroStart,
-        )
-        .to(
-          processOverlay,
-          {
-            autoAlpha: 1,
-            duration: 0.16,
-            ease: "power2.out",
-          },
-          processIntroStart,
-        )
-        .to(
-          processShell,
-          {
-            yPercent: 0,
-            duration: 0.12,
-            ease: "power3.out",
-          },
-          processIntroStart,
-        )
-        .to(
-          processStage,
-          {
-            yPercent: 0,
-            scale: 1,
-            rotationX: 0,
-            duration: 0.18,
-            ease: "power3.out",
-          },
-          processIntroStart + 0.01,
-        )
-        .to(
-          processShell,
-          {
-            yPercent: processShellParallaxEndY,
-            duration: processParallaxDuration,
-            ease: "none",
-          },
-          processIntroStart + 0.06,
-        )
-        .to(
-          processStage,
-          {
-            yPercent: processStageParallaxEndY,
-            duration: processParallaxDuration,
-            ease: "none",
-          },
-          processIntroStart + 0.06,
-        )
-        .to(
-          sceneMedia,
-          {
-            yPercent: sceneParallaxEndY,
-            scale: sceneParallaxEndScale,
-            duration: processParallaxDuration,
-            ease: "none",
-          },
-          processIntroStart + 0.06,
+          frameExitStart + 0.02,
         );
-
-      processWords.forEach((_, index) => {
-        const spec = processWordMotionSpecs[index];
-        const revealPosition = processWordStart + index * processWordSpacing;
-        const progressScale = (index + 1) / processWords.length;
-        const revealState = createProcessRevealState(spec, index);
-
-        tweenProcessLineState(timeline, index, revealState, revealPosition, {
-          duration: processWordRevealDurations[index] ?? 0.12,
-          ease: index === finalProcessWordIndex ? "power4.out" : "power3.out",
-          trailDelay: index === finalProcessWordIndex ? 0.02 : 0.012,
-        });
-
-        timeline.to(
-          processProgressFill,
-          {
-            scaleX: progressScale,
-            duration: 0.1,
-            ease: "power3.out",
-          },
-          revealPosition,
-        );
-
-        timeline.to(
-          processOverlay,
-          {
-            "--process-glow-strength": spec.overlay.glow,
-            "--process-grid-strength": spec.overlay.grid,
-            "--process-chaos-strength": spec.overlay.chaos,
-            "--process-resolve-strength": spec.overlay.resolve,
-            duration: processWordRevealDurations[index] ?? 0.12,
-            ease: "power2.out",
-          },
-          revealPosition,
-        );
-
-        if (index > 0) {
-          processWordMotionSpecs.slice(0, index).forEach((previousSpec, previousIndex) => {
-            tweenProcessLineState(
-              timeline,
-              previousIndex,
-              previousSpec.settle,
-              revealPosition + processWordSettleDelay + previousIndex * 0.01,
-              {
-                duration: processWordSettleDuration,
-                ease: "power2.out",
-              },
-            );
-          });
-        }
-      });
-
-      const finalComposePosition =
-        processWordStart +
-        processWordSpacing * finalProcessWordIndex +
-        processFinalComposeOffset;
-
-      processWordMotionSpecs.forEach((spec, index) => {
-        tweenProcessLineState(
-          timeline,
-          index,
-          spec.compose,
-          finalComposePosition + (index === finalProcessWordIndex ? 0 : index * 0.012),
-          {
-            duration: index === finalProcessWordIndex ? 0.16 : 0.14,
-            ease: index === finalProcessWordIndex ? "power3.out" : "power2.out",
-            trailDelay: 0.012,
-          },
-        );
-      });
-
-      timeline.to(
-        processStage,
-        {
-          scale: processStageFinalScale,
-          duration: 0.16,
-          ease: "power2.out",
-        },
-        finalComposePosition,
-      );
-
-      timeline.to(
-        processOverlay,
-        {
-          "--process-glow-strength": 0.98,
-          "--process-grid-strength": 0.54,
-          "--process-chaos-strength": 0.64,
-          "--process-resolve-strength": 0.58,
-          duration: 0.16,
-          ease: "power2.out",
-        },
-        finalComposePosition,
-      );
-
-      timeline.to(
-        {},
-        {
-          duration: processFinalHoldDuration,
-        },
-        finalComposePosition + 0.08,
-      );
 
       if (!useStickyProjectsScroll) {
         gsap.timeline({
@@ -3320,6 +3290,8 @@ export default function App() {
       refreshProjectMotionSettings();
       syncProjectsScrollDistance();
       syncMaskLayout(true);
+      measureCharacterField();
+      updateCharacterSystem(sectionTimelineTrigger?.progress ?? 0);
       ScrollTrigger.refresh();
     };
 
@@ -3327,16 +3299,22 @@ export default function App() {
     teardown.push(() => window.removeEventListener("resize", handleResize));
 
     if (typeof ResizeObserver === "function") {
-      const resizeObserver = new ResizeObserver(() => syncMaskLayout(true));
+      const resizeObserver = new ResizeObserver(() => {
+        syncMaskLayout(true);
+        measureCharacterField();
+        updateCharacterSystem(sectionTimelineTrigger?.progress ?? 0);
+      });
       resizeObserver.observe(aboutFrame);
       resizeObserver.observe(aboutFrameContent);
       resizeObserver.observe(wordSlot);
       teardown.push(() => resizeObserver.disconnect());
     }
 
-      if (document.fonts?.ready) {
+    if (document.fonts?.ready) {
       const fontsReady = () => {
         syncMaskLayout(true);
+        measureCharacterField();
+        updateCharacterSystem(sectionTimelineTrigger?.progress ?? 0);
         ScrollTrigger.refresh();
       };
 
@@ -3347,6 +3325,7 @@ export default function App() {
       syncProjectsScrollDistance();
       applyProjectBaseState();
       syncMaskLayout(true);
+      measureCharacterField();
     };
 
     ScrollTrigger.addEventListener("refreshInit", handleRefreshInit);
@@ -3430,7 +3409,7 @@ export default function App() {
                 alt="Full-screen hero artwork"
                 className="hero-media hero-fallback"
                 decoding="async"
-                fetchPriority="high"
+                fetchpriority="high"
                 loading="eager"
                 src={heroPoster}
               />
@@ -3472,40 +3451,49 @@ export default function App() {
                   <img
                     alt=""
                     decoding="async"
-                    fetchPriority="low"
+                    fetchpriority="low"
                     loading="lazy"
                     src={impactWideImage}
                   />
                 </picture>
               </div>
 
-              <div className="process-overlay" aria-label="Process words">
-                <div className="process-shell">
-                  <div className="process-stage">
-                    <div className="process-word-column" aria-label="Process words">
-                      {processWordItems.map((word, index) => (
-                        <span
-                          className={`process-word-line process-word-line-${index + 1}`}
-                          key={word}
-                        >
-                          <span className="process-word-copy">
-                            <span className="process-word-trail" aria-hidden="true">
-                              {word}
-                            </span>
-                            <span className="process-word">{word}</span>
-                          </span>
-                        </span>
-                      ))}
-                    </div>
+              <div className="pattern-overlay" aria-hidden="true">
+                <div className="pattern-field">
+                  <div className="pattern-trace-layer">
+                    {patternTraceItems.map((trace, index) => (
+                      <span
+                        className="pattern-trace"
+                        key={`${trace.top}-${trace.left}-${index}`}
+                        style={{
+                          "--trace-left": trace.left,
+                          "--trace-rotation": trace.rotation,
+                          "--trace-top": trace.top,
+                          "--trace-width": trace.width,
+                        }}
+                      />
+                    ))}
                   </div>
 
-                  <div className="process-footer" aria-hidden="true">
-                    <div className="process-progress">
+                  <div className="pattern-node-layer">
+                    {patternNodeItems.map((node, index) => (
                       <span
-                        className="process-progress-fill"
-                        ref={processProgressRef}
+                        className="pattern-node"
+                        key={`${node.top}-${node.left}-${index}`}
+                        style={{
+                          "--node-left": node.left,
+                          "--node-size": node.size,
+                          "--node-top": node.top,
+                        }}
                       />
-                    </div>
+                    ))}
+                  </div>
+
+                  <div className="pattern-energy">
+                    <span
+                      className="pattern-energy-fill"
+                      ref={patternProgressRef}
+                    />
                   </div>
                 </div>
               </div>
@@ -3522,7 +3510,7 @@ export default function App() {
                       viewBox="0 0 100 100"
                     >
                       <defs>
-                        {/* The foreground panel is real geometry; the mask cuts IMPACT
+                        {/* The foreground panel is real geometry; the mask cuts Impact
                             out of it so the background scene is visible through the word. */}
                         <linearGradient id="about-surface-gradient" x1="10%" x2="90%" y1="0%" y2="100%">
                           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.98" />
@@ -3561,7 +3549,7 @@ export default function App() {
                             x="50"
                             y="50"
                           >
-                            IMPACT
+                            Impact
                           </text>
                         </mask>
                       </defs>
@@ -3629,7 +3617,7 @@ export default function App() {
                         x="50"
                         y="50"
                       >
-                        IMPACT
+                        Impact
                       </text>
                     </svg>
                   </div>
@@ -3646,7 +3634,8 @@ export default function App() {
                       {aboutParagraphLines.map((line) => (
                         <p
                           aria-label={line.ariaLabel}
-                          className="about-line"
+                          className={`about-line about-line-${line.lineIndex + 1}`}
+                          data-echo-text={line.ariaLabel}
                           key={line.ariaLabel}
                         >
                           {line.segments.map((segment) => {
@@ -3659,7 +3648,7 @@ export default function App() {
                                     aria-hidden="true"
                                   >
                                     <span className="impact-word-measure">
-                                      IMPACT
+                                      Impact
                                     </span>
                                   </span>
                                 </span>
@@ -3790,7 +3779,7 @@ export default function App() {
                             <img
                               alt=""
                               decoding="async"
-                              fetchPriority="low"
+                              fetchpriority="low"
                               loading="lazy"
                               src={panel.image}
                             />
