@@ -1930,6 +1930,7 @@ export default function App() {
       processWordSpacing * processWords.length + processFinalHoldDuration + 0.26;
     const characterRevealBatchSize = runtimeProfile.touchDevice ? 4 : 1;
     const simplifyProcessLines = runtimeProfile.touchDevice;
+    const useStickyProjectsScroll = runtimeProfile.touchDevice;
     let previousActiveCount = -1;
     let syncFrameId = 0;
     let sectionEntryProgress = 0;
@@ -2279,6 +2280,19 @@ export default function App() {
         transformOrigin: "left center",
       });
       projectsSection.style.setProperty("--projects-progress", "0");
+      return settings;
+    };
+
+    const syncProjectsScrollDistance = () => {
+      if (!useStickyProjectsScroll) {
+        projectsSection.style.removeProperty("--projects-scroll-distance");
+        return;
+      }
+
+      projectsSection.style.setProperty(
+        "--projects-scroll-distance",
+        `${getProjectsHorizontalDistance()}px`,
+      );
     };
 
     const measureMaskLayout = () => {
@@ -2752,6 +2766,7 @@ export default function App() {
       processWordMotionSpecs.forEach((spec, index) => {
         setProcessLineState(index, spec.enter);
       });
+      syncProjectsScrollDistance();
       applyProjectBaseState();
 
       const timeline = gsap.timeline({
@@ -3039,131 +3054,259 @@ export default function App() {
         finalComposePosition + 0.08,
       );
 
-      gsap.timeline({
-        defaults: {
-          ease: "none",
-        },
-        scrollTrigger: {
-          trigger: projectsSection,
-          start: "top top",
-          end: () => `+=${getProjectsHorizontalDistance()}`,
-          scrub: projectMotion.trackScrub,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onRefresh: (self) => {
-            projectsSection.style.setProperty(
-              "--projects-progress",
-              self.progress.toFixed(4),
-            );
+      if (!useStickyProjectsScroll) {
+        gsap.timeline({
+          defaults: {
+            ease: "none",
           },
-          onUpdate: (self) => {
-            projectsSection.style.setProperty(
-              "--projects-progress",
-              self.progress.toFixed(4),
-            );
+          scrollTrigger: {
+            trigger: projectsSection,
+            start: "top top",
+            end: useStickyProjectsScroll
+              ? "bottom bottom"
+              : () => `+=${getProjectsHorizontalDistance()}`,
+            scrub: projectMotion.trackScrub,
+            pin: !useStickyProjectsScroll,
+            anticipatePin: useStickyProjectsScroll ? 0 : 1,
+            invalidateOnRefresh: true,
+            onRefresh: (self) => {
+              projectsSection.style.setProperty(
+                "--projects-progress",
+                self.progress.toFixed(4),
+              );
+            },
+            onUpdate: (self) => {
+              projectsSection.style.setProperty(
+                "--projects-progress",
+                self.progress.toFixed(4),
+              );
+            },
           },
-        },
-      })
-        .to(
-          projectsTrack,
-          {
-            x: () => -getProjectsHorizontalDistance(),
-            duration: projectSequenceDuration,
+        })
+          .to(
+            projectsTrack,
+            {
+              x: () => -getProjectsHorizontalDistance(),
+              duration: projectSequenceDuration,
+            },
+            0,
+          )
+          .to(
+            projectsProgressFill,
+            {
+              scaleX: 1,
+              duration: projectSequenceDuration,
+            },
+            0,
+          )
+          .to(
+            projectPanelOneCopy,
+            {
+              xPercent: () => projectMotion.panelOneDrift.xPercent,
+              yPercent: () => projectMotion.panelOneDrift.yPercent,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            projectPanelTwoMedia,
+            {
+              xPercent: () => projectMotion.panelTwoMediaDrift.xPercent,
+              scale: () => projectMotion.panelTwoMediaDrift.scale,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            projectPanelTwoCaption,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            projectPanelThreeCopy,
+            {
+              xPercent: () => projectMotion.textDrift.xPercent,
+              yPercent: () => projectMotion.textDrift.yPercent,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelThreeGhost,
+            {
+              xPercent: () => projectMotion.ghostDrift.xPercent,
+              yPercent: () => projectMotion.ghostDrift.yPercent,
+              opacity: () => projectMotion.ghostDrift.opacity,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelFourMedia,
+            {
+              xPercent: () => projectMotion.panelFourMediaDrift.xPercent,
+              scale: () => projectMotion.panelFourMediaDrift.scale,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelFourCaption,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelFiveCopy,
+            {
+              xPercent: () => projectMotion.textDrift.xPercent,
+              yPercent: () => projectMotion.textDrift.yPercent,
+              duration: 1,
+            },
+            3,
+          )
+          .to(
+            projectPanelFiveGhost,
+            {
+              xPercent: () => projectMotion.ghostDrift.xPercent,
+              yPercent: () => projectMotion.ghostDrift.yPercent,
+              opacity: () => projectMotion.ghostDrift.opacity,
+              duration: 1,
+            },
+            3,
+          );
+      } else {
+        gsap.timeline({
+          defaults: {
+            ease: "none",
           },
-          0,
-        )
-        .to(
-          projectsProgressFill,
-          {
-            scaleX: 1,
-            duration: projectSequenceDuration,
+          scrollTrigger: {
+            trigger: projectsSection,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: projectMotion.trackScrub,
+            invalidateOnRefresh: true,
+            onRefresh: (self) => {
+              projectsSection.style.setProperty(
+                "--projects-progress",
+                self.progress.toFixed(4),
+              );
+            },
+            onUpdate: (self) => {
+              projectsSection.style.setProperty(
+                "--projects-progress",
+                self.progress.toFixed(4),
+              );
+            },
           },
-          0,
-        )
-        .to(
-          projectPanelOneCopy,
-          {
-            xPercent: () => projectMotion.panelOneDrift.xPercent,
-            yPercent: () => projectMotion.panelOneDrift.yPercent,
-            duration: 1,
-          },
-          0,
-        )
-        .to(
-          projectPanelTwoMedia,
-          {
-            xPercent: () => projectMotion.panelTwoMediaDrift.xPercent,
-            scale: () => projectMotion.panelTwoMediaDrift.scale,
-            duration: 1,
-          },
-          0,
-        )
-        .to(
-          projectPanelTwoCaption,
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-          },
-          0,
-        )
-        .to(
-          projectPanelThreeCopy,
-          {
-            xPercent: () => projectMotion.textDrift.xPercent,
-            yPercent: () => projectMotion.textDrift.yPercent,
-            duration: 1,
-          },
-          2,
-        )
-        .to(
-          projectPanelThreeGhost,
-          {
-            xPercent: () => projectMotion.ghostDrift.xPercent,
-            yPercent: () => projectMotion.ghostDrift.yPercent,
-            opacity: () => projectMotion.ghostDrift.opacity,
-            duration: 1,
-          },
-          2,
-        )
-        .to(
-          projectPanelFourMedia,
-          {
-            xPercent: () => projectMotion.panelFourMediaDrift.xPercent,
-            scale: () => projectMotion.panelFourMediaDrift.scale,
-            duration: 1,
-          },
-          2,
-        )
-        .to(
-          projectPanelFourCaption,
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-          },
-          2,
-        )
-        .to(
-          projectPanelFiveCopy,
-          {
-            xPercent: () => projectMotion.textDrift.xPercent,
-            yPercent: () => projectMotion.textDrift.yPercent,
-            duration: 1,
-          },
-          3,
-        )
-        .to(
-          projectPanelFiveGhost,
-          {
-            xPercent: () => projectMotion.ghostDrift.xPercent,
-            yPercent: () => projectMotion.ghostDrift.yPercent,
-            opacity: () => projectMotion.ghostDrift.opacity,
-            duration: 1,
-          },
-          3,
-        );
+        })
+          .to(
+            projectsTrack,
+            {
+              x: () => -getProjectsHorizontalDistance(),
+              duration: projectSequenceDuration,
+            },
+            0,
+          )
+          .to(
+            projectsProgressFill,
+            {
+              scaleX: 1,
+              duration: projectSequenceDuration,
+            },
+            0,
+          )
+          .to(
+            projectPanelOneCopy,
+            {
+              xPercent: () => projectMotion.panelOneDrift.xPercent,
+              yPercent: () => projectMotion.panelOneDrift.yPercent,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            projectPanelTwoMedia,
+            {
+              xPercent: () => projectMotion.panelTwoMediaDrift.xPercent,
+              scale: () => projectMotion.panelTwoMediaDrift.scale,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            projectPanelTwoCaption,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+            },
+            0,
+          )
+          .to(
+            projectPanelThreeCopy,
+            {
+              xPercent: () => projectMotion.textDrift.xPercent,
+              yPercent: () => projectMotion.textDrift.yPercent,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelThreeGhost,
+            {
+              xPercent: () => projectMotion.ghostDrift.xPercent,
+              yPercent: () => projectMotion.ghostDrift.yPercent,
+              opacity: () => projectMotion.ghostDrift.opacity,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelFourMedia,
+            {
+              xPercent: () => projectMotion.panelFourMediaDrift.xPercent,
+              scale: () => projectMotion.panelFourMediaDrift.scale,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelFourCaption,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+            },
+            2,
+          )
+          .to(
+            projectPanelFiveCopy,
+            {
+              xPercent: () => projectMotion.textDrift.xPercent,
+              yPercent: () => projectMotion.textDrift.yPercent,
+              duration: 1,
+            },
+            3,
+          )
+          .to(
+            projectPanelFiveGhost,
+            {
+              xPercent: () => projectMotion.ghostDrift.xPercent,
+              yPercent: () => projectMotion.ghostDrift.yPercent,
+              opacity: () => projectMotion.ghostDrift.opacity,
+              duration: 1,
+            },
+            3,
+          );
+      }
     }, section);
 
     aboutFrameContent.addEventListener("scroll", requestMaskSync, {
@@ -3175,6 +3318,7 @@ export default function App() {
 
     const handleResize = () => {
       refreshProjectMotionSettings();
+      syncProjectsScrollDistance();
       syncMaskLayout(true);
       ScrollTrigger.refresh();
     };
@@ -3200,6 +3344,7 @@ export default function App() {
     }
 
     const handleRefreshInit = () => {
+      syncProjectsScrollDistance();
       applyProjectBaseState();
       syncMaskLayout(true);
     };
